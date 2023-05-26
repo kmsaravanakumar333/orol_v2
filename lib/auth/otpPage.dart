@@ -59,27 +59,18 @@ class _OtpPageState extends State<OtpPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              Transform.translate(
-                offset: Offset(-15.0,0),
-                child: Container(
-                  margin: const EdgeInsets.only(top: 40, bottom: 40),
-                  alignment: Alignment.centerLeft,
-                  child: SizedBox(
-                    height: 75,
-                    width: 175,
-                    child: Image.asset("assets/logos/logo_app.png"),
-                  ),
+              Container(
+                margin: const EdgeInsets.only(top: 40, bottom: 40),
+                alignment: Alignment.center,
+                child: SizedBox(
+                  height: 75,
+                  width: 175,
+                  child: Image.asset("assets/logos/logo_app.png"),
                 ),
               ),
-              const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: 20.0),
-                    child: Text("Please login to begin the process.",),
-                  )),
               ReactiveFormBuilder(
                 form: buildForm,
                 builder: (context, form, child) {

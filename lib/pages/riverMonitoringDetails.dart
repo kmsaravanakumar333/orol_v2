@@ -124,12 +124,12 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
           userId==waterDetailsUserId?
           Row(
             children: [
-              IconButton(
-                icon: const Icon(Icons.edit),
-                onPressed: () {
-                  _navigateToRiverMonitoringScreen(context);
-                },
-              ),
+              // IconButton(
+              //   icon: const Icon(Icons.edit),
+              //   onPressed: () {
+              //     _navigateToRiverMonitoringScreen(context);
+              //   },
+              // ),
               IconButton(
                 icon: const Icon(Icons.delete),
                 onPressed: () {
@@ -1126,6 +1126,14 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                   padding: EdgeInsets.only(
                                                       bottom: 10, left: 5),
                                                   alignment: Alignment.bottomLeft,
+                                                  decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                      image: NetworkImage(snapshot.data.riverPictures[Index]['imageURL']),
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                    borderRadius:
+                                                    BorderRadius.circular(13),
+                                                  ),
                                                   child: Container(
                                                       width: 170,
                                                       height: 20,
@@ -1148,14 +1156,6 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                           ),
                                                         ),
                                                       )),
-                                                  decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                      image: NetworkImage(snapshot.data.riverPictures[Index]['imageURL']),
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                    borderRadius:
-                                                    BorderRadius.circular(13),
-                                                  ),
                                                 );
                                               }))),
                               ],

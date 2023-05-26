@@ -1,18 +1,15 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
-import 'dart:typed_data';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_orol_v2/utils/resources.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:flutter_orol_v2/services/constants/constants.dart';
 import '../services/models/riverMonitoring.dart';
 import '../services/providers/AppSharedPreferences.dart';
 import '../widgets/features/googleMap.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 
 class RiverMonitoringForm extends StatefulWidget {
@@ -27,6 +24,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   int _index = 0;
   List<Step> _steps=[];
   bool _error=false;
+  bool _isSubmitted=false;
   final TextEditingController activityDateController = TextEditingController();
   final TextEditingController activityTimeController = TextEditingController();
   var selectedWaterLevel ;
@@ -75,9 +73,9 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
 
 
   Future<WaterTestDetails?> getRiverMonitoringDetail() async {
-     _waterTestDetail = (await AppSharedPreference().getRiverMonitoringInfo())! ;
-     print('_waterTestDetail');
-     print(jsonEncode(_waterTestDetail));
+    _waterTestDetail = (await AppSharedPreference().getRiverMonitoringInfo())! ;
+    print('_waterTestDetail');
+    print(jsonEncode(_waterTestDetail));
   }
 
   Future<void> pickImages(name) async {
@@ -131,7 +129,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
         _steps = _generateSteps();
       }
     });
-    }
+  }
   //FORM
   final steps = ['generalInformation', 'waterLevelAndWeather','surroundings','waterTesting','flora','preview'];
   final FormGroup form = fb.group({
@@ -211,9 +209,9 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           decoration: InputDecoration(
             labelText: label,
             suffix: fieldName=="waterTesting.waterTemperature"||fieldName=="waterTesting.pH"||fieldName=="waterTesting.alkalinity"?Text("°C")
-                    :fieldName=="waterTesting.turbidity"?Text("NTU")
-                    :fieldName=="waterTesting.conductivity"?Text("µs")
-                    :fieldName=="waterTesting.totalDissolvedSolids"?Text("ppm"):Text("mg/L"),
+                :fieldName=="waterTesting.turbidity"?Text("NTU")
+                :fieldName=="waterTesting.conductivity"?Text("µs")
+                :fieldName=="waterTesting.totalDissolvedSolids"?Text("ppm"):Text("mg/L"),
             labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue),
             focusedBorder: UnderlineInputBorder(
               borderSide: BorderSide(
@@ -261,20 +259,6 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
       // Do something with the name and ID
     }
   }
-
-  List<Map<String, dynamic>> convertToObjects(List<XFile> images, List<String> descriptions) {
-    setState(() {
-      _steps = _generateSteps();
-    });
-    return List.generate(
-      images.length,
-          (index) => {
-        'imageURL': '',
-        'description': descriptions.length>0?descriptions[index]:'',
-      },
-    );
-  }
-
 
   //STEPS COUNT
   List<Step> _generateSteps() {
@@ -437,6 +421,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
               const SizedBox(height: 10),
               ReactiveTextField<String>(
                 formControlName: 'generalInformation.latitude',
+                keyboardType: TextInputType.number,
                 validationMessages: {
                   ValidationMessage.required: (_) => 'required',
                 },
@@ -458,6 +443,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
               SizedBox(width: 10,),
               ReactiveTextField<String>(
                 formControlName: 'generalInformation.longitude',
+                keyboardType: TextInputType.number,
                 validationMessages: {
                   ValidationMessage.required: (_) => 'required',
                 },
@@ -501,6 +487,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
               children: [
                 ReactiveTextField<String>(
                   formControlName: 'waterLevelAndWeather.airTemperature',
+                  keyboardType: TextInputType.number,
                   validationMessages: {
                     ValidationMessage.required: (_) => 'required',
                   },
@@ -559,42 +546,42 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         })),
                 Text("Weather Condtions",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
                 Container(
-                  height: 100,
-                  child: ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 5,
-                    itemBuilder: (BuildContext ctxt, int Index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 10.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            GestureDetector(
-                              onTap: (){
-                                setState(() {
-                                  selectedWeather=WATERANDWEATHER.weatherLabels[Index];
-                                  form.control('waterLevelAndWeather.weather').value=WATERANDWEATHER.weatherLabels[Index];
-                                  _steps = _generateSteps();
-                                });
-                              },
-                              child: SvgPicture.asset(
-                                selectedWeather == WATERANDWEATHER.weatherLabels[Index]
-                                    ? "assets/images/${WATERANDWEATHER.weatherSelectedIcons[Index]}"
-                                    : "assets/images/${WATERANDWEATHER.weatherUnselectedIcons[Index]}",
-                                width: 44,
-                                height: 44,
-                              ),
+                    height: 100,
+                    child: ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: 5,
+                        itemBuilder: (BuildContext ctxt, int Index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                GestureDetector(
+                                  onTap: (){
+                                    setState(() {
+                                      selectedWeather=WATERANDWEATHER.weatherLabels[Index];
+                                      form.control('waterLevelAndWeather.weather').value=WATERANDWEATHER.weatherLabels[Index];
+                                      _steps = _generateSteps();
+                                    });
+                                  },
+                                  child: SvgPicture.asset(
+                                    selectedWeather == WATERANDWEATHER.weatherLabels[Index]
+                                        ? "assets/images/${WATERANDWEATHER.weatherSelectedIcons[Index]}"
+                                        : "assets/images/${WATERANDWEATHER.weatherUnselectedIcons[Index]}",
+                                    width: 44,
+                                    height: 44,
+                                  ),
+                                ),
+                                SizedBox(height: 5,),
+                                Text(WATERANDWEATHER.weatherLabels[Index],style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),)
+                              ],
                             ),
-                            SizedBox(height: 5,),
-                            Text(WATERANDWEATHER.weatherLabels[Index],style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),)
-                          ],
-                        ),
-                      );
-                    })),
-                Text("River Pictures",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
+                          );
+                        })),
+                Text("River Pictures",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16),),
               ],
             ),
           ),
@@ -603,55 +590,52 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
             onPressed: (){
               pickImages('riverPicture');
             },
-            child: const Text('Select Images'),
+            child: const Text('Upload Images'),
           ),
-          const SizedBox(height: 16.0),
+          const SizedBox(height: 10.0),
           if (selectedRiverImages.isNotEmpty)
             Container(
-                margin:
-                EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                margin: EdgeInsets.symmetric( vertical: 20),
                 child: Container(
-                    height: 250,
+                    height: 225,
                     child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemCount: selectedRiverImages.length,
                         itemBuilder: (BuildContext ctxt, int Index) {
                           return Container(
-                            margin: EdgeInsets.only(right: 10),
-                            height: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            width: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            padding:
-                            EdgeInsets.only(bottom: 10, left: 5),
-                            alignment: Alignment.bottomLeft,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Align(
-                                    alignment: Alignment.topRight,
-                                    child: IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            selectedRiverImages.removeAt(Index);
-                                            riverDescriptions.removeAt(Index);
-                                            _steps = _generateSteps();
-                                          });
-                                        },
-                                        icon: const Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                        ))),
-                                Container(
-                                    width:150,
-                                    height:150,
-                                    child: Image.file(
-                                        fit: BoxFit.fill,
-                                        File(selectedRiverImages[Index]!.path)
-                                    )
+                                Stack(
+                                  alignment: Alignment.topRight,
+                                  children:[
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        height: (MediaQuery.of(context).size.width - 30) / 2,
+                                        width: (MediaQuery.of(context).size.width - 30) / 2,
+                                          child: Image.file(
+                                              fit: BoxFit.fill,
+                                              File(selectedRiverImages[Index]!.path)
+                                          )
+                                      ),
+                                    ),
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                selectedRiverImages.removeAt(Index);
+                                                riverDescriptions.removeAt(Index);
+                                                _steps = _generateSteps();
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ))),
+                                  ]
                                 ),
                                 Container(
                                     width: 170,
@@ -733,64 +717,63 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   );
                 }).toList(),
               ),
-              Text("Surrounding Pictures",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
+              SizedBox(height: 16.0),
+              Text("Surrounding Pictures",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16),),
             ],
           ),
         ),
         SizedBox(height: 16.0),
         ElevatedButton(
-         onPressed: (){
-          pickImages('surroundingImages');
+          onPressed: (){
+            pickImages('surroundingImages');
           },
-          child: Text('Select Images'),
+          child: Text('Upload Images'),
         ),
         SizedBox(height: 16.0),
         if (selectedSurroundingImages.isNotEmpty)
           Container(
               margin:
-              EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+              EdgeInsets.symmetric(vertical: 20),
               child: Container(
-                  height: 250,
+                  height: 225,
                   child: ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
                       itemCount: selectedSurroundingImages.length,
                       itemBuilder: (BuildContext ctxt, int Index) {
                         return Container(
-                          margin: EdgeInsets.only(right: 10),
-                          height: (MediaQuery.of(context).size.width -
-                              30) /
-                              2,
-                          width: (MediaQuery.of(context).size.width -
-                              30) /
-                              2,
-                          padding:
-                          EdgeInsets.only(bottom: 10, left: 5),
-                          alignment: Alignment.bottomLeft,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Align(
-                                  alignment: Alignment.topRight,
-                                  child: IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          selectedSurroundingImages.removeAt(Index);
-                                          surroundingDescriptions.removeAt(Index);
-                                          _steps = _generateSteps();
-                                        });
-                                      },
-                                      icon: const Icon(
-                                        Icons.delete,
-                                        color: Colors.red,
-                                      ))),
-                              Container(
-                                  width:150,
-                                  height:150,
-                                  child: Image.file(
-                                      fit: BoxFit.fill,
-                                      File(selectedSurroundingImages[Index]!.path)
-                                  )
+                              Stack(
+                                alignment: Alignment.topRight,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                       height: (MediaQuery.of(context).size.width - 30) / 2,
+                                       width: (MediaQuery.of(context).size.width - 30) / 2,
+                                        child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(selectedSurroundingImages[Index]!.path)
+                                        )
+                                    ),
+                                  ),
+                                  Align(
+                                      alignment: Alignment.topRight,
+                                      child: IconButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              selectedSurroundingImages.removeAt(Index);
+                                              surroundingDescriptions.removeAt(Index);
+                                              _steps = _generateSteps();
+                                            });
+                                          },
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            color: Colors.red,
+                                          ))),
+                                ],
                               ),
                               Container(  width: 170,
                                   height: 20,
@@ -837,7 +820,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ...waterQualityFormFields(),
-              Text("Bacteria",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
+              SizedBox(height: 16.0),
+              Text("Bacteria",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16),),
               SizedBox(height: 20,),
               Row(
                 children: [
@@ -859,7 +843,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         ),
                       ),
                       child: const Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(12.0),
                         child: Text('Present'),
                       ),
                     ),
@@ -883,13 +867,14 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         ),
                       ),
                       child: const Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(12.0),
                         child: Text('Absent'),
                       ),
                     ),
                   )
                 ],
-              )
+              ),
+              SizedBox(height: 16.0),
             ],
           ),
         ),
@@ -907,61 +892,57 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           Text("Flora & Fauna",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 15,fontWeight: FontWeight.w600),),
           const SizedBox(height: 10,),
           _error==true?const Text("Please fill all details",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
-          Text("Flora",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
+          Text("Flora",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16),),
           SizedBox(height: 16.0),
           ElevatedButton(
             onPressed: (){
               pickImages('flora');
             },
-            child: Text('Select Images'),
+            child: Text('Upload Images'),
           ),
           SizedBox(height: 16.0),
           if (selectedFloraImages.isNotEmpty)
             Container(
                 margin:
-                EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                EdgeInsets.symmetric(vertical: 20),
                 child: Container(
-                    height: 250,
+                    height: 225,
                     child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemCount: selectedFloraImages.length,
                         itemBuilder: (BuildContext ctxt, int Index) {
                           return Container(
-                            margin: EdgeInsets.only(right: 10),
-                            height: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            width: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            padding:
-                            EdgeInsets.only(bottom: 10, left: 5),
-                            alignment: Alignment.bottomLeft,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Align(
-                                    alignment: Alignment.topRight,
-                                    child: IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            selectedFloraImages.removeAt(Index);
-                                            floraDescriptions.removeAt(Index);
-                                            _steps = _generateSteps();
-                                          });
-                                        },
-                                        icon: const Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                        ))),
-                                Container(
-                                    width:150,
-                                    height:150,
-                                    child: Image.file(
-                                        fit: BoxFit.fill,
-                                        File(selectedFloraImages[Index]!.path)
-                                    )
+                                Stack(
+                                  alignment:Alignment.topRight,
+                                  children: [
+                                    Container(
+                                        height: (MediaQuery.of(context).size.width - 30) / 2,
+                                        width: (MediaQuery.of(context).size.width - 30) / 2,
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(selectedFloraImages[Index]!.path)
+                                        )
+                                    ),
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                selectedFloraImages.removeAt(Index);
+                                                floraDescriptions.removeAt(Index);
+                                                _steps = _generateSteps();
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ))),
+                                  ],
                                 ),
                                 Container(    width: 170,
                                     height: 20,
@@ -989,63 +970,60 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         })
                 )
             ),
-          Text("Fauna",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
+          Text("Fauna",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16),),
           SizedBox(height: 16.0),
           ElevatedButton(
             onPressed: (){
               pickImages('fauna');
             },
-            child: Text('Select Images'),
+            child: Text('Upload Images'),
           ),
           SizedBox(height: 16.0),
           if (selectedFaunaImages.isNotEmpty)
             Container(
                 margin:
-                EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                EdgeInsets.symmetric(vertical: 20),
                 child: Container(
-                    height: 250,
+                    height: 225,
                     child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemCount: selectedFaunaImages.length,
                         itemBuilder: (BuildContext ctxt, int Index) {
                           return Container(
-                            margin: EdgeInsets.only(right: 10),
-                            height: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            width: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            padding:
-                            EdgeInsets.only(bottom: 10, left: 5),
-                            alignment: Alignment.bottomLeft,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Align(
-                                    alignment: Alignment.topRight,
-                                    child: IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            selectedFaunaImages.removeAt(Index);
-                                            faunaDescriptions.removeAt(Index);
-                                            _steps = _generateSteps();
-                                          });
-                                        },
-                                        icon: const Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                        ))),
-                                Container(
-                                    width:150,
-                                    height:150,
-                                    child: Image.file(
-                                        fit: BoxFit.fill,
-                                        File(selectedFaunaImages[Index]!.path)
-                                    )
+                                Stack(
+                                  alignment: Alignment.topRight,
+                                  children: [
+                                    Container(
+                                        height: (MediaQuery.of(context).size.width - 30) / 2,
+                                        width: (MediaQuery.of(context).size.width - 30) / 2,
+                                        padding:EdgeInsets.all(8.0),
+                                        child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(selectedFaunaImages[Index]!.path)
+                                        )
+                                    ),
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                selectedFaunaImages.removeAt(Index);
+                                                faunaDescriptions.removeAt(Index);
+                                                _steps = _generateSteps();
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ))),
+                                  ],
                                 ),
-                                Container(    width: 170,
+                                Container(
+                                    width: 170,
                                     height: 20,
                                     decoration: BoxDecoration(
                                         color: Colors.white,
@@ -1086,61 +1064,57 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           Text("Water Level & Weather",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 15,fontWeight: FontWeight.w600),),
           const SizedBox(height: 10,),
           _error==true?const Text("Please fill all details",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
-          Text("Group pictures",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
+          Text("Group pictures",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16),),
           SizedBox(height: 16.0),
           ElevatedButton(
             onPressed: (){
               pickImages('group');
             },
-            child: Text('Select Images'),
+            child: Text('Upload Images'),
           ),
           SizedBox(height: 16.0),
           if (selectedGroupImages.isNotEmpty)
             Container(
                 margin:
-                EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                EdgeInsets.symmetric(vertical: 20),
                 child: Container(
-                    height: 250,
+                    height: 225,
                     child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemCount: selectedGroupImages.length,
                         itemBuilder: (BuildContext ctxt, int Index) {
                           return Container(
-                            margin: EdgeInsets.only(right: 10),
-                            height: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            width: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            padding:
-                            EdgeInsets.only(bottom: 10, left: 5),
-                            alignment: Alignment.bottomLeft,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Align(
-                                    alignment: Alignment.topRight,
-                                    child: IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            selectedGroupImages.removeAt(Index);
-                                            groupImageDescriptions.removeAt(Index);
-                                            _steps = _generateSteps();
-                                          });
-                                        },
-                                        icon: const Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                        ))),
-                                Container(
-                                    width:150,
-                                    height:150,
-                                    child: Image.file(
-                                        fit: BoxFit.fill,
-                                        File(selectedGroupImages[Index]!.path)
-                                    )
+                                Stack(
+                                  alignment:Alignment.topRight,
+                                  children: [
+                                    Container(
+                                        height: (MediaQuery.of(context).size.width - 30) / 2,
+                                        width: (MediaQuery.of(context).size.width - 30) / 2,
+                                        padding:EdgeInsets.all(8.0),
+                                        child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(selectedGroupImages[Index]!.path)
+                                        )
+                                    ),
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                selectedGroupImages.removeAt(Index);
+                                                groupImageDescriptions.removeAt(Index);
+                                                _steps = _generateSteps();
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ))),
+                                  ],
                                 ),
                                 Container(    width: 170,
                                     height: 20,
@@ -1168,61 +1142,58 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         })
                 )
             ),
-          Text("Activity pictures",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
+          Text("Activity pictures",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16),),
           SizedBox(height: 16.0),
           ElevatedButton(
             onPressed: (){
               pickImages('activity');
             },
-            child: Text('Select Images'),
+            child: Text('Upload Images'),
           ),
           SizedBox(height: 16.0),
           if (selectedActivityImages.isNotEmpty)
             Container(
                 margin:
-                EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                EdgeInsets.symmetric(vertical: 20),
                 child: Container(
-                    height: 250,
+                    height: 225,
                     child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemCount: selectedActivityImages.length,
                         itemBuilder: (BuildContext ctxt, int Index) {
                           return Container(
-                            margin: EdgeInsets.only(right: 10),
-                            height: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            width: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            padding:
-                            EdgeInsets.only(bottom: 10, left: 5),
                             alignment: Alignment.bottomLeft,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Align(
-                                    alignment: Alignment.topRight,
-                                    child: IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            selectedActivityImages.removeAt(Index);
-                                            activityImageDescriptions.removeAt(Index);
-                                            _steps = _generateSteps();
-                                          });
-                                        },
-                                        icon: const Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                        ))),
-                                Container(
-                                    width:150,
-                                    height:150,
-                                    child: Image.file(
-                                        fit: BoxFit.fill,
-                                        File(selectedActivityImages[Index]!.path)
-                                    )
+                                Stack(
+                                  alignment: Alignment.topRight,
+                                  children: [
+                                    Container(
+                                        height: (MediaQuery.of(context).size.width - 30) / 2,
+                                        width: (MediaQuery.of(context).size.width - 30) / 2,
+                                        padding:EdgeInsets.all(8.0),
+                                        child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(selectedActivityImages[Index]!.path)
+                                        )
+                                    ),
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                selectedActivityImages.removeAt(Index);
+                                                activityImageDescriptions.removeAt(Index);
+                                                _steps = _generateSteps();
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ))),
+                                  ],
                                 ),
                                 Container(    width: 170,
                                     height: 20,
@@ -1250,61 +1221,57 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         })
                 )
             ),
-          Text("Artworks",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
+          Text("Artworks",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16),),
           SizedBox(height: 16.0),
           ElevatedButton(
             onPressed: (){
               pickImages('artwork');
             },
-            child: Text('Select Images'),
+            child: Text('Upload Images'),
           ),
           SizedBox(height: 16.0),
           if (selectedArtworkImages.isNotEmpty)
             Container(
                 margin:
-                EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                EdgeInsets.symmetric(vertical: 20),
                 child: Container(
-                    height: 250,
+                    height: 225,
                     child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemCount: selectedArtworkImages.length,
                         itemBuilder: (BuildContext ctxt, int Index) {
                           return Container(
-                            margin: EdgeInsets.only(right: 10),
-                            height: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            width: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            padding:
-                            EdgeInsets.only(bottom: 10, left: 5),
-                            alignment: Alignment.bottomLeft,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Align(
-                                    alignment: Alignment.topRight,
-                                    child: IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            selectedArtworkImages.removeAt(Index);
-                                            artworkDescriptions.removeAt(Index);
-                                            _steps = _generateSteps();
-                                          });
-                                        },
-                                        icon: const Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                        ))),
-                                Container(
-                                    width:150,
-                                    height:150,
-                                    child: Image.file(
-                                        fit: BoxFit.fill,
-                                        File(selectedArtworkImages[Index]!.path)
-                                    )
+                                Stack(
+                                  alignment: Alignment.topRight,
+                                  children: [
+                                    Container(
+                                        height: (MediaQuery.of(context).size.width - 30) / 2,
+                                        width: (MediaQuery.of(context).size.width - 30) / 2,
+                                        padding:EdgeInsets.all(8.0),
+                                        child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(selectedArtworkImages[Index]!.path)
+                                        )
+                                    ),
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                selectedArtworkImages.removeAt(Index);
+                                                artworkDescriptions.removeAt(Index);
+                                                _steps = _generateSteps();
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ))),
+                                  ],
                                 ),
                                 Container(    width: 170,
                                     height: 20,
@@ -1336,7 +1303,6 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
       ),
     );
   }
-  
 
   //STEP 7 : CONFIRM SUBMIT
   _confirmSubmit(){
@@ -1403,12 +1369,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Activity Date",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('generalInformation.activityDate').value ?? ''}',
                                       style: TextStyle(
@@ -1423,12 +1389,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Activity Time",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text("${form.control('generalInformation.activityTime').value ?? ''}",
                                       style: TextStyle(
@@ -1442,7 +1408,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Location",
                                       style: TextStyle(
                                           color: Colors.grey[700],
@@ -1467,12 +1433,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Name",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text(' ${form.control('generalInformation.testerName').value ?? ''}',
                                       style: const TextStyle(
@@ -1487,12 +1453,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Latitude",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text( '${form.control('generalInformation.latitude').value ?? ''}',
                                       style: TextStyle(
@@ -1507,12 +1473,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Longitude",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text(' ${form.control('generalInformation.longitude').value ?? ''}',
                                       style: TextStyle(
@@ -1577,12 +1543,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Weather",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterLevelAndWeather.weather').value ?? ''}',
                                       style: const TextStyle(
@@ -1597,12 +1563,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Air Temperatue",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
                                       '${form.control('waterLevelAndWeather.airTemperature').value ?? ''}' + " °C",
@@ -1618,12 +1584,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Water Level",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterLevelAndWeather.waterLevel').value ?? ''}',
                                       style: const TextStyle(
@@ -1689,15 +1655,15 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Water Temperature",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                     ' ${form.control('waterTesting.waterTemperature').value ?? ''}' + " °C",
+                                      ' ${form.control('waterTesting.waterTemperature').value ?? ''}' + " °C",
                                       style: const TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.bold)))
@@ -1710,12 +1676,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("pH",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text(' ${form.control('waterTesting.pH').value ?? ''}' + " units",
                                       style: TextStyle(
@@ -1730,12 +1696,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Alkalinity",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.alkalinity').value ?? ''}' + " mg/L",
                                       style: TextStyle(
@@ -1751,12 +1717,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Nitrate",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.nitrate').value ?? ''}' + " mg/L",
                                       style: const TextStyle(
@@ -1771,12 +1737,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Nitrite",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.nitrite').value ?? ''}' + " mg/L",
                                       style: TextStyle(
@@ -1791,12 +1757,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Hardness",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.hardness').value ?? ''}' + " mg/L",
                                       style: TextStyle(
@@ -1811,12 +1777,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Chlorine",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.chlorine').value ?? ''}' + " mg/L",
                                       style: TextStyle(
@@ -1831,12 +1797,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Iron",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.iron').value ?? ''}' + " mg/L",
                                       style: TextStyle(
@@ -1851,12 +1817,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Dissolved oxygen",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
                                       '${form.control('waterTesting.dissolvedOxygen').value ?? ''}' + " mg/L",
@@ -1872,13 +1838,13 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text(
                                       "E Coli/Coliform Bacteria",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
                                       '${form.control('waterTesting.bacteria').value ?? ''}' + " ",
@@ -1894,12 +1860,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Turbidity",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.turbidity').value ?? ''}' + " NTU",
                                       style: TextStyle(
@@ -1914,12 +1880,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Phosphate",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.phosphate').value ?? ''}' + " mg/L",
                                       style: TextStyle(
@@ -1934,12 +1900,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Ammonia",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.ammonia').value ?? ''}' + " mg/L",
                                       style: TextStyle(
@@ -1954,12 +1920,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Lead",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.lead').value ?? ''}' + " mg/L",
                                       style: TextStyle(
@@ -1974,12 +1940,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Total Dissolved Solids",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.totalDissolvedSolids').value ?? ''}' + " ppm",
                                       style: TextStyle(
@@ -1994,12 +1960,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Conductivity",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.conductivity').value ?? ''}' + " µs",
                                       style: TextStyle(
@@ -2065,24 +2031,16 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                 itemCount: selectedRiverImages.length,
                                 itemBuilder:
                                     (BuildContext ctxt, int Index) {
-                                  return Container(    margin: EdgeInsets.only(right: 10),
-                                    height: (MediaQuery.of(context)
-                                        .size
-                                        .width -
-                                        30) /
-                                        2,
-                                    width: (MediaQuery.of(context)
-                                        .size
-                                        .width -
-                                        30) /
-                                        2,
+                                  return Container(
+                                    height: (MediaQuery.of(context).size.width - 30) / 2,
+                                    width: (MediaQuery.of(context).size.width - 30) / 2,
                                     padding: const EdgeInsets.only(
                                         bottom: 10, left: 5),
                                     alignment: Alignment.bottomLeft,
                                     child: Column(
                                       children: [
                                         Container(
-                                            width:100,
+                                            width:120,
                                             height:80,
                                             child: Image.file(
                                                 fit: BoxFit.fill,
@@ -2255,9 +2213,9 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               ),
                             ),
                             Container(padding: const EdgeInsets.only(
-                                  left: 10,
-                                  bottom: 5,
-                                ),
+                              left: 10,
+                              bottom: 5,
+                            ),
                                 child: const Text(
                                   "Flora",
                                   style: TextStyle(
@@ -2687,157 +2645,241 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
       appBar: AppBar(
         title: Text("Add river monitoring"),
       ),
-      body: Stepper(
-        elevation: 0,
-        type:StepperType.horizontal,
-        currentStep: _index,
-        onStepTapped: (int index) {
-          setState(() {
-            _index = index;
-            _steps = _generateSteps();
-          });
-        },
-        steps:_steps,
-        controlsBuilder:(onStepContinue,onStepCancel){
-          return _index == _steps.length - 1?
-          Row(
-            children: [
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
+      body: Stack(
+        alignment: Alignment.center,
+        children:[
+          Stepper(
+          elevation: 0,
+          type:StepperType.horizontal,
+          currentStep: _index,
+          onStepTapped: (int index) {
+            // setState(() {
+            //   _index = index;
+            //   _steps = _generateSteps();
+            // });
+            if (steps[_index]!='flora'&&steps[_index]!='waterLevelAndWeather'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType==FormGroup&&form.control(steps[_index]).valid) {
+              setState(() {
+                _index++;
+                _error=false;
+                _steps = _generateSteps();
+              });
+            }
+            else if(steps[_index]=="waterLevelAndWeather"){
+              if(form.control(steps[_index]).valid&&selectedRiverImages.length>0){
+                setState(() {
+                  _index++;
+                  _error=false;
+                  _steps = _generateSteps();
+                });
+              }
+              else{
+                setState(() {
+                  _error=true;
+                  _steps = _generateSteps();
+                });
+              }
+            }
+            else if (steps[_index]!='flora'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType!=FormGroup&&((form.value['surroundings'] as List<String>).isNotEmpty&&selectedSurroundingImages.length!=0)) {
+              setState(() {
+                _index++;
+                _error=false;
+                _steps = _generateSteps();
+              });
+            }
+            else if (steps[_index]=='flora'||steps[_index]=='preview') {
+              setState(() {
+                _index++;
+                _error=false;
+                _steps = _generateSteps();
+              });
+            }
+            else {
+              setState(() {
+                _error=true;
+                _steps = _generateSteps();
+              });
+              form.control(steps[_index]).markAllAsTouched();
+            }
+          },
+          steps:_steps,
+          controlsBuilder:(onStepContinue,onStepCancel){
+            return _index == _steps.length - 1?
+            Row(
+              children: [
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
+                  ),
+                  onPressed: () async {
+                    for(int i=0;i<selectedRiverImages.length;i++){
+                      riverImgObj.add({
+                        "imageURL":"",
+                        "fileName":path.basename(selectedRiverImages[i].path),
+                        "description":riverDescriptions[i].text
+                      });
+                    }
+                    for(int i=0;i<selectedSurroundingImages.length;i++){
+                      surroundingImgObj.add({
+                        "imageURL":"",
+                        "fileName":path.basename(selectedSurroundingImages[i].path),
+                        "description":surroundingDescriptions[i].text
+                      });
+                    }
+                    for(int i=0;i<selectedFloraImages.length;i++){
+                      floraImgObj.add({
+                        "imageURL":"",
+                        "fileName":path.basename(selectedFloraImages[i].path),
+                        "description":floraDescriptions[i].text
+                      });
+                    }
+                    for(int i=0;i<selectedFaunaImages.length;i++){
+                      faunaDescriptions.add({
+                        "imageURL":"",
+                        "fileName":path.basename(selectedFaunaImages[i].path),
+                        "description":faunaDescriptions[i].text
+                      });
+                    }
+                    for(int i=0;i<selectedGroupImages.length;i++){
+                      groupImgObj.add({
+                        "imageURL":"",
+                        "fileName":path.basename(selectedFaunaImages[i].path),
+                        "description":groupImageDescriptions[i].text
+                      });
+                    }
+                    for(int i=0;i<selectedActivityImages.length;i++){
+                      activityImgObj.add({
+                        "imageURL":"",
+                        "fileName":path.basename(selectedActivityImages[i].path),
+                        "description":activityImageDescriptions[i].text
+                      });
+                    }
+                    for(int i=0;i<selectedArtworkImages.length;i++){
+                      artwrokImgObj.add({
+                        "imageURL":"",
+                        "fileName":path.basename(selectedArtworkImages[i].path),
+                        "description":artworkDescriptions[i].text
+                      });
+                    }
+                    form.control('riverPictures').value=riverImgObj;
+                    form.control('surroundingPictures').value=surroundingImgObj;
+                    form.control('floraPictures').value=floraImgObj;
+                    form.control('faunaPictures').value=faunaImgObj;
+                    form.control('groupPictures').value=groupImgObj;
+                    form.control('activityPictures').value=activityImgObj;
+                    form.control('artworkPictures').value=artwrokImgObj;
+                    // var newMap = new Map(Object.entries(form.value));
+
+                    var _isSubmitted1=true;
+                    setState(() {
+                      _isSubmitted=true;
+                    });
+                    _waterTestDetail.createWaterTestDetail(
+                        form.value,
+                        selectedRiverImages,
+                        selectedSurroundingImages,
+                        selectedFaunaImages,
+                        selectedFloraImages,
+                        selectedArtworkImages,
+                        selectedActivityImages,
+                        selectedGroupImages,
+                        context);
+                    setState(() {
+                      _isSubmitted==false;
+                      _steps = _generateSteps();
+                    });
+                  },
+                  child: _isSubmitted?Text('Creating'):Text("Save"),
                 ),
-                onPressed: () async {
-                  onStepContinue;
-                  for(int i=0;i<selectedRiverImages.length;i++){
-                    print('imageTemporary');
-                    riverImgObj.add({
-                      "imageURL":"",
-                      "fileName":path.basename(selectedRiverImages[i].path),
-                      "description":riverDescriptions[i].text
-                    });
-                    print(riverImgObj);
-                  }
-                  for(int i=0;i<selectedSurroundingImages.length;i++){
-                    surroundingImgObj.add({
-                      "imageURL":"",
-                      "fileName":path.basename(selectedSurroundingImages[i].path),
-                      "description":surroundingDescriptions[i].text
-                    });
-                  }
-                  for(int i=0;i<selectedFloraImages.length;i++){
-                    floraImgObj.add({
-                      "imageURL":"",
-                      "fileName":path.basename(selectedFloraImages[i].path),
-                      "description":floraDescriptions[i].text
-                    });
-                  }
-                  for(int i=0;i<selectedFaunaImages.length;i++){
-                    faunaDescriptions.add({
-                      "imageURL":"",
-                      "fileName":path.basename(selectedFaunaImages[i].path),
-                      "description":faunaDescriptions[i].text
-                    });
-                  }
-                  for(int i=0;i<selectedGroupImages.length;i++){
-                    groupImgObj.add({
-                      "imageURL":"",
-                      "fileName":path.basename(selectedFaunaImages[i].path),
-                      "description":groupImageDescriptions[i].text
-                    });
-                  }
-                  for(int i=0;i<selectedActivityImages.length;i++){
-                    activityImgObj.add({
-                      "imageURL":"",
-                      "fileName":path.basename(selectedActivityImages[i].path),
-                      "description":activityImageDescriptions[i].text
-                    });
-                  }
-                  for(int i=0;i<selectedArtworkImages.length;i++){
-                    artwrokImgObj.add({
-                      "imageURL":"",
-                      "fileName":path.basename(selectedArtworkImages[i].path),
-                      "description":artworkDescriptions[i].text
-                    });
-                  }
-                  form.control('riverPictures').value=riverImgObj;
-                  form.control('surroundingPictures').value=surroundingImgObj;
-                  form.control('floraPictures').value=floraImgObj;
-                  form.control('faunaPictures').value=faunaImgObj;
-                  form.control('groupPictures').value=groupImgObj;
-                  form.control('activityPictures').value=activityImgObj;
-                  form.control('artworkPictures').value=artwrokImgObj;
-                   // var newMap = new Map(Object.entries(form.value));
-                  Map<String, dynamic> testMap = (form.value);
-                  _waterTestDetail.createWaterTestDetail(form,selectedRiverImages,selectedSurroundingImages, context);
-                },
-                child: Text('Save'),
-              ),
-            ],
-          ):
-          Row(
-            children: [
-              _index>0?
-              Row(
-                children: [
-                  TextButton(
-                    onPressed: (){
-                      if (_index > 0) {
+              ],
+            ):
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _index>0?
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: (){
+                        if (_index > 0) {
+                          setState(() {
+                            _index -= 1;
+                            _steps = _generateSteps();
+                          });
+                        }
+                      },
+                      child: Text('Previous'),
+                    ),
+                    SizedBox(width: 16),
+                  ],
+                ):
+                SizedBox(),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
+                  ),
+                  onPressed: (){
+                    if (steps[_index]!='flora'&&steps[_index]!='waterLevelAndWeather'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType==FormGroup&&form.control(steps[_index]).valid) {
+                      setState(() {
+                        _index++;
+                        _error=false;
+                        _steps = _generateSteps();
+                      });
+                    }
+                    else if(steps[_index]=="waterLevelAndWeather"){
+                      if(form.control(steps[_index]).valid&&selectedRiverImages.length>0){
                         setState(() {
-                          _index -= 1;
+                          _index++;
+                          _error=false;
                           _steps = _generateSteps();
                         });
                       }
-                    },
-                    child: Text('Previous'),
-                  ),
-                  SizedBox(width: 16),
-                ],
-              ):
-              SizedBox(),
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
+                      else{
+                        setState(() {
+                          _error=true;
+                          _steps = _generateSteps();
+                        });
+                      }
+                    }
+                    else if (steps[_index]!='flora'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType!=FormGroup&&((form.value['surroundings'] as List<String>).isNotEmpty&&selectedSurroundingImages.length!=0)) {
+                      setState(() {
+                        _index++;
+                        _error=false;
+                        _steps = _generateSteps();
+                      });
+                    }
+                    else if (steps[_index]=='flora'||steps[_index]=='preview') {
+                      setState(() {
+                        _index++;
+                        _error=false;
+                        _steps = _generateSteps();
+                      });
+                    }
+                    else {
+                      setState(() {
+                        _error=true;
+                        _steps = _generateSteps();
+                      });
+                      form.control(steps[_index]).markAllAsTouched();
+                    }
+                  },
+                  child: Text('Next'),
                 ),
-                onPressed: (){
-                  print("FORM CONTROL");
-                  print(form.value['surroundings']);
-                  if (steps[_index]!='flora'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType==FormGroup&&form.control(steps[_index]).valid) {
-                    setState(() {
-                      _index++;
-                      _error=false;
-                      _steps = _generateSteps();
-                    });
-                  }
-                  else if (steps[_index]!='flora'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType!=FormGroup&&(form.value['surroundings'] as List<String>).isNotEmpty) {
-                    setState(() {
-                      _index++;
-                      _error=false;
-                      _steps = _generateSteps();
-                    });
-                  }
-                  else if (steps[_index]=='flora'||steps[_index]=='preview') {
-                    setState(() {
-                      _index++;
-                      _error=false;
-                      _steps = _generateSteps();
-                    });
-                  }
-                  else {
-                    setState(() {
-                      _error=true;
-                      _steps = _generateSteps();
-                    });
-                    form.control(steps[_index]).markAllAsTouched();
-                  }
-                },
-                child: Text('Next'),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
+          if(_isSubmitted)
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
+            ),
+          ),
+          if(_isSubmitted)
+          CircularProgressIndicator()
+        ],
       ),
     );
   }
 }
-
 

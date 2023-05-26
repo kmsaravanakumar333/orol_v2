@@ -58,7 +58,7 @@ class _GetStartedPageState extends State<GetStartedPage> {
       nextFlex: 0,
       skip: Text('Skip', style: TextStyle(color: Resources.colors.appTheme.darkBlue),),
       next: Icon(Icons.arrow_forward, color: Resources.colors.appTheme.darkBlue,),
-      done: Text('Get Started', style: TextStyle(
+      done: Text('GET STARTED', style: TextStyle(
           fontWeight: FontWeight.w600, color:Resources.colors.appTheme.darkBlue
       ),),
       dotsDecorator:  DotsDecorator(
