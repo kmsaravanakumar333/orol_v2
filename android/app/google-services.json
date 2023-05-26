@@ -1,0 +1,85 @@
+{
+  "project_info": {
+    "project_number": "1085141870142",
+    "firebase_url": "https://our-river-our-life-7823b.firebaseio.com",
+    "project_id": "our-river-our-life-7823b",
+    "storage_bucket": "our-river-our-life-7823b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085141870142:android:020e05aeb2150f2480136f",
+        "android_client_info": {
+          "package_name": "com.example.flutter_orol_v2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1085141870142-vdpk5fctvam0jkjakpkrao8peb20o5f9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQpCK-TfjGpcCChspnhpQOh2lq6EYSLw8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1085141870142-vdpk5fctvam0jkjakpkrao8peb20o5f9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085141870142:android:714c056b55e18f9180136f",
+        "android_client_info": {
+          "package_name": "ourriversourlifeapp.our_rivers_our_life_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1085141870142-450kgqh79lhr8n1sg1kbd1653hmmqkps.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ourriversourlifeapp.our_rivers_our_life_app",
+            "certificate_hash": "521ea6f85c0629f864488433967c0979477edee0"
+          }
+        },
+        {
+          "client_id": "1085141870142-oho0rordh59teb79anrk15ankld3qr8a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ourriversourlifeapp.our_rivers_our_life_app",
+            "certificate_hash": "8fe6565bef9700a00c8a59366808f592c9a3b453"
+          }
+        },
+        {
+          "client_id": "1085141870142-vdpk5fctvam0jkjakpkrao8peb20o5f9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQpCK-TfjGpcCChspnhpQOh2lq6EYSLw8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1085141870142-vdpk5fctvam0jkjakpkrao8peb20o5f9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

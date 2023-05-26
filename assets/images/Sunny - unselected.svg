@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="46px" height="46px" viewBox="0 0 46 46" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 63.1 (101010) - https://sketch.com -->
+    <title>63E6CBCC-7143-4ED5-B48F-02B5702F859B</title>
+    <desc>Created with sketchtool.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Water-Level-&amp;-Weather" transform="translate(-19.000000, -393.000000)" stroke="#1E3664">
+            <g id="Sunny---unselected" transform="translate(20.000000, 394.000000)">
+                <path d="M31.908,43.908 L12,43.908 C5.373,43.908 0,38.535 0,31.908 L0,12 C0,5.373 5.373,0 12,0 L31.908,0 C38.535,0 43.908,5.373 43.908,12 L43.908,31.908 C43.908,38.535 38.535,43.908 31.908,43.908 Z" id="Stroke-1"></path>
+                <g id="Group-2" transform="translate(12.696400, 12.695900)" stroke-linecap="round">
+                    <path d="M4.944,9.258 C4.944,6.876 6.876,4.945 9.257,4.945 C11.639,4.945 13.57,6.876 13.57,9.258 C13.57,11.64 11.639,13.571 9.257,13.571 C6.876,13.571 4.944,11.64 4.944,9.258 Z" id="Stroke-11"></path>
+                    <line x1="9.2575" y1="2.945" x2="9.2575" y2="0" id="Stroke-13"></line>
+                    <line x1="2.944" y1="9.258" x2="0" y2="9.258" id="Stroke-17"></line>
+                    <line x1="18.5153" y1="9.258" x2="15.5703" y2="9.258" id="Stroke-19"></line>
+                    <line x1="4.7936" y1="4.7941" x2="2.7106" y2="2.7111" id="Stroke-21"></line>
+                    <line x1="15.8034" y1="2.7116" x2="13.7214" y2="4.7946" id="Stroke-27"></line>
+                    <line x1="16.3036" y1="15.3041" x2="14.3036" y2="13.3041" id="Stroke-23"></line>
+                    <line x1="5.3036" y1="13.3041" x2="3.3036" y2="15.3041" id="Stroke-25"></line>
+                    <line x1="8.8036" y1="18.3041" x2="8.8036" y2="15.3041" id="Stroke-15"></line>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

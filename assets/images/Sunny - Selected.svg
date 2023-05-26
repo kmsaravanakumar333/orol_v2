@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="44px" height="44px" viewBox="0 0 44 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 63.1 (101010) - https://sketch.com -->
+    <title>B016DE59-239C-49F8-8B7F-A4D0C2C252F3</title>
+    <desc>Created with sketchtool.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Water-Level-&amp;-Weather-(1)" transform="translate(-20.000000, -395.000000)">
+            <g id="Sunny---Selected" transform="translate(20.000000, 395.000000)">
+                <g id="Group-10">
+                    <path d="M31.908,43.908 L12,43.908 C5.373,43.908 7.10542736e-15,38.535 7.10542736e-15,31.908 L7.10542736e-15,12 C7.10542736e-15,5.373 5.373,-4.97379915e-14 12,-4.97379915e-14 L31.908,-4.97379915e-14 C38.535,-4.97379915e-14 43.908,5.373 43.908,12 L43.908,31.908 C43.908,38.535 38.535,43.908 31.908,43.908 Z" id="Stroke-1" fill="#1E3664"></path>
+                    <path d="M17.6404,21.9539 C17.6404,19.5719 19.5724,17.6409 21.9534,17.6409 C24.3354,17.6409 26.2664,19.5719 26.2664,21.9539 C26.2664,24.3359 24.3354,26.2669 21.9534,26.2669 C19.5724,26.2669 17.6404,24.3359 17.6404,21.9539 Z" id="Stroke-11" stroke="#FFFFFF" stroke-linecap="round"></path>
+                    <line x1="21.9539" y1="15.6409" x2="21.9539" y2="12.6959" id="Stroke-13" stroke="#FFFFFF" stroke-linecap="round"></line>
+                    <line x1="15.6404" y1="21.9539" x2="12.6964" y2="21.9539" id="Stroke-17" stroke="#FFFFFF" stroke-linecap="round"></line>
+                    <line x1="31.2117" y1="21.9539" x2="28.2667" y2="21.9539" id="Stroke-19" stroke="#FFFFFF" stroke-linecap="round"></line>
+                    <line x1="17.49" y1="17.49" x2="15.407" y2="15.407" id="Stroke-21" stroke="#FFFFFF" stroke-linecap="round"></line>
+                    <line x1="28.4998" y1="15.4075" x2="26.4178" y2="17.4905" id="Stroke-27" stroke="#FFFFFF" stroke-linecap="round"></line>
+                </g>
+                <line x1="21.5" y1="30.945" x2="21.5" y2="28" id="Stroke-15" stroke="#FFFFFF" stroke-linecap="round"></line>
+                <line x1="28" y1="28" x2="26" y2="26" id="Stroke-23" stroke="#FFFFFF" stroke-linecap="round"></line>
+                <line x1="17" y1="26" x2="15" y2="28" id="Stroke-25" stroke="#FFFFFF" stroke-linecap="round"></line>
+            </g>
+        </g>
+    </g>
+</svg>
