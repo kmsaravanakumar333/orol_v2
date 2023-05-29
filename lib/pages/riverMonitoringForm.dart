@@ -1,19 +1,22 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
-import 'dart:typed_data';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_orol_v2/utils/resources.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:flutter_orol_v2/services/constants/constants.dart';
 import '../services/models/riverMonitoring.dart';
 import '../services/providers/AppSharedPreferences.dart';
 import '../widgets/features/googleMap.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_webservice/places.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import '../widgets/features/pictureOptions.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class RiverMonitoringForm extends StatefulWidget {
   String mode;
@@ -27,8 +30,15 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   int _index = 0;
   List<Step> _steps=[];
   bool _error=false;
+  bool _isSubmitted=false;
+  DateTime now = DateTime.now();
+  final String GOOGLE_MAP_API='AIzaSyD9VmkK8P-ONafIM_49q6v5vtu3apjbdFg';
   final TextEditingController activityDateController = TextEditingController();
   final TextEditingController activityTimeController = TextEditingController();
+  TextEditingController _searchController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _autoValidate = false;
+  List<PlacesSearchResult> _searchResults = [];
   var selectedWaterLevel ;
   var selectedWeather;
   var _bacteriaPresent;
@@ -67,25 +77,35 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      form.control('generalInformation.activityDate').value=DateFormat('yyyy-MM-dd').format(now);
+      form.control('generalInformation.activityTime').value= DateFormat('h:mm a').format(now);
+    });
     if(widget.mode=="edit"){
       getRiverMonitoringDetail();
     }
     _steps = _generateSteps();
   }
 
-
-  Future<WaterTestDetails?> getRiverMonitoringDetail() async {
-     _waterTestDetail = (await AppSharedPreference().getRiverMonitoringInfo())! ;
-     print('_waterTestDetail');
-     print(jsonEncode(_waterTestDetail));
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
-  Future<void> pickImages(name) async {
+
+  Future<WaterTestDetails?> getRiverMonitoringDetail() async {
+    _waterTestDetail = (await AppSharedPreference().getRiverMonitoringInfo())! ;
+  }
+
+  Future<void> pickImages(name,mode) async {
     XFile? image;
     try {
-      image = await ImagePicker().pickImage(source: ImageSource.gallery);
-      print('image');
-      print(image!.name);
+      if(mode=='Gallery'){
+        image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      }else if(mode=='Camera'){
+        image = await ImagePicker().pickImage(source: ImageSource.camera);
+      }
     } catch (e) {
       // Handle any exceptions
     }
@@ -93,8 +113,6 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
     setState(() {
       // Image.file(File(image!.path));
       File file = File(image!.path);
-      print('file');
-      print(file);
       if(name=='riverPicture'){
         selectedRiverImages.add(file);
         riverDescriptions.add(TextEditingController());
@@ -131,7 +149,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
         _steps = _generateSteps();
       }
     });
-    }
+  }
   //FORM
   final steps = ['generalInformation', 'waterLevelAndWeather','surroundings','waterTesting','flora','preview'];
   final FormGroup form = fb.group({
@@ -200,31 +218,46 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
       final fieldName = config['fieldName'];
       final label = config['label'];
       return SingleChildScrollView(
-        child: ReactiveTextField<String>(
-          formControlName: fieldName,
-          keyboardType: TextInputType.number,
-          validationMessages: {
-            ValidationMessage.required: (_) =>
-            'The ${label?.toLowerCase()} must not be empty'
-          },
-          textInputAction: TextInputAction.next,
-          decoration: InputDecoration(
-            labelText: label,
-            suffix: fieldName=="waterTesting.waterTemperature"||fieldName=="waterTesting.pH"||fieldName=="waterTesting.alkalinity"?Text("°C")
-                    :fieldName=="waterTesting.turbidity"?Text("NTU")
-                    :fieldName=="waterTesting.conductivity"?Text("µs")
-                    :fieldName=="waterTesting.totalDissolvedSolids"?Text("ppm"):Text("mg/L"),
-            labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
-                width: 1.0,         // Replace with your desired focus border width
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            RichText(
+              text:  TextSpan(
+                text: label,
+                style: TextStyle(
+                    fontSize: 12.0,
+                    fontFamily: 'Montserrat',
+                    color: Resources.colors.appTheme.darkBlue
+                ),
               ),
             ),
-            helperText: '',
-            helperStyle: TextStyle(height: 0.7),
-            errorStyle: TextStyle(height: 0.7),
-          ),
+            ReactiveTextField<String>(
+              formControlName: fieldName,
+              keyboardType: TextInputType.number,
+              validationMessages: {
+                ValidationMessage.required: (_) =>
+                'The ${label?.toLowerCase()} must not be empty'
+              },
+              textInputAction: TextInputAction.next,
+              decoration: InputDecoration(
+                suffix: fieldName=="waterTesting.waterTemperature"?Text("°C")
+                    :fieldName=="waterTesting.turbidity"?Text("NTU")
+                    :fieldName=="waterTesting.conductivity"?Text("µs")
+                    :fieldName=="waterTesting.pH"?Text("ph")
+                    :fieldName=="waterTesting.totalDissolvedSolids"?Text("ppm")
+                    :Text("mg/L"),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
+                    width: 1.0,         // Replace with your desired focus border width
+                  ),
+                ),
+                helperText: '',
+                helperStyle: TextStyle(height: 0.7),
+                errorStyle: TextStyle(height: 0.7),
+              ),
+            ),
+          ],
         ),
       );
     }).toList();
@@ -251,8 +284,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
       final locationName = result['locationName'];
       final lat = result['lat'];
       final lan = result['lan'];
-      print("LOCATION DETAILS");
       setState(() {
+        _searchController.text=locationName;
         form.control('generalInformation.location').value=locationName;
         form.control('generalInformation.latitude').value=lat.toString();
         form.control('generalInformation.longitude').value=lan.toString();
@@ -261,20 +294,6 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
       // Do something with the name and ID
     }
   }
-
-  List<Map<String, dynamic>> convertToObjects(List<XFile> images, List<String> descriptions) {
-    setState(() {
-      _steps = _generateSteps();
-    });
-    return List.generate(
-      images.length,
-          (index) => {
-        'imageURL': '',
-        'description': descriptions.length>0?descriptions[index]:'',
-      },
-    );
-  }
-
 
   //STEPS COUNT
   List<Step> _generateSteps() {
@@ -301,6 +320,43 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
     }
   }
 
+  void _onSearchTextChanged(String value) async {
+    final places = GoogleMapsPlaces(apiKey: GOOGLE_MAP_API);
+
+    PlacesAutocompleteResponse response = await places.autocomplete(
+      value,
+      language: 'en',
+      types: ['geocode'], // Restrict to addresses only
+    );
+
+    setState(() {
+      _searchResults = response.predictions
+          .map((prediction) => PlacesSearchResult(
+        placeId: prediction.placeId.toString(),
+        name: prediction.structuredFormatting!.mainText,
+        formattedAddress: prediction.structuredFormatting!.secondaryText, reference: '',
+      ))
+          .toList();
+      _steps=_generateSteps();
+    });
+  }
+
+  Future<Map<String, dynamic>> getLocationFromPlaceId(String placeId) async {
+    final apiUrl =
+        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=geometry&key=$GOOGLE_MAP_API';
+
+    final response = await http.get(Uri.parse(apiUrl));
+
+    if (response.statusCode == 200) {
+      final decodedData = json.decode(response.body);
+      form.control('generalInformation.latitude').value="${decodedData['result']['geometry']['location']['lat']}";
+      form.control('generalInformation.longitude').value="${decodedData['result']['geometry']['location']['lng']}";
+      return decodedData;
+    } else {
+      throw Exception('Failed to fetch location data');
+    }
+  }
+
   //STEP 1 : GENERAL INFORMATION
   _generalInformation (){
     return Column(
@@ -313,168 +369,333 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           formGroup: form,
           child: Column(
             children: [
-              ReactiveTextField<String>(
-                formControlName: 'generalInformation.activityDate',
-                controller: activityDateController,
-                validationMessages: {
-                  ValidationMessage.required: (_) => 'required',
-                },
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.calendar_today),
-                    onPressed: () async {
-                      final selectedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2100),
-                      );
-                      if (selectedDate != null) {
-                        activityDateController.text =
-                            selectedDate.toIso8601String().substring(0, 10);
-                        form.control('generalInformation.activityDate').value=activityDateController.text;
-                      }
-                    },
-                  ),
-                  labelText: 'Activity Date ',
-                  labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
-                      width: 1.0,         // Replace with your desired focus border width
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text:  TextSpan(
+                      text: 'Activity Date',
+                      style: TextStyle(
+                        fontSize: 12.0,
+                        fontFamily: 'Montserrat',
+                        color:  Resources.colors.appTheme.darkBlue
+                      ),
+                      children: const [
+                        TextSpan(
+                          text: ' *',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  helperText: '',
-                  helperStyle: TextStyle(height: 0.7),
-                  errorStyle: TextStyle(height: 1),
-                ),
+                  ReactiveTextField<String>(
+                    formControlName: 'generalInformation.activityDate',
+                    controller: activityDateController,
+                    validationMessages: {
+                      ValidationMessage.required: (_) => 'Required field',
+                    },
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.calendar_today),
+                        onPressed: () async {
+                          final selectedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2100),
+                          );
+                          if (selectedDate != null) {
+                            activityDateController.text =
+                                selectedDate.toIso8601String().substring(0, 10);
+                            form.control('generalInformation.activityDate').value=activityDateController.text;
+                          }
+                        },
+                      ),
+                      labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
+                          width: 1.0,         // Replace with your desired focus border width
+                        ),
+                      ),
+                      helperText: '',
+                      helperStyle: TextStyle(height: 0.7),
+                      errorStyle: TextStyle(height: 1),
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 10,),
-              ReactiveTextField<String>(
-                formControlName: 'generalInformation.activityTime',
-                controller: activityTimeController,
-                validationMessages: {
-                  ValidationMessage.required: (_) => 'required',
-                },
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.schedule),
-                    onPressed: () async {
-                      final selectedTime = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.now(),
-                      );
-                      if (selectedTime != null) {
-                        activityTimeController.text =
-                            selectedTime.format(context);
-                        form.control('generalInformation.activityTime').value=activityTimeController.text;
-                      }
-                    },
-                  ),
-                  labelText: 'Activity Time ',
-                  labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
-                      width: 1.0,         // Replace with your desired focus border width
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text:  TextSpan(
+                      text: 'Activity Time',
+                      style: TextStyle(
+                          fontSize: 12.0,
+                          fontFamily: 'Montserrat',
+                          color: Resources.colors.appTheme.darkBlue
+                      ),
+                      children: const [
+                        TextSpan(
+                          text: ' *',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  helperText: '',
-                  helperStyle: TextStyle(height: 0.7),
-                  errorStyle: TextStyle(height: 1),
-                ),
+                  ReactiveTextField<String>(
+                    formControlName: 'generalInformation.activityTime',
+                    controller: activityTimeController,
+                    validationMessages: {
+                      ValidationMessage.required: (_) => 'Required field',
+                    },
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.schedule),
+                        onPressed: () async {
+                          final selectedTime = await showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay.now(),
+                          );
+                          if (selectedTime != null) {
+                            activityTimeController.text =
+                                selectedTime.format(context);
+                            form.control('generalInformation.activityTime').value=activityTimeController.text;
+                          }
+                        },
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
+                          width: 1.0,         // Replace with your desired focus border width
+                        ),
+                      ),
+                      helperText: '',
+                      helperStyle: TextStyle(height: 0.7),
+                      errorStyle: TextStyle(height: 1),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
-              ReactiveTextField<String>(
-                formControlName: 'generalInformation.testerName',
-                validationMessages: {
-                  ValidationMessage.required: (_) => 'required',
-                },
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  labelText: 'Tester Name',
-                  labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
-                      width: 1.0,         // Replace with your desired focus border width
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text:  TextSpan(
+                      text: 'Tester Name',
+                      style: TextStyle(
+                          fontSize: 12.0,
+                          fontFamily: 'Montserrat',
+                          color: Resources.colors.appTheme.darkBlue
+                      ),
+                      children: const [
+                        TextSpan(
+                          text: ' *',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  helperText: '',
-                  helperStyle: TextStyle(height: 0.7),
-                  errorStyle: TextStyle(height: 1),
-                ),
-              ),
-              SizedBox(width: 10,),
-              ReactiveTextField<String>(
-                formControlName: 'generalInformation.location',
-                validationMessages: {
-                  ValidationMessage.required: (_) => 'required',
-                },
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  labelText: 'Location',
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.gps_fixed),
-                    onPressed: () async {
-                      _navigateToMap();
+                  ReactiveTextField<String>(
+                    formControlName: 'generalInformation.testerName',
+                    validationMessages: {
+                      ValidationMessage.required: (_) => 'Required field',
                     },
-                  ),
-                  labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
-                      width: 1.0,         // Replace with your desired focus border width
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
+                          width: 1.0,         // Replace with your desired focus border width
+                        ),
+                      ),
+                      // helperText: '',
+                      // helperStyle: TextStyle(height: 0.7),
+                      errorStyle: TextStyle(height: 1),
                     ),
                   ),
-                  helperText: '',
-                  helperStyle: TextStyle(height: 0.7),
-                  errorStyle: TextStyle(height: 1),
-                ),
+                ],
+              ),
+              SizedBox(height: 10,),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text:  TextSpan(
+                      text: 'Location',
+                      style: TextStyle(
+                          fontSize: 12.0,
+                          fontFamily: 'Montserrat',
+                          color: Resources.colors.appTheme.darkBlue
+                      ),
+                      children: const [
+                        TextSpan(
+                          text: ' *',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Form(
+                    key: this._formKey,
+                    autovalidateMode: _autoValidate
+                        ? AutovalidateMode.always
+                        : AutovalidateMode.disabled,
+                    child: TypeAheadFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Required field';
+                        }
+                        return null;
+                      },
+                      textFieldConfiguration:  TextFieldConfiguration(
+                        controller:_searchController,
+                        autofocus: true,
+                        decoration:  InputDecoration(
+                          border: UnderlineInputBorder(),
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.gps_fixed),
+                            onPressed: () async {
+                              _navigateToMap();
+                            },
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
+                              width: 1.0,         // Replace with your desired focus border width
+                            ),
+                          ),
+                        ),
+                      ),
+                      suggestionsCallback: (pattern) async {
+                        form.control('generalInformation.location').value=pattern;
+                        _onSearchTextChanged(pattern);
+                        return _searchResults.where((place) =>
+                            place.name.toLowerCase().contains(pattern.toLowerCase()));
+                      },
+                      itemBuilder: (context, suggestion) {
+                        return _searchResults.length>0?ListTile(
+                          title: Text(suggestion.name),
+                          subtitle: Text(suggestion.formattedAddress==null?"":"${suggestion.formattedAddress}"),
+                        ):SizedBox();
+                      },
+                      onSuggestionSelected: (suggestion) {
+                        var location= "${suggestion.name}, ${suggestion.formattedAddress!=null?suggestion.formattedAddress:''}";
+                        getLocationFromPlaceId(suggestion.placeId);
+                        setState(() {
+                          _searchController.text=location;
+                          form.control('generalInformation.location').value=location;
+                        });
+                      },
+                    ),
+                  ),
+
+                ],
               ),
               const SizedBox(height: 10),
-              ReactiveTextField<String>(
-                formControlName: 'generalInformation.latitude',
-                validationMessages: {
-                  ValidationMessage.required: (_) => 'required',
-                },
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  labelText: 'Latitude',
-                  labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
-                      width: 1.0,         // Replace with your desired focus border width
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text:  TextSpan(
+                      text: 'Latitude',
+                      style: TextStyle(
+                          fontSize: 12.0,
+                          fontFamily: 'Montserrat',
+                          color: Resources.colors.appTheme.darkBlue
+                      ),
+                      children: const [
+                        TextSpan(
+                          text: ' *',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  helperText: '',
-                  helperStyle: TextStyle(height: 0.7),
-                  errorStyle: TextStyle(height: 1),
-                ),
+                  ReactiveTextField<String>(
+                    formControlName: 'generalInformation.latitude',
+                    keyboardType: TextInputType.number,
+                    validationMessages: {
+                      ValidationMessage.required: (_) => 'Required field',
+                    },
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
+                          width: 1.0,         // Replace with your desired focus border width
+                        ),
+                      ),
+                      helperText: '',
+                      helperStyle: TextStyle(height: 0.7),
+                      errorStyle: TextStyle(height: 1),
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(width: 10,),
-              ReactiveTextField<String>(
-                formControlName: 'generalInformation.longitude',
-                validationMessages: {
-                  ValidationMessage.required: (_) => 'required',
-                },
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  labelText: 'Longitude',
-                  labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
-                      width: 1.0,         // Replace with your desired focus border width
+              const SizedBox(height: 10,),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text:  TextSpan(
+                      text: 'Longitude',
+                      style: TextStyle(
+                          fontSize: 12.0,
+                          fontFamily: 'Montserrat',
+                          color: Resources.colors.appTheme.darkBlue
+                      ),
+                      children: const [
+                        TextSpan(
+                          text: ' *',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  helperText: '',
-                  helperStyle: TextStyle(height: 0.7),
-                  errorStyle: TextStyle(height: 1),
-                ),
+                  ReactiveTextField<String>(
+                    formControlName: 'generalInformation.longitude',
+                    keyboardType: TextInputType.number,
+                    validationMessages: {
+                      ValidationMessage.required: (_) => 'Required field',
+                    },
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
+                          width: 1.0,         // Replace with your desired focus border width
+                        ),
+                      ),
+                      helperText: '',
+                      helperStyle: TextStyle(height: 0.7),
+                      errorStyle: TextStyle(height: 1),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -499,28 +720,69 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ReactiveTextField<String>(
-                  formControlName: 'waterLevelAndWeather.airTemperature',
-                  validationMessages: {
-                    ValidationMessage.required: (_) => 'required',
-                  },
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: 'Measure the air temperature',
-                    suffix: Text("°C"),
-                    labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
-                        width: 1.0,         // Replace with your desired focus border width
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text:  TextSpan(
+                        text: 'Measure the air temperature',
+                        style: TextStyle(
+                            fontSize: 12.0,
+                            fontFamily: 'Montserrat',
+                            color: Resources.colors.appTheme.darkBlue
+                        ),
+                        children: const [
+                          TextSpan(
+                            text: ' *',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    helperText: '',
-                    helperStyle: TextStyle(height: 0.7),
-                    errorStyle: TextStyle(height: 1),
+                    ReactiveTextField<String>(
+                      formControlName: 'waterLevelAndWeather.airTemperature',
+                      keyboardType: TextInputType.number,
+                      validationMessages: {
+                        ValidationMessage.required: (_) => 'Required field',
+                      },
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        suffix: Text("°C"),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
+                            width: 1.0,         // Replace with your desired focus border width
+                          ),
+                        ),
+                        helperText: '',
+                        helperStyle: TextStyle(height: 0.7),
+                        errorStyle: TextStyle(height: 1),
+                      ),
+                    ),
+                  ],
+                ),
+                RichText(
+                  text:  TextSpan(
+                    text: 'Observe the Water Level',
+                    style: TextStyle(
+                        fontSize: 12.0,
+                        fontFamily: 'Montserrat',
+                        color: Resources.colors.appTheme.darkBlue
+                    ),
+                    children: const [
+                      TextSpan(
+                        text: ' *',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Text("Observe the Water Level",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
                 Container(
                     height: 100,
                     child: ListView.builder(
@@ -557,101 +819,143 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             ),
                           );
                         })),
-                Text("Weather Condtions",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
-                Container(
-                  height: 100,
-                  child: ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 5,
-                    itemBuilder: (BuildContext ctxt, int Index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 10.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            GestureDetector(
-                              onTap: (){
-                                setState(() {
-                                  selectedWeather=WATERANDWEATHER.weatherLabels[Index];
-                                  form.control('waterLevelAndWeather.weather').value=WATERANDWEATHER.weatherLabels[Index];
-                                  _steps = _generateSteps();
-                                });
-                              },
-                              child: SvgPicture.asset(
-                                selectedWeather == WATERANDWEATHER.weatherLabels[Index]
-                                    ? "assets/images/${WATERANDWEATHER.weatherSelectedIcons[Index]}"
-                                    : "assets/images/${WATERANDWEATHER.weatherUnselectedIcons[Index]}",
-                                width: 44,
-                                height: 44,
-                              ),
-                            ),
-                            SizedBox(height: 5,),
-                            Text(WATERANDWEATHER.weatherLabels[Index],style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),)
-                          ],
+                RichText(
+                  text:  TextSpan(
+                    text: 'Weather Condtions',
+                    style: TextStyle(
+                        fontSize: 12.0,
+                        fontFamily: 'Montserrat',
+                        color: Resources.colors.appTheme.darkBlue
+                    ),
+                    children: const [
+                      TextSpan(
+                        text: ' *',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.red,
                         ),
-                      );
-                    })),
-                Text("River Pictures",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                    height: 100,
+                    child: ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: 5,
+                        itemBuilder: (BuildContext ctxt, int Index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                GestureDetector(
+                                  onTap: (){
+                                    setState(() {
+                                      selectedWeather=WATERANDWEATHER.weatherLabels[Index];
+                                      form.control('waterLevelAndWeather.weather').value=WATERANDWEATHER.weatherLabels[Index];
+                                      _steps = _generateSteps();
+                                    });
+                                  },
+                                  child: SvgPicture.asset(
+                                    selectedWeather == WATERANDWEATHER.weatherLabels[Index]
+                                        ? "assets/images/${WATERANDWEATHER.weatherSelectedIcons[Index]}"
+                                        : "assets/images/${WATERANDWEATHER.weatherUnselectedIcons[Index]}",
+                                    width: 44,
+                                    height: 44,
+                                  ),
+                                ),
+                                SizedBox(height: 5,),
+                                Text(WATERANDWEATHER.weatherLabels[Index],style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),)
+                              ],
+                            ),
+                          );
+                        })),
+                RichText(
+                  text:  TextSpan(
+                    text: 'River Pictures',
+                    style: TextStyle(
+                        fontSize: 12.0,
+                        fontFamily: 'Montserrat',
+                        color: Resources.colors.appTheme.darkBlue
+                    ),
+                    children: const [
+                      TextSpan(
+                        text: ' *',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
           const SizedBox(height: 16.0),
           ElevatedButton(
-            onPressed: (){
-              pickImages('riverPicture');
+            onPressed: () async {
+              var camOrGallery = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return PictureOptions();
+                  });
+              if (camOrGallery.toString() == "Gallery") {
+                var img = pickImages('riverPicture','Gallery');
+              } else if (camOrGallery.toString() == "Camera") {
+                var img = pickImages('riverPicture','Camera');
+              }
             },
-            child: const Text('Select Images'),
+            child: const Text('Upload Images'),
           ),
-          const SizedBox(height: 16.0),
+          const SizedBox(height: 10.0),
           if (selectedRiverImages.isNotEmpty)
             Container(
-                margin:
-                EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                margin: EdgeInsets.symmetric( vertical: 20),
                 child: Container(
-                    height: 250,
+                    height: 225,
                     child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemCount: selectedRiverImages.length,
                         itemBuilder: (BuildContext ctxt, int Index) {
                           return Container(
-                            margin: EdgeInsets.only(right: 10),
-                            height: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            width: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            padding:
-                            EdgeInsets.only(bottom: 10, left: 5),
-                            alignment: Alignment.bottomLeft,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Align(
-                                    alignment: Alignment.topRight,
-                                    child: IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            selectedRiverImages.removeAt(Index);
-                                            riverDescriptions.removeAt(Index);
-                                            _steps = _generateSteps();
-                                          });
-                                        },
-                                        icon: const Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                        ))),
-                                Container(
-                                    width:150,
-                                    height:150,
-                                    child: Image.file(
-                                        fit: BoxFit.fill,
-                                        File(selectedRiverImages[Index]!.path)
-                                    )
+                                Stack(
+                                  alignment: Alignment.topRight,
+                                  children:[
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        height: (MediaQuery.of(context).size.width - 30) / 2,
+                                        width: (MediaQuery.of(context).size.width - 30) / 2,
+                                          child: Image.file(
+                                              fit: BoxFit.fill,
+                                              File(selectedRiverImages[Index]!.path)
+                                          )
+                                      ),
+                                    ),
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                selectedRiverImages.removeAt(Index);
+                                                riverDescriptions.removeAt(Index);
+                                                _steps = _generateSteps();
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ))),
+                                  ]
                                 ),
                                 Container(
                                     width: 170,
@@ -699,6 +1003,25 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              RichText(
+                text:  TextSpan(
+                  text: 'Surroundings',
+                  style: TextStyle(
+                      fontSize: 12.0,
+                      fontFamily: 'Montserrat',
+                      color: Resources.colors.appTheme.darkBlue
+                  ),
+                  children: const [
+                    TextSpan(
+                      text: ' *',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               Wrap(
                 children: WATERANDWEATHER.surroundings.map((item) {
                   return Padding(
@@ -726,71 +1049,96 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                           _steps = _generateSteps();
                         });
                         form.control('surroundings').value=selectedSurroundings;
-                        // print(jsonEncode(selectedSurroundings));
-                        // print(jsonEncode(form.value['surroundings']);
                       },
                     ),
                   );
                 }).toList(),
               ),
-              Text("Surrounding Pictures",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
+              SizedBox(height: 16.0),
+              RichText(
+                text:  TextSpan(
+                  text: 'Surrounding Pictures',
+                  style: TextStyle(
+                      fontSize: 12.0,
+                      fontFamily: 'Montserrat',
+                      color: Resources.colors.appTheme.darkBlue
+                  ),
+                  children: const [
+                    TextSpan(
+                      text: ' *',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
         SizedBox(height: 16.0),
         ElevatedButton(
-         onPressed: (){
-          pickImages('surroundingImages');
+          onPressed: () async {
+            var camOrGallery = await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return PictureOptions();
+                });
+
+            if (camOrGallery.toString() == "Gallery") {
+              var img = pickImages('surroundingImages','Gallery');
+            } else if (camOrGallery.toString() == "Camera") {
+              var img = pickImages('surroundingImages','Camera');
+            }
           },
-          child: Text('Select Images'),
+          child: Text('Upload Images'),
         ),
         SizedBox(height: 16.0),
         if (selectedSurroundingImages.isNotEmpty)
           Container(
               margin:
-              EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+              EdgeInsets.symmetric(vertical: 20),
               child: Container(
-                  height: 250,
+                  height: 225,
                   child: ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
                       itemCount: selectedSurroundingImages.length,
                       itemBuilder: (BuildContext ctxt, int Index) {
                         return Container(
-                          margin: EdgeInsets.only(right: 10),
-                          height: (MediaQuery.of(context).size.width -
-                              30) /
-                              2,
-                          width: (MediaQuery.of(context).size.width -
-                              30) /
-                              2,
-                          padding:
-                          EdgeInsets.only(bottom: 10, left: 5),
-                          alignment: Alignment.bottomLeft,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Align(
-                                  alignment: Alignment.topRight,
-                                  child: IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          selectedSurroundingImages.removeAt(Index);
-                                          surroundingDescriptions.removeAt(Index);
-                                          _steps = _generateSteps();
-                                        });
-                                      },
-                                      icon: const Icon(
-                                        Icons.delete,
-                                        color: Colors.red,
-                                      ))),
-                              Container(
-                                  width:150,
-                                  height:150,
-                                  child: Image.file(
-                                      fit: BoxFit.fill,
-                                      File(selectedSurroundingImages[Index]!.path)
-                                  )
+                              Stack(
+                                alignment: Alignment.topRight,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                       height: (MediaQuery.of(context).size.width - 30) / 2,
+                                       width: (MediaQuery.of(context).size.width - 30) / 2,
+                                        child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(selectedSurroundingImages[Index]!.path)
+                                        )
+                                    ),
+                                  ),
+                                  Align(
+                                      alignment: Alignment.topRight,
+                                      child: IconButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              selectedSurroundingImages.removeAt(Index);
+                                              surroundingDescriptions.removeAt(Index);
+                                              _steps = _generateSteps();
+                                            });
+                                          },
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            color: Colors.red,
+                                          ))),
+                                ],
                               ),
                               Container(  width: 170,
                                   height: 20,
@@ -837,7 +1185,17 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ...waterQualityFormFields(),
-              Text("Bacteria",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
+              SizedBox(height: 16.0),
+              RichText(
+                text:  TextSpan(
+                  text: "Bacteria",
+                  style: TextStyle(
+                      fontSize: 12.0,
+                      fontFamily: 'Montserrat',
+                      color: Resources.colors.appTheme.darkBlue
+                  ),
+                ),
+              ),
               SizedBox(height: 20,),
               Row(
                 children: [
@@ -859,7 +1217,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         ),
                       ),
                       child: const Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(12.0),
                         child: Text('Present'),
                       ),
                     ),
@@ -883,13 +1241,14 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         ),
                       ),
                       child: const Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(12.0),
                         child: Text('Absent'),
                       ),
                     ),
                   )
                 ],
-              )
+              ),
+              SizedBox(height: 16.0),
             ],
           ),
         ),
@@ -907,61 +1266,76 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           Text("Flora & Fauna",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 15,fontWeight: FontWeight.w600),),
           const SizedBox(height: 10,),
           _error==true?const Text("Please fill all details",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
-          Text("Flora",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
+          RichText(
+            text:  TextSpan(
+              text: "Flora",
+              style: TextStyle(
+                  fontSize: 12.0,
+                  fontFamily: 'Montserrat',
+                  color: Resources.colors.appTheme.darkBlue
+              ),
+            ),
+          ),
           SizedBox(height: 16.0),
           ElevatedButton(
-            onPressed: (){
-              pickImages('flora');
+            onPressed: () async {
+              var camOrGallery = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return PictureOptions();
+                  });
+
+              if (camOrGallery.toString() == "Gallery") {
+                var img = pickImages('flora','Gallery');
+              } else if (camOrGallery.toString() == "Camera") {
+                var img = pickImages('flora','Camera');
+              }
             },
-            child: Text('Select Images'),
+            child: Text('Upload Images'),
           ),
           SizedBox(height: 16.0),
           if (selectedFloraImages.isNotEmpty)
             Container(
                 margin:
-                EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                EdgeInsets.symmetric(vertical: 20),
                 child: Container(
-                    height: 250,
+                    height: 225,
                     child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemCount: selectedFloraImages.length,
                         itemBuilder: (BuildContext ctxt, int Index) {
                           return Container(
-                            margin: EdgeInsets.only(right: 10),
-                            height: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            width: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            padding:
-                            EdgeInsets.only(bottom: 10, left: 5),
-                            alignment: Alignment.bottomLeft,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Align(
-                                    alignment: Alignment.topRight,
-                                    child: IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            selectedFloraImages.removeAt(Index);
-                                            floraDescriptions.removeAt(Index);
-                                            _steps = _generateSteps();
-                                          });
-                                        },
-                                        icon: const Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                        ))),
-                                Container(
-                                    width:150,
-                                    height:150,
-                                    child: Image.file(
-                                        fit: BoxFit.fill,
-                                        File(selectedFloraImages[Index]!.path)
-                                    )
+                                Stack(
+                                  alignment:Alignment.topRight,
+                                  children: [
+                                    Container(
+                                        height: (MediaQuery.of(context).size.width - 30) / 2,
+                                        width: (MediaQuery.of(context).size.width - 30) / 2,
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(selectedFloraImages[Index]!.path)
+                                        )
+                                    ),
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                selectedFloraImages.removeAt(Index);
+                                                floraDescriptions.removeAt(Index);
+                                                _steps = _generateSteps();
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ))),
+                                  ],
                                 ),
                                 Container(    width: 170,
                                     height: 20,
@@ -989,63 +1363,79 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         })
                 )
             ),
-          Text("Fauna",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
+          RichText(
+            text:  TextSpan(
+              text: "Fauna",
+              style: TextStyle(
+                  fontSize: 12.0,
+                  fontFamily: 'Montserrat',
+                  color: Resources.colors.appTheme.darkBlue
+              ),
+            ),
+          ),
           SizedBox(height: 16.0),
           ElevatedButton(
-            onPressed: (){
-              pickImages('fauna');
+            onPressed: () async {
+              var camOrGallery = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return PictureOptions();
+                  });
+
+              if (camOrGallery.toString() == "Gallery") {
+                var img = pickImages('fauna','Gallery');
+              } else if (camOrGallery.toString() == "Camera") {
+                var img = pickImages('fauna','Camera');
+              }
             },
-            child: Text('Select Images'),
+            child: Text('Upload Images'),
           ),
           SizedBox(height: 16.0),
           if (selectedFaunaImages.isNotEmpty)
             Container(
                 margin:
-                EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                EdgeInsets.symmetric(vertical: 20),
                 child: Container(
-                    height: 250,
+                    height: 225,
                     child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemCount: selectedFaunaImages.length,
                         itemBuilder: (BuildContext ctxt, int Index) {
                           return Container(
-                            margin: EdgeInsets.only(right: 10),
-                            height: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            width: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            padding:
-                            EdgeInsets.only(bottom: 10, left: 5),
-                            alignment: Alignment.bottomLeft,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Align(
-                                    alignment: Alignment.topRight,
-                                    child: IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            selectedFaunaImages.removeAt(Index);
-                                            faunaDescriptions.removeAt(Index);
-                                            _steps = _generateSteps();
-                                          });
-                                        },
-                                        icon: const Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                        ))),
-                                Container(
-                                    width:150,
-                                    height:150,
-                                    child: Image.file(
-                                        fit: BoxFit.fill,
-                                        File(selectedFaunaImages[Index]!.path)
-                                    )
+                                Stack(
+                                  alignment: Alignment.topRight,
+                                  children: [
+                                    Container(
+                                        height: (MediaQuery.of(context).size.width - 30) / 2,
+                                        width: (MediaQuery.of(context).size.width - 30) / 2,
+                                        padding:EdgeInsets.all(8.0),
+                                        child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(selectedFaunaImages[Index]!.path)
+                                        )
+                                    ),
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                selectedFaunaImages.removeAt(Index);
+                                                faunaDescriptions.removeAt(Index);
+                                                _steps = _generateSteps();
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ))),
+                                  ],
                                 ),
-                                Container(    width: 170,
+                                Container(
+                                    width: 170,
                                     height: 20,
                                     decoration: BoxDecoration(
                                         color: Colors.white,
@@ -1086,61 +1476,76 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           Text("Water Level & Weather",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 15,fontWeight: FontWeight.w600),),
           const SizedBox(height: 10,),
           _error==true?const Text("Please fill all details",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
-          Text("Group pictures",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
+          RichText(
+            text:  TextSpan(
+              text: "Group pictures",
+              style: TextStyle(
+                  fontSize: 12.0,
+                  fontFamily: 'Montserrat',
+                  color: Resources.colors.appTheme.darkBlue
+              ),
+            ),
+          ),
           SizedBox(height: 16.0),
           ElevatedButton(
-            onPressed: (){
-              pickImages('group');
+            onPressed: () async {
+              var camOrGallery = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return PictureOptions();
+                  });
+
+              if (camOrGallery.toString() == "Gallery") {
+                var img = pickImages('group','Gallery');
+              } else if (camOrGallery.toString() == "Camera") {
+                var img = pickImages('group','Camera');
+              }
             },
-            child: Text('Select Images'),
+            child: Text('Upload Images'),
           ),
           SizedBox(height: 16.0),
           if (selectedGroupImages.isNotEmpty)
             Container(
                 margin:
-                EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                EdgeInsets.symmetric(vertical: 20),
                 child: Container(
-                    height: 250,
+                    height: 225,
                     child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemCount: selectedGroupImages.length,
                         itemBuilder: (BuildContext ctxt, int Index) {
                           return Container(
-                            margin: EdgeInsets.only(right: 10),
-                            height: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            width: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            padding:
-                            EdgeInsets.only(bottom: 10, left: 5),
-                            alignment: Alignment.bottomLeft,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Align(
-                                    alignment: Alignment.topRight,
-                                    child: IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            selectedGroupImages.removeAt(Index);
-                                            groupImageDescriptions.removeAt(Index);
-                                            _steps = _generateSteps();
-                                          });
-                                        },
-                                        icon: const Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                        ))),
-                                Container(
-                                    width:150,
-                                    height:150,
-                                    child: Image.file(
-                                        fit: BoxFit.fill,
-                                        File(selectedGroupImages[Index]!.path)
-                                    )
+                                Stack(
+                                  alignment:Alignment.topRight,
+                                  children: [
+                                    Container(
+                                        height: (MediaQuery.of(context).size.width - 30) / 2,
+                                        width: (MediaQuery.of(context).size.width - 30) / 2,
+                                        padding:EdgeInsets.all(8.0),
+                                        child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(selectedGroupImages[Index]!.path)
+                                        )
+                                    ),
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                selectedGroupImages.removeAt(Index);
+                                                groupImageDescriptions.removeAt(Index);
+                                                _steps = _generateSteps();
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ))),
+                                  ],
                                 ),
                                 Container(    width: 170,
                                     height: 20,
@@ -1168,61 +1573,77 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         })
                 )
             ),
-          Text("Activity pictures",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
+          RichText(
+            text:  TextSpan(
+              text: "Activity pictures",
+              style: TextStyle(
+                  fontSize: 12.0,
+                  fontFamily: 'Montserrat',
+                  color: Resources.colors.appTheme.darkBlue
+              ),
+            ),
+          ),
           SizedBox(height: 16.0),
           ElevatedButton(
-            onPressed: (){
-              pickImages('activity');
+            onPressed: () async {
+              var camOrGallery = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return PictureOptions();
+                  });
+
+              if (camOrGallery.toString() == "Gallery") {
+                var img = pickImages('activity','Gallery');
+              } else if (camOrGallery.toString() == "Camera") {
+                var img = pickImages('activity','Camera');
+              }
             },
-            child: Text('Select Images'),
+            child: Text('Upload Images'),
           ),
           SizedBox(height: 16.0),
           if (selectedActivityImages.isNotEmpty)
             Container(
                 margin:
-                EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                EdgeInsets.symmetric(vertical: 20),
                 child: Container(
-                    height: 250,
+                    height: 225,
                     child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemCount: selectedActivityImages.length,
                         itemBuilder: (BuildContext ctxt, int Index) {
                           return Container(
-                            margin: EdgeInsets.only(right: 10),
-                            height: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            width: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            padding:
-                            EdgeInsets.only(bottom: 10, left: 5),
                             alignment: Alignment.bottomLeft,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Align(
-                                    alignment: Alignment.topRight,
-                                    child: IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            selectedActivityImages.removeAt(Index);
-                                            activityImageDescriptions.removeAt(Index);
-                                            _steps = _generateSteps();
-                                          });
-                                        },
-                                        icon: const Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                        ))),
-                                Container(
-                                    width:150,
-                                    height:150,
-                                    child: Image.file(
-                                        fit: BoxFit.fill,
-                                        File(selectedActivityImages[Index]!.path)
-                                    )
+                                Stack(
+                                  alignment: Alignment.topRight,
+                                  children: [
+                                    Container(
+                                        height: (MediaQuery.of(context).size.width - 30) / 2,
+                                        width: (MediaQuery.of(context).size.width - 30) / 2,
+                                        padding:EdgeInsets.all(8.0),
+                                        child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(selectedActivityImages[Index]!.path)
+                                        )
+                                    ),
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                selectedActivityImages.removeAt(Index);
+                                                activityImageDescriptions.removeAt(Index);
+                                                _steps = _generateSteps();
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ))),
+                                  ],
                                 ),
                                 Container(    width: 170,
                                     height: 20,
@@ -1250,61 +1671,76 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         })
                 )
             ),
-          Text("Artworks",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
+          RichText(
+            text:  TextSpan(
+              text: "Artworks",
+              style: TextStyle(
+                  fontSize: 12.0,
+                  fontFamily: 'Montserrat',
+                  color: Resources.colors.appTheme.darkBlue
+              ),
+            ),
+          ),
           SizedBox(height: 16.0),
           ElevatedButton(
-            onPressed: (){
-              pickImages('artwork');
+            onPressed: () async {
+              var camOrGallery = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return PictureOptions();
+                  });
+
+              if (camOrGallery.toString() == "Gallery") {
+                var img = pickImages('artwork','Gallery');
+              } else if (camOrGallery.toString() == "Camera") {
+                var img = pickImages('artwork','Camera');
+              }
             },
-            child: Text('Select Images'),
+            child: Text('Upload Images'),
           ),
           SizedBox(height: 16.0),
           if (selectedArtworkImages.isNotEmpty)
             Container(
                 margin:
-                EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                EdgeInsets.symmetric(vertical: 20),
                 child: Container(
-                    height: 250,
+                    height: 225,
                     child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemCount: selectedArtworkImages.length,
                         itemBuilder: (BuildContext ctxt, int Index) {
                           return Container(
-                            margin: EdgeInsets.only(right: 10),
-                            height: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            width: (MediaQuery.of(context).size.width -
-                                30) /
-                                2,
-                            padding:
-                            EdgeInsets.only(bottom: 10, left: 5),
-                            alignment: Alignment.bottomLeft,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Align(
-                                    alignment: Alignment.topRight,
-                                    child: IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            selectedArtworkImages.removeAt(Index);
-                                            artworkDescriptions.removeAt(Index);
-                                            _steps = _generateSteps();
-                                          });
-                                        },
-                                        icon: const Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                        ))),
-                                Container(
-                                    width:150,
-                                    height:150,
-                                    child: Image.file(
-                                        fit: BoxFit.fill,
-                                        File(selectedArtworkImages[Index]!.path)
-                                    )
+                                Stack(
+                                  alignment: Alignment.topRight,
+                                  children: [
+                                    Container(
+                                        height: (MediaQuery.of(context).size.width - 30) / 2,
+                                        width: (MediaQuery.of(context).size.width - 30) / 2,
+                                        padding:EdgeInsets.all(8.0),
+                                        child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(selectedArtworkImages[Index]!.path)
+                                        )
+                                    ),
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                selectedArtworkImages.removeAt(Index);
+                                                artworkDescriptions.removeAt(Index);
+                                                _steps = _generateSteps();
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ))),
+                                  ],
                                 ),
                                 Container(    width: 170,
                                     height: 20,
@@ -1336,7 +1772,6 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
       ),
     );
   }
-  
 
   //STEP 7 : CONFIRM SUBMIT
   _confirmSubmit(){
@@ -1403,12 +1838,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Activity Date",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('generalInformation.activityDate').value ?? ''}',
                                       style: TextStyle(
@@ -1423,12 +1858,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Activity Time",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text("${form.control('generalInformation.activityTime').value ?? ''}",
                                       style: TextStyle(
@@ -1442,7 +1877,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Location",
                                       style: TextStyle(
                                           color: Colors.grey[700],
@@ -1467,12 +1902,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Name",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text(' ${form.control('generalInformation.testerName').value ?? ''}',
                                       style: const TextStyle(
@@ -1487,12 +1922,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Latitude",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text( '${form.control('generalInformation.latitude').value ?? ''}',
                                       style: TextStyle(
@@ -1507,12 +1942,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Longitude",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text(' ${form.control('generalInformation.longitude').value ?? ''}',
                                       style: TextStyle(
@@ -1577,12 +2012,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Weather",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterLevelAndWeather.weather').value ?? ''}',
                                       style: const TextStyle(
@@ -1597,12 +2032,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Air Temperatue",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
                                       '${form.control('waterLevelAndWeather.airTemperature').value ?? ''}' + " °C",
@@ -1618,12 +2053,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Water Level",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterLevelAndWeather.waterLevel').value ?? ''}',
                                       style: const TextStyle(
@@ -1689,15 +2124,15 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Water Temperature",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                     ' ${form.control('waterTesting.waterTemperature').value ?? ''}' + " °C",
+                                      ' ${form.control('waterTesting.waterTemperature').value ?? ''}' + " °C",
                                       style: const TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.bold)))
@@ -1710,12 +2145,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("pH",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text(' ${form.control('waterTesting.pH').value ?? ''}' + " units",
                                       style: TextStyle(
@@ -1730,12 +2165,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Alkalinity",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.alkalinity').value ?? ''}' + " mg/L",
                                       style: TextStyle(
@@ -1751,12 +2186,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Nitrate",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.nitrate').value ?? ''}' + " mg/L",
                                       style: const TextStyle(
@@ -1771,12 +2206,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Nitrite",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.nitrite').value ?? ''}' + " mg/L",
                                       style: TextStyle(
@@ -1791,12 +2226,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Hardness",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.hardness').value ?? ''}' + " mg/L",
                                       style: TextStyle(
@@ -1811,12 +2246,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Chlorine",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.chlorine').value ?? ''}' + " mg/L",
                                       style: TextStyle(
@@ -1831,12 +2266,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Iron",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.iron').value ?? ''}' + " mg/L",
                                       style: TextStyle(
@@ -1851,12 +2286,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Dissolved oxygen",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
                                       '${form.control('waterTesting.dissolvedOxygen').value ?? ''}' + " mg/L",
@@ -1872,13 +2307,13 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text(
                                       "E Coli/Coliform Bacteria",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
                                       '${form.control('waterTesting.bacteria').value ?? ''}' + " ",
@@ -1894,12 +2329,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Turbidity",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.turbidity').value ?? ''}' + " NTU",
                                       style: TextStyle(
@@ -1914,12 +2349,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Phosphate",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.phosphate').value ?? ''}' + " mg/L",
                                       style: TextStyle(
@@ -1934,12 +2369,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Ammonia",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.ammonia').value ?? ''}' + " mg/L",
                                       style: TextStyle(
@@ -1954,12 +2389,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Lead",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.lead').value ?? ''}' + " mg/L",
                                       style: TextStyle(
@@ -1974,12 +2409,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Total Dissolved Solids",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.totalDissolvedSolids').value ?? ''}' + " ppm",
                                       style: TextStyle(
@@ -1994,12 +2429,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Container(  
+                              Container(
                                   child: Text("Conductivity",
                                       style: TextStyle(
                                           color: Colors.grey[700],
                                           fontFamily: "Montserrat"))),
-                              Container(  
+                              Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterTesting.conductivity').value ?? ''}' + " µs",
                                       style: TextStyle(
@@ -2065,24 +2500,16 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                 itemCount: selectedRiverImages.length,
                                 itemBuilder:
                                     (BuildContext ctxt, int Index) {
-                                  return Container(    margin: EdgeInsets.only(right: 10),
-                                    height: (MediaQuery.of(context)
-                                        .size
-                                        .width -
-                                        30) /
-                                        2,
-                                    width: (MediaQuery.of(context)
-                                        .size
-                                        .width -
-                                        30) /
-                                        2,
+                                  return Container(
+                                    height: (MediaQuery.of(context).size.width - 30) / 2,
+                                    width: (MediaQuery.of(context).size.width - 30) / 2,
                                     padding: const EdgeInsets.only(
                                         bottom: 10, left: 5),
                                     alignment: Alignment.bottomLeft,
                                     child: Column(
                                       children: [
                                         Container(
-                                            width:100,
+                                            width:120,
                                             height:80,
                                             child: Image.file(
                                                 fit: BoxFit.fill,
@@ -2255,9 +2682,9 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               ),
                             ),
                             Container(padding: const EdgeInsets.only(
-                                  left: 10,
-                                  bottom: 5,
-                                ),
+                              left: 10,
+                              bottom: 5,
+                            ),
                                 child: const Text(
                                   "Flora",
                                   style: TextStyle(
@@ -2685,159 +3112,244 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add river monitoring"),
+        title: Text("Monitor River"),
       ),
-      body: Stepper(
-        elevation: 0,
-        type:StepperType.horizontal,
-        currentStep: _index,
-        onStepTapped: (int index) {
-          setState(() {
-            _index = index;
-            _steps = _generateSteps();
-          });
-        },
-        steps:_steps,
-        controlsBuilder:(onStepContinue,onStepCancel){
-          return _index == _steps.length - 1?
-          Row(
-            children: [
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
+      body: Stack(
+        alignment: Alignment.center,
+        children:[
+          Stepper(
+          elevation: 0,
+          type:StepperType.horizontal,
+          currentStep: _index,
+          onStepTapped: (int index) {
+            // setState(() {
+            //   _index = index;
+            //   _steps = _generateSteps();
+            // });
+            if (steps[_index]!='flora'&&steps[_index]!='waterLevelAndWeather'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType==FormGroup&&form.control(steps[_index]).valid) {
+              setState(() {
+                _error=false;
+                _index = index;
+                _steps = _generateSteps();
+              });
+            }
+            else if(steps[_index]=="waterLevelAndWeather"){
+              if(form.control(steps[_index]).valid&&selectedRiverImages.length>0){
+                setState(() {
+                  _index = index;
+                  _error=false;
+                  _steps = _generateSteps();
+                });
+              }
+              else{
+                setState(() {
+                  _error=true;
+                  _steps = _generateSteps();
+                });
+              }
+            }
+            else if (steps[_index]!='flora'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType!=FormGroup&&((form.value['surroundings'] as List<String>).isNotEmpty&&selectedSurroundingImages.length!=0)) {
+              setState(() {
+                _index = index;
+                _error=false;
+                _steps = _generateSteps();
+              });
+            }
+            else if (steps[_index]=='flora'||steps[_index]=='preview') {
+              setState(() {
+                _index = index;
+                _error=false;
+                _steps = _generateSteps();
+              });
+            }
+            else {
+              setState(() {
+                _error=true;
+                _steps = _generateSteps();
+              });
+              form.control(steps[_index]).markAllAsTouched();
+            }
+          },
+          steps:_steps,
+          controlsBuilder:(onStepContinue,onStepCancel){
+            return _index == _steps.length - 1?
+            Row(
+              children: [
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
+                  ),
+                  onPressed: () async {
+                    for(int i=0;i<selectedRiverImages.length;i++){
+                      riverImgObj.add({
+                        "imageURL":"",
+                        "fileName":path.basename(selectedRiverImages[i].path),
+                        "description":riverDescriptions[i].text
+                      });
+                    }
+                    for(int i=0;i<selectedSurroundingImages.length;i++){
+                      surroundingImgObj.add({
+                        "imageURL":"",
+                        "fileName":path.basename(selectedSurroundingImages[i].path),
+                        "description":surroundingDescriptions[i].text
+                      });
+                    }
+                    for(int i=0;i<selectedFloraImages.length;i++){
+                      floraImgObj.add({
+                        "imageURL":"",
+                        "fileName":path.basename(selectedFloraImages[i].path),
+                        "description":floraDescriptions[i].text
+                      });
+                    }
+                    for(int i=0;i<selectedFaunaImages.length;i++){
+                      faunaDescriptions.add({
+                        "imageURL":"",
+                        "fileName":path.basename(selectedFaunaImages[i].path),
+                        "description":faunaDescriptions[i].text
+                      });
+                    }
+                    for(int i=0;i<selectedGroupImages.length;i++){
+                      groupImgObj.add({
+                        "imageURL":"",
+                        "fileName":path.basename(selectedFaunaImages[i].path),
+                        "description":groupImageDescriptions[i].text
+                      });
+                    }
+                    for(int i=0;i<selectedActivityImages.length;i++){
+                      activityImgObj.add({
+                        "imageURL":"",
+                        "fileName":path.basename(selectedActivityImages[i].path),
+                        "description":activityImageDescriptions[i].text
+                      });
+                    }
+                    for(int i=0;i<selectedArtworkImages.length;i++){
+                      artwrokImgObj.add({
+                        "imageURL":"",
+                        "fileName":path.basename(selectedArtworkImages[i].path),
+                        "description":artworkDescriptions[i].text
+                      });
+                    }
+                    form.control('riverPictures').value=riverImgObj;
+                    form.control('surroundingPictures').value=surroundingImgObj;
+                    form.control('floraPictures').value=floraImgObj;
+                    form.control('faunaPictures').value=faunaImgObj;
+                    form.control('groupPictures').value=groupImgObj;
+                    form.control('activityPictures').value=activityImgObj;
+                    form.control('artworkPictures').value=artwrokImgObj;
+                    // var newMap = new Map(Object.entries(form.value));
+
+                    var _isSubmitted1=true;
+                    setState(() {
+                      _isSubmitted=true;
+                    });
+                    _waterTestDetail.createWaterTestDetail(
+                        form.value,
+                        selectedRiverImages,
+                        selectedSurroundingImages,
+                        selectedFaunaImages,
+                        selectedFloraImages,
+                        selectedArtworkImages,
+                        selectedActivityImages,
+                        selectedGroupImages,
+                        context);
+                    setState(() {
+                      _isSubmitted==false;
+                      _steps = _generateSteps();
+                    });
+                  },
+                  child: _isSubmitted?Text('Creating'):Text("Save"),
                 ),
-                onPressed: () async {
-                  onStepContinue;
-                  for(int i=0;i<selectedRiverImages.length;i++){
-                    print('imageTemporary');
-                    riverImgObj.add({
-                      "imageURL":"",
-                      "fileName":path.basename(selectedRiverImages[i].path),
-                      "description":riverDescriptions[i].text
-                    });
-                    print(riverImgObj);
-                  }
-                  for(int i=0;i<selectedSurroundingImages.length;i++){
-                    surroundingImgObj.add({
-                      "imageURL":"",
-                      "fileName":path.basename(selectedSurroundingImages[i].path),
-                      "description":surroundingDescriptions[i].text
-                    });
-                  }
-                  for(int i=0;i<selectedFloraImages.length;i++){
-                    floraImgObj.add({
-                      "imageURL":"",
-                      "fileName":path.basename(selectedFloraImages[i].path),
-                      "description":floraDescriptions[i].text
-                    });
-                  }
-                  for(int i=0;i<selectedFaunaImages.length;i++){
-                    faunaDescriptions.add({
-                      "imageURL":"",
-                      "fileName":path.basename(selectedFaunaImages[i].path),
-                      "description":faunaDescriptions[i].text
-                    });
-                  }
-                  for(int i=0;i<selectedGroupImages.length;i++){
-                    groupImgObj.add({
-                      "imageURL":"",
-                      "fileName":path.basename(selectedFaunaImages[i].path),
-                      "description":groupImageDescriptions[i].text
-                    });
-                  }
-                  for(int i=0;i<selectedActivityImages.length;i++){
-                    activityImgObj.add({
-                      "imageURL":"",
-                      "fileName":path.basename(selectedActivityImages[i].path),
-                      "description":activityImageDescriptions[i].text
-                    });
-                  }
-                  for(int i=0;i<selectedArtworkImages.length;i++){
-                    artwrokImgObj.add({
-                      "imageURL":"",
-                      "fileName":path.basename(selectedArtworkImages[i].path),
-                      "description":artworkDescriptions[i].text
-                    });
-                  }
-                  form.control('riverPictures').value=riverImgObj;
-                  form.control('surroundingPictures').value=surroundingImgObj;
-                  form.control('floraPictures').value=floraImgObj;
-                  form.control('faunaPictures').value=faunaImgObj;
-                  form.control('groupPictures').value=groupImgObj;
-                  form.control('activityPictures').value=activityImgObj;
-                  form.control('artworkPictures').value=artwrokImgObj;
-                   // var newMap = new Map(Object.entries(form.value));
-                  Map<String, dynamic> testMap = (form.value);
-                  _waterTestDetail.createWaterTestDetail(form,selectedRiverImages,selectedSurroundingImages, context);
-                },
-                child: Text('Save'),
-              ),
-            ],
-          ):
-          Row(
-            children: [
-              _index>0?
-              Row(
-                children: [
-                  TextButton(
-                    onPressed: (){
-                      if (_index > 0) {
+              ],
+            ):
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _index>0?
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: (){
+                        if (_index > 0) {
+                          setState(() {
+                            _index -= 1;
+                            _steps = _generateSteps();
+                          });
+                        }
+                      },
+                      child: Text('Previous'),
+                    ),
+                    SizedBox(width: 16),
+                  ],
+                ):
+                SizedBox(),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
+                  ),
+                  onPressed: (){
+                    if (this._formKey.currentState!.validate()&&steps[_index]!='flora'&&steps[_index]!='waterLevelAndWeather'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType==FormGroup&&form.control(steps[_index]).valid) {
+                      setState(() {
+                        _index++;
+                        _error=false;
+                        _steps = _generateSteps();
+                      });
+                    }
+                    else if(steps[_index]=="waterLevelAndWeather"){
+                      if(form.control(steps[_index]).valid&&selectedRiverImages.length>0){
                         setState(() {
-                          _index -= 1;
+                          _index++;
+                          _error=false;
                           _steps = _generateSteps();
                         });
                       }
-                    },
-                    child: Text('Previous'),
-                  ),
-                  SizedBox(width: 16),
-                ],
-              ):
-              SizedBox(),
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
+                      else{
+                        setState(() {
+                          _error=true;
+                          _steps = _generateSteps();
+                        });
+                      }
+                    }
+                    else if (steps[_index]!='flora'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType!=FormGroup&&((form.value['surroundings'] as List<String>).isNotEmpty&&selectedSurroundingImages.length!=0)) {
+                      setState(() {
+                        _index++;
+                        _error=false;
+                        _steps = _generateSteps();
+                      });
+                    }
+                    else if (steps[_index]=='flora'||steps[_index]=='preview') {
+                      setState(() {
+                        _index++;
+                        _error=false;
+                        _steps = _generateSteps();
+                      });
+                    }
+                    else {
+                      setState(() {
+                        _error=true;
+                        _autoValidate = true;
+                        _steps = _generateSteps();
+                      });
+                      form.control(steps[_index]).markAllAsTouched();
+                    }
+                  },
+                  child: Text('Next'),
                 ),
-                onPressed: (){
-                  print("FORM CONTROL");
-                  print(form.value['surroundings']);
-                  if (steps[_index]!='flora'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType==FormGroup&&form.control(steps[_index]).valid) {
-                    setState(() {
-                      _index++;
-                      _error=false;
-                      _steps = _generateSteps();
-                    });
-                  }
-                  else if (steps[_index]!='flora'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType!=FormGroup&&(form.value['surroundings'] as List<String>).isNotEmpty) {
-                    setState(() {
-                      _index++;
-                      _error=false;
-                      _steps = _generateSteps();
-                    });
-                  }
-                  else if (steps[_index]=='flora'||steps[_index]=='preview') {
-                    setState(() {
-                      _index++;
-                      _error=false;
-                      _steps = _generateSteps();
-                    });
-                  }
-                  else {
-                    setState(() {
-                      _error=true;
-                      _steps = _generateSteps();
-                    });
-                    form.control(steps[_index]).markAllAsTouched();
-                  }
-                },
-                child: Text('Next'),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
+          if(_isSubmitted)
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
+            ),
+          ),
+          if(_isSubmitted)
+          CircularProgressIndicator()
+        ],
       ),
     );
   }
 }
-
 

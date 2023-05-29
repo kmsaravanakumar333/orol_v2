@@ -39,20 +39,11 @@ class _AppSideNavigationBarState extends State<AppSideNavigationBar> {
     prefs.setString("access_token", "");
     await AppSharedPreference().saveUserInfo(Users.fromJson({}));
     Navigator.of(context).pop();
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => LoginPage()));
-  }
-  _navigateToRegisterScreen(context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("access_token", "");
-    await AppSharedPreference().saveUserInfo(Users.fromJson({}));
-    Navigator.of(context).pop();
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => RegisterPage()));
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context){
+          return const LoginPage();
+        }
+        ), (Route<dynamic> route) => false);
   }
 
 
@@ -119,17 +110,6 @@ class _AppSideNavigationBarState extends State<AppSideNavigationBar> {
                 AppSharedPreference().removeUserInfo();
                 prefs.remove("access_token");
                 _navigateToLoginScreen(context);
-              },
-            ),
-            ListTile(
-              leading:  Icon(Icons.login_outlined,color: Resources.colors.appTheme.darkBlue,),
-              title:const Text('Register',style: TextStyle(
-                  fontFamily: 'Montserrat', fontWeight: FontWeight.bold),),
-              onTap: () async {
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                AppSharedPreference().removeUserInfo();
-                prefs.remove("access_token");
-                _navigateToRegisterScreen(context);
               },
             ),
           ],

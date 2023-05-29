@@ -8,6 +8,7 @@ import 'package:reactive_forms/reactive_forms.dart';
 import '../services/models/user.dart';
 import '../services/providers/AppSharedPreferences.dart';
 import '../utils/resources.dart';
+import 'loginPage.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -139,27 +140,18 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
         body:SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
-                Transform.translate(
-                  offset: Offset(-15.0,0),
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 40, bottom: 40),
-                    alignment: Alignment.centerLeft,
-                    child: SizedBox(
-                      height: 75,
-                      width: 175,
-                      child: Image.asset("assets/logos/logo_app.png"),
-                    ),
+                Container(
+                  margin: const EdgeInsets.only(top: 40, bottom: 40),
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    height: 75,
+                    width: 175,
+                    child: Image.asset("assets/logos/logo_app.png"),
                   ),
                 ),
-                const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: EdgeInsets.only(bottom: 20.0),
-                      child: Text("Please register to begin the process.",),
-                    )),
                 ReactiveFormBuilder(
                   form: buildForm,
                   builder: (context, form, child) {
@@ -173,7 +165,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           },
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
-                            labelText: 'First name ',
+                            labelText: 'First Name ',
                             labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue),
                             focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
@@ -243,7 +235,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           },
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
-                            labelText: 'Phone number ',
+                            labelText: 'Phone',
                             labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue),
                             focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
@@ -365,7 +357,11 @@ class _RegisterPageState extends State<RegisterPage> {
                                           fontFamily: 'Montserrat', fontSize: 14, fontWeight: FontWeight.bold,color: Resources.colors.appTheme.darkBlue)),
                                   TextButton(
                                     onPressed: () async {
-
+                                      Navigator.of(context).pushAndRemoveUntil(
+                                          MaterialPageRoute(builder: (context){
+                                            return const LoginPage();
+                                          }
+                                          ), (Route<dynamic> route) => false);
                                     },
                                     child: const Text("Login",style: TextStyle(
                                         fontFamily: 'Montserrat', fontSize: 14, fontWeight: FontWeight.bold)),

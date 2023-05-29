@@ -124,12 +124,12 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
           userId==waterDetailsUserId?
           Row(
             children: [
-              IconButton(
-                icon: const Icon(Icons.edit),
-                onPressed: () {
-                  _navigateToRiverMonitoringScreen(context);
-                },
-              ),
+              // IconButton(
+              //   icon: const Icon(Icons.edit),
+              //   onPressed: () {
+              //     _navigateToRiverMonitoringScreen(context);
+              //   },
+              // ),
               IconButton(
                 icon: const Icon(Icons.delete),
                 onPressed: () {
@@ -1104,65 +1104,38 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 10, vertical: 5),
                                       child: Container(
-                                          height: 150,
+                                          height: 225,
                                           child: ListView.builder(
                                               shrinkWrap: true,
                                               scrollDirection: Axis.horizontal,
                                               itemCount: snapshot.data.riverPictures.length,
                                               itemBuilder:
                                                   (BuildContext ctxt, int Index) {
-                                                return Container(
-                                                  margin: EdgeInsets.only(right: 10),
-                                                  height: (MediaQuery.of(context)
-                                                      .size
-                                                      .width -
-                                                      30) /
-                                                      2,
-                                                  width: (MediaQuery.of(context)
-                                                      .size
-                                                      .width -
-                                                      30) /
-                                                      2,
-                                                  padding: EdgeInsets.only(
-                                                      bottom: 10, left: 5),
-                                                  alignment: Alignment.bottomLeft,
-                                                  child: Container(
-                                                      width: 170,
-                                                      height: 20,
+                                                return Column(
+                                                  children: [
+                                                    Container(
+                                                      margin: EdgeInsets.only(right: 10),
+                                                      height: (MediaQuery.of(context).size.width - 30) / 2,
+                                                      width: (MediaQuery.of(context).size.width - 30) / 2,
+                                                      padding: const EdgeInsets.only(
+                                                          bottom: 10, left: 5),
+                                                      alignment: Alignment.bottomLeft,
                                                       decoration: BoxDecoration(
-                                                          color: Colors.white,
-                                                          borderRadius:
-                                                          BorderRadius.circular(
-                                                              5)),
-                                                      padding: EdgeInsets.symmetric(
-                                                          horizontal: 5),
-                                                      child: TextFormField(
-                                                        controller: TextEditingController(text: '${snapshot.data.riverPictures[Index]['description']}'),
-                                                        style:
-                                                        TextStyle(fontSize: 12),
-                                                        readOnly:true,
-                                                        decoration: InputDecoration(
-                                                          focusedBorder:OutlineInputBorder(
-                                                            borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                                            borderRadius: BorderRadius.circular(25.0),
-                                                          ),
+                                                        image: DecorationImage(
+                                                          image: NetworkImage(snapshot.data.riverPictures[Index]['imageURL']),
+                                                          fit: BoxFit.cover,
                                                         ),
-                                                      )),
-                                                  decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                      image: NetworkImage(snapshot.data.riverPictures[Index]['imageURL']),
-                                                      fit: BoxFit.cover,
+                                                      ),
                                                     ),
-                                                    borderRadius:
-                                                    BorderRadius.circular(13),
-                                                  ),
+                                                    SizedBox(height: 15,),
+                                                    Text('${snapshot.data.riverPictures[Index]['description']}')
+                                                  ],
                                                 );
                                               }))),
                               ],
                             )),
                         Container(
-                            margin:
-                            EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                            margin: EdgeInsets.symmetric(horizontal: 25, vertical: 20),
                             padding: EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               border: Border.all(
@@ -1199,51 +1172,40 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 10, vertical: 5),
                                       child: Container(
-                                          height: 150,
+                                          height: 225,
                                           child: ListView.builder(
                                               shrinkWrap: true,
                                               scrollDirection: Axis.horizontal,
                                               itemCount: snapshot.data.surroundingPictures.length,
                                               itemBuilder:
                                                   (BuildContext ctxt, int Index) {
-                                                return Container(
-                                                  margin: EdgeInsets.only(right: 10),
-                                                  height: (MediaQuery.of(context)
-                                                      .size
-                                                      .width -
-                                                      30) /
-                                                      2,
-                                                  width: (MediaQuery.of(context)
-                                                      .size
-                                                      .width -
-                                                      30) /
-                                                      2,
-                                                  padding: EdgeInsets.only(
-                                                      bottom: 10, left: 5),
-                                                  alignment: Alignment.bottomLeft,
-                                                  child: Container(
-                                                      width: 170,
-                                                      height: 20,
+                                                return Column(
+                                                  children: [
+                                                    Container(
+                                                      margin: EdgeInsets.only(right: 10),
+                                                      height: (MediaQuery.of(context)
+                                                          .size
+                                                          .width -
+                                                          30) /
+                                                          2,
+                                                      width: (MediaQuery.of(context)
+                                                          .size
+                                                          .width -
+                                                          30) /
+                                                          2,
+                                                      padding: EdgeInsets.only(
+                                                          bottom: 10, left: 5),
+                                                      alignment: Alignment.bottomLeft,
                                                       decoration: BoxDecoration(
-                                                          color: Colors.white,
-                                                          borderRadius:
-                                                          BorderRadius.circular(5)),
-                                                      padding: EdgeInsets.symmetric(
-                                                          horizontal: 5),
-                                                      child: TextFormField(
-                                                        controller: TextEditingController(text: '${snapshot.data.surroundingPictures[Index]['description']}'),
-                                                        style:
-                                                        TextStyle(fontSize: 12),
-                                                        readOnly:true,
-                                                      )),
-                                                  decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                      image: NetworkImage(snapshot.data.surroundingPictures[Index]['imageURL']),
-                                                      fit: BoxFit.cover,
+                                                        image: DecorationImage(
+                                                          image: NetworkImage(snapshot.data.surroundingPictures[Index]['imageURL']),
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
                                                     ),
-                                                    borderRadius:
-                                                    BorderRadius.circular(13),
-                                                  ),
+                                                    SizedBox(height: 15,),
+                                                    Text('${snapshot.data.surroundingPictures[Index]['description']}'),
+                                                  ],
                                                 );
                                               }))),
                               ],
@@ -1322,58 +1284,32 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 10, vertical: 5),
                                       child: Container(
-                                          height: 150,
+                                          height: 225,
                                           child: ListView.builder(
                                               shrinkWrap: true,
                                               scrollDirection: Axis.horizontal,
                                               itemCount: snapshot.data.floraPictures.length,
                                               itemBuilder:
                                                   (BuildContext ctxt, int Index) {
-                                                return Container(
-                                                  margin: EdgeInsets.only(right: 10),
-                                                  height: (MediaQuery.of(context)
-                                                      .size
-                                                      .width -
-                                                      30) /
-                                                      2,
-                                                  width: (MediaQuery.of(context)
-                                                      .size
-                                                      .width -
-                                                      30) /
-                                                      2,
-                                                  padding: const EdgeInsets.only(
-                                                      bottom: 10, left: 5),
-                                                  alignment: Alignment.bottomLeft,
-                                                  child: Container(
-                                                      width: 170,
-                                                      height: 20,
+                                                return Column(
+                                                  children: [
+                                                    Container(
+                                                      margin: EdgeInsets.only(right: 10),
+                                                      height: (MediaQuery.of(context).size.width - 30) / 2,
+                                                      width: (MediaQuery.of(context).size.width - 30) / 2,
+                                                      padding: const EdgeInsets.only(
+                                                          bottom: 10, left: 5),
+                                                      alignment: Alignment.bottomLeft,
                                                       decoration: BoxDecoration(
-                                                          color: Colors.white,
-                                                          borderRadius:
-                                                          BorderRadius.circular(
-                                                              5)),
-                                                      padding: const EdgeInsets.symmetric(
-                                                          horizontal: 5),
-                                                      child: TextFormField(
-                                                        controller: TextEditingController(text: '${snapshot.data.floraPictures[Index]['description']}'),
-                                                        style:
-                                                        TextStyle(fontSize: 12),
-                                                        readOnly:true,
-                                                        decoration: InputDecoration(
-                                                          focusedBorder:OutlineInputBorder(
-                                                            borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                                            borderRadius: BorderRadius.circular(25.0),
-                                                          ),
+                                                        image: DecorationImage(
+                                                          image: NetworkImage(snapshot.data.floraPictures[Index]['imageURL']),
+                                                          fit: BoxFit.cover,
                                                         ),
-                                                      )),
-                                                  decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                      image: NetworkImage(snapshot.data.floraPictures[Index]['imageURL']),
-                                                      fit: BoxFit.cover,
+                                                      ),
                                                     ),
-                                                    borderRadius:
-                                                    BorderRadius.circular(13),
-                                                  ),
+                                                    SizedBox(height: 15,),
+                                                    Text('${snapshot.data.floraPictures[Index]['description']}')
+                                                  ],
                                                 );
                                               }))),
                                 Row(
@@ -1411,58 +1347,32 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 10, vertical: 5),
                                       child: Container(
-                                          height: 150,
+                                          height: 225,
                                           child: ListView.builder(
                                               shrinkWrap: true,
                                               scrollDirection: Axis.horizontal,
                                               itemCount: snapshot.data.faunaPictures.length,
                                               itemBuilder:
                                                   (BuildContext ctxt, int Index) {
-                                                return Container(
-                                                  margin: EdgeInsets.only(right: 10),
-                                                  height: (MediaQuery.of(context)
-                                                      .size
-                                                      .width -
-                                                      30) /
-                                                      2,
-                                                  width: (MediaQuery.of(context)
-                                                      .size
-                                                      .width -
-                                                      30) /
-                                                      2,
-                                                  padding: const EdgeInsets.only(
-                                                      bottom: 10, left: 5),
-                                                  alignment: Alignment.bottomLeft,
-                                                  child: Container(
-                                                      width: 170,
-                                                      height: 20,
+                                                return Column(
+                                                  children: [
+                                                    Container(
+                                                      margin: EdgeInsets.only(right: 10),
+                                                      height: (MediaQuery.of(context).size.width - 30) / 2,
+                                                      width: (MediaQuery.of(context).size.width - 30) / 2,
+                                                      padding: const EdgeInsets.only(
+                                                          bottom: 10, left: 5),
+                                                      alignment: Alignment.bottomLeft,
                                                       decoration: BoxDecoration(
-                                                          color: Colors.white,
-                                                          borderRadius:
-                                                          BorderRadius.circular(
-                                                              5)),
-                                                      padding: const EdgeInsets.symmetric(
-                                                          horizontal: 5),
-                                                      child: TextFormField(
-                                                        controller: TextEditingController(text: '${snapshot.data.faunaPictures[Index]['description']}'),
-                                                        style:
-                                                        TextStyle(fontSize: 12),
-                                                        readOnly:true,
-                                                        decoration: InputDecoration(
-                                                          focusedBorder:OutlineInputBorder(
-                                                            borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                                            borderRadius: BorderRadius.circular(25.0),
-                                                          ),
+                                                        image: DecorationImage(
+                                                          image: NetworkImage(snapshot.data.faunaPictures[Index]['imageURL']),
+                                                          fit: BoxFit.cover,
                                                         ),
-                                                      )),
-                                                  decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                      image: NetworkImage(snapshot.data.faunaPictures[Index]['imageURL']),
-                                                      fit: BoxFit.cover,
+                                                      ),
                                                     ),
-                                                    borderRadius:
-                                                    BorderRadius.circular(13),
-                                                  ),
+                                                    SizedBox(height: 15,),
+                                                    Text('${snapshot.data.faunaPictures[Index]['description']}')
+                                                  ],
                                                 );
                                               }))),
                               ],
@@ -1483,7 +1393,7 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                 Container(
                                     padding: EdgeInsets.only(bottom: 5),
                                     margin: EdgeInsets.only(bottom: 20),
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       border: Border(
                                         bottom: BorderSide(),
                                       ),
@@ -1533,50 +1443,31 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                       margin:
                                       EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                                       child: Container(
-                                          height: 150,
+                                          height: 225,
                                           child: ListView.builder(
                                               shrinkWrap: true,
                                               scrollDirection: Axis.horizontal,
                                               itemCount: snapshot.data.groupPictures.length,
                                               itemBuilder: (BuildContext ctxt, int Index) {
-                                                return Container(
-                                                  margin: EdgeInsets.only(right: 10),
-                                                  height: (MediaQuery.of(context).size.width -
-                                                      30) /
-                                                      2,
-                                                  width: (MediaQuery.of(context).size.width -
-                                                      30) /
-                                                      2,
-                                                  padding:
-                                                  EdgeInsets.only(bottom: 10, left: 5),
-                                                  alignment: Alignment.bottomLeft,
-                                                  child: Container(
-                                                      width: 170,
-                                                      height: 20,
+                                                return Column(
+                                                  children: [
+                                                    Container(
+                                                      margin: EdgeInsets.only(right: 10),
+                                                      height: (MediaQuery.of(context).size.width - 30) / 2,
+                                                      width: (MediaQuery.of(context).size.width - 30) / 2,
+                                                      padding: const EdgeInsets.only(
+                                                          bottom: 10, left: 5),
+                                                      alignment: Alignment.bottomLeft,
                                                       decoration: BoxDecoration(
-                                                          color: Colors.white,
-                                                          borderRadius:
-                                                          BorderRadius.circular(5)),
-                                                      padding:
-                                                      EdgeInsets.symmetric(horizontal: 5),
-                                                      child: TextFormField(
-                                                        controller: TextEditingController(text: '${snapshot.data.groupPictures[Index]['description']}'),
-                                                        style: TextStyle(fontSize: 12),
-                                                        readOnly:true,
-                                                        decoration: InputDecoration(
-                                                          focusedBorder:OutlineInputBorder(
-                                                            borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                                            borderRadius: BorderRadius.circular(25.0),
-                                                          ),
+                                                        image: DecorationImage(
+                                                          image: NetworkImage(snapshot.data.groupPictures[Index]['imageURL']),
+                                                          fit: BoxFit.cover,
                                                         ),
-                                                      )),
-                                                  decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                      image: NetworkImage(snapshot.data.groupPictures[Index]['imageURL']),
-                                                      fit: BoxFit.cover,
+                                                      ),
                                                     ),
-                                                    borderRadius: BorderRadius.circular(13),
-                                                  ),
+                                                    SizedBox(height: 15,),
+                                                    Text('${snapshot.data.groupPictures[Index]['description']}')
+                                                  ],
                                                 );
                                               }))),
                                 Row(
@@ -1611,50 +1502,31 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                       margin:
                                       EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                                       child: Container(
-                                          height: 150,
+                                          height: 225,
                                           child: ListView.builder(
                                               shrinkWrap: true,
                                               scrollDirection: Axis.horizontal,
                                               itemCount: snapshot.data.activityPictures.length,
                                               itemBuilder: (BuildContext ctxt, int Index) {
-                                                return Container(
-                                                  margin: EdgeInsets.only(right: 10),
-                                                  height: (MediaQuery.of(context).size.width -
-                                                      30) /
-                                                      2,
-                                                  width: (MediaQuery.of(context).size.width -
-                                                      30) /
-                                                      2,
-                                                  padding:
-                                                  EdgeInsets.only(bottom: 10, left: 5),
-                                                  alignment: Alignment.bottomLeft,
-                                                  child: Container(
-                                                      width: 170,
-                                                      height: 20,
+                                                return Column(
+                                                  children: [
+                                                    Container(
+                                                      margin: EdgeInsets.only(right: 10),
+                                                      height: (MediaQuery.of(context).size.width - 30) / 2,
+                                                      width: (MediaQuery.of(context).size.width - 30) / 2,
+                                                      padding: const EdgeInsets.only(
+                                                          bottom: 10, left: 5),
+                                                      alignment: Alignment.bottomLeft,
                                                       decoration: BoxDecoration(
-                                                          color: Colors.white,
-                                                          borderRadius:
-                                                          BorderRadius.circular(5)),
-                                                      padding:
-                                                      EdgeInsets.symmetric(horizontal: 5),
-                                                      child: TextFormField(
-                                                        controller: TextEditingController(text: '${snapshot.data.activityPictures[Index]['description']}'),
-                                                        style: TextStyle(fontSize: 12),
-                                                        readOnly:true,
-                                                        decoration: InputDecoration(
-                                                          focusedBorder:OutlineInputBorder(
-                                                            borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                                            borderRadius: BorderRadius.circular(25.0),
-                                                          ),
+                                                        image: DecorationImage(
+                                                          image: NetworkImage(snapshot.data.activityPictures[Index]['imageURL']),
+                                                          fit: BoxFit.cover,
                                                         ),
-                                                      )),
-                                                  decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                      image: NetworkImage(snapshot.data.activityPictures[Index]['imageURL']),
-                                                      fit: BoxFit.cover,
+                                                      ),
                                                     ),
-                                                    borderRadius: BorderRadius.circular(13),
-                                                  ),
+                                                    SizedBox(height: 15,),
+                                                    Text('${snapshot.data.activityPictures[Index]['description']}')
+                                                  ],
                                                 );
                                               }))),
                                 Row(
@@ -1689,50 +1561,31 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                       margin:
                                       EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                                       child: Container(
-                                          height: 150,
+                                          height: 225,
                                           child: ListView.builder(
                                               shrinkWrap: true,
                                               scrollDirection: Axis.horizontal,
                                               itemCount: snapshot.data.artworkPictures.length,
                                               itemBuilder: (BuildContext ctxt, int Index) {
-                                                return Container(
-                                                  margin: EdgeInsets.only(right: 10),
-                                                  height: (MediaQuery.of(context).size.width -
-                                                      30) /
-                                                      2,
-                                                  width: (MediaQuery.of(context).size.width -
-                                                      30) /
-                                                      2,
-                                                  padding:
-                                                  EdgeInsets.only(bottom: 10, left: 5),
-                                                  alignment: Alignment.bottomLeft,
-                                                  child: Container(
-                                                      width: 170,
-                                                      height: 20,
+                                                return Column(
+                                                  children: [
+                                                    Container(
+                                                      margin: EdgeInsets.only(right: 10),
+                                                      height: (MediaQuery.of(context).size.width - 30) / 2,
+                                                      width: (MediaQuery.of(context).size.width - 30) / 2,
+                                                      padding: const EdgeInsets.only(
+                                                          bottom: 10, left: 5),
+                                                      alignment: Alignment.bottomLeft,
                                                       decoration: BoxDecoration(
-                                                          color: Colors.white,
-                                                          borderRadius:
-                                                          BorderRadius.circular(5)),
-                                                      padding:
-                                                      EdgeInsets.symmetric(horizontal: 5),
-                                                      child: TextFormField(
-                                                        controller: TextEditingController(text: '${snapshot.data.artworkPictures[Index]['description']}'),
-                                                        style: TextStyle(fontSize: 12),
-                                                        readOnly:true,
-                                                        decoration: InputDecoration(
-                                                          focusedBorder:OutlineInputBorder(
-                                                            borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                                            borderRadius: BorderRadius.circular(25.0),
-                                                          ),
+                                                        image: DecorationImage(
+                                                          image: NetworkImage(snapshot.data.artworkPictures[Index]['imageURL']),
+                                                          fit: BoxFit.cover,
                                                         ),
-                                                      )),
-                                                  decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                      image: NetworkImage(snapshot.data.artworkPictures[Index]['imageURL']),
-                                                      fit: BoxFit.cover,
+                                                      ),
                                                     ),
-                                                    borderRadius: BorderRadius.circular(13),
-                                                  ),
+                                                    SizedBox(height: 15,),
+                                                    Text('${snapshot.data.artworkPictures[Index]['description']}')
+                                                  ],
                                                 );
                                               }))),
                               ],
