@@ -1,6 +1,6 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_orol_v2/auth/forgotPasswordPage.dart';
 import 'package:flutter_orol_v2/auth/registerPage.dart';
 import 'package:flutter_orol_v2/utils/resources.dart';
 import 'package:reactive_forms/reactive_forms.dart';
@@ -49,9 +49,15 @@ class _LoginPageState extends State<LoginPage> {
             builder: (context) => RegisterPage()));
   }
 
+  _navigateToForgotPassword(context){
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ForgorPasswordPage()));
+  }
+
   @override
   void initState() {
-
     super.initState();
   }
 
@@ -147,20 +153,20 @@ class _LoginPageState extends State<LoginPage> {
                             padding: MaterialStateProperty.all<EdgeInsetsGeometry>(const EdgeInsets.only(top: 10.0,bottom: 10.0,left: 20.0,right: 20.0)),
                           ),
                           onPressed: () async {
-                            setState(() {
-                              _isLoggedIn=true;
-                            });
                             if (form.valid) {
+                              setState(() {
+                                _isLoggedIn=true;
+                              });
                               if (phoneRegex.hasMatch(form.value['email'].toString())) {
                                var response = await _user.loginByPhone(form.value,context,"UserLogin");
                                setState(() {
                                  _isLoggedIn=false;
                                });
                               }else{
+                                var response = await _user.loginByEmail(form.value, context, "UserLogin");
                                 setState(() {
                                   _isLoggedIn=false;
                                 });
-                                var response = await _user.loginByEmail(form.value, context, "UserLogin");
                               }
 
                             } else {
@@ -184,10 +190,25 @@ class _LoginPageState extends State<LoginPage> {
                                       _navigateToRegister(context);
                                     },
                                     child: const Text("Register",style: TextStyle(
-                                        fontFamily: 'Montserrat', fontSize: 14, fontWeight: FontWeight.bold)),
+                                        fontFamily: 'Montserrat', fontSize: 14, fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                      decorationThickness: 2.0,
+                                    ),
+                                    ),
                                   )
                                 ],
                               )),
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            _navigateToForgotPassword(context);
+                          },
+                          child: const Text("Forgot Password?",style: TextStyle(
+                            fontFamily: 'Montserrat', fontSize: 14, fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                            decorationThickness: 2.0,
+                          ),
+                          ),
                         ),
                       ],
                     );

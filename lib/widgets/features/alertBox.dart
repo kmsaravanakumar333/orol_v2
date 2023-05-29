@@ -1,5 +1,6 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
+import 'package:flutter_orol_v2/pages/home.dart';
 
 import '../../pages/riverMonitoringList.dart';
 class ShowAlert extends StatefulWidget {
@@ -17,7 +18,7 @@ class _ShowAlertState extends State<ShowAlert> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => const RiverMonitoringPage()));
+            builder: (context) => const HomePage()));
   }
 
   @override

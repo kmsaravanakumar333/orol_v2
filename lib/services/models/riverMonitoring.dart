@@ -392,18 +392,22 @@ class WaterTestDetails {
       throw Exception('Failed to create user.');
     }
   }
-  Future<List<WaterTestDetails>> getWaterTestDetails() async {
+
+  Future<List<WaterTestDetails>> getWaterTestDetails(page) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var accessToken = prefs.getString('access_token') ;
     var _user = (await AppSharedPreference().getUserInfo())as Users;
     final response = await http.get(
-        Uri.parse(URL.apiURL+'/water-test-details'),
+        Uri.parse(URL.apiURL+'/water-test-details?page=$page&limit=15'),
       headers: <String, String>{
         "Authorization": 'Bearer '+ accessToken!
       },
     );
+
+    print(URL.apiURL+'/water-test-details?page$page&limit=15');
     if (response.statusCode == 200) {
       var rows = jsonDecode(response.body);
+      print(rows['count']);
       var x = await List<WaterTestDetails>.from(
           (rows["rows"])
               .map((data) => WaterTestDetails.fromJson(data))

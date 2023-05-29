@@ -9,8 +9,14 @@ import 'package:flutter_orol_v2/services/constants/constants.dart';
 import '../services/models/riverMonitoring.dart';
 import '../services/providers/AppSharedPreferences.dart';
 import '../widgets/features/googleMap.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_webservice/places.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import '../widgets/features/pictureOptions.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class RiverMonitoringForm extends StatefulWidget {
   String mode;
@@ -25,8 +31,14 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   List<Step> _steps=[];
   bool _error=false;
   bool _isSubmitted=false;
+  DateTime now = DateTime.now();
+  final String GOOGLE_MAP_API='AIzaSyD9VmkK8P-ONafIM_49q6v5vtu3apjbdFg';
   final TextEditingController activityDateController = TextEditingController();
   final TextEditingController activityTimeController = TextEditingController();
+  TextEditingController _searchController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _autoValidate = false;
+  List<PlacesSearchResult> _searchResults = [];
   var selectedWaterLevel ;
   var selectedWeather;
   var _bacteriaPresent;
@@ -65,25 +77,35 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      form.control('generalInformation.activityDate').value=DateFormat('yyyy-MM-dd').format(now);
+      form.control('generalInformation.activityTime').value= DateFormat('h:mm a').format(now);
+    });
     if(widget.mode=="edit"){
       getRiverMonitoringDetail();
     }
     _steps = _generateSteps();
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
 
   Future<WaterTestDetails?> getRiverMonitoringDetail() async {
     _waterTestDetail = (await AppSharedPreference().getRiverMonitoringInfo())! ;
-    print('_waterTestDetail');
-    print(jsonEncode(_waterTestDetail));
   }
 
-  Future<void> pickImages(name) async {
+  Future<void> pickImages(name,mode) async {
     XFile? image;
     try {
-      image = await ImagePicker().pickImage(source: ImageSource.gallery);
-      print('image');
-      print(image!.name);
+      if(mode=='Gallery'){
+        image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      }else if(mode=='Camera'){
+        image = await ImagePicker().pickImage(source: ImageSource.camera);
+      }
     } catch (e) {
       // Handle any exceptions
     }
@@ -91,8 +113,6 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
     setState(() {
       // Image.file(File(image!.path));
       File file = File(image!.path);
-      print('file');
-      print(file);
       if(name=='riverPicture'){
         selectedRiverImages.add(file);
         riverDescriptions.add(TextEditingController());
@@ -198,31 +218,46 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
       final fieldName = config['fieldName'];
       final label = config['label'];
       return SingleChildScrollView(
-        child: ReactiveTextField<String>(
-          formControlName: fieldName,
-          keyboardType: TextInputType.number,
-          validationMessages: {
-            ValidationMessage.required: (_) =>
-            'The ${label?.toLowerCase()} must not be empty'
-          },
-          textInputAction: TextInputAction.next,
-          decoration: InputDecoration(
-            labelText: label,
-            suffix: fieldName=="waterTesting.waterTemperature"||fieldName=="waterTesting.pH"||fieldName=="waterTesting.alkalinity"?Text("°C")
-                :fieldName=="waterTesting.turbidity"?Text("NTU")
-                :fieldName=="waterTesting.conductivity"?Text("µs")
-                :fieldName=="waterTesting.totalDissolvedSolids"?Text("ppm"):Text("mg/L"),
-            labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
-                width: 1.0,         // Replace with your desired focus border width
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            RichText(
+              text:  TextSpan(
+                text: label,
+                style: TextStyle(
+                    fontSize: 12.0,
+                    fontFamily: 'Montserrat',
+                    color: Resources.colors.appTheme.darkBlue
+                ),
               ),
             ),
-            helperText: '',
-            helperStyle: TextStyle(height: 0.7),
-            errorStyle: TextStyle(height: 0.7),
-          ),
+            ReactiveTextField<String>(
+              formControlName: fieldName,
+              keyboardType: TextInputType.number,
+              validationMessages: {
+                ValidationMessage.required: (_) =>
+                'The ${label?.toLowerCase()} must not be empty'
+              },
+              textInputAction: TextInputAction.next,
+              decoration: InputDecoration(
+                suffix: fieldName=="waterTesting.waterTemperature"?Text("°C")
+                    :fieldName=="waterTesting.turbidity"?Text("NTU")
+                    :fieldName=="waterTesting.conductivity"?Text("µs")
+                    :fieldName=="waterTesting.pH"?Text("ph")
+                    :fieldName=="waterTesting.totalDissolvedSolids"?Text("ppm")
+                    :Text("mg/L"),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
+                    width: 1.0,         // Replace with your desired focus border width
+                  ),
+                ),
+                helperText: '',
+                helperStyle: TextStyle(height: 0.7),
+                errorStyle: TextStyle(height: 0.7),
+              ),
+            ),
+          ],
         ),
       );
     }).toList();
@@ -249,8 +284,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
       final locationName = result['locationName'];
       final lat = result['lat'];
       final lan = result['lan'];
-      print("LOCATION DETAILS");
       setState(() {
+        _searchController.text=locationName;
         form.control('generalInformation.location').value=locationName;
         form.control('generalInformation.latitude').value=lat.toString();
         form.control('generalInformation.longitude').value=lan.toString();
@@ -285,6 +320,43 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
     }
   }
 
+  void _onSearchTextChanged(String value) async {
+    final places = GoogleMapsPlaces(apiKey: GOOGLE_MAP_API);
+
+    PlacesAutocompleteResponse response = await places.autocomplete(
+      value,
+      language: 'en',
+      types: ['geocode'], // Restrict to addresses only
+    );
+
+    setState(() {
+      _searchResults = response.predictions
+          .map((prediction) => PlacesSearchResult(
+        placeId: prediction.placeId.toString(),
+        name: prediction.structuredFormatting!.mainText,
+        formattedAddress: prediction.structuredFormatting!.secondaryText, reference: '',
+      ))
+          .toList();
+      _steps=_generateSteps();
+    });
+  }
+
+  Future<Map<String, dynamic>> getLocationFromPlaceId(String placeId) async {
+    final apiUrl =
+        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=geometry&key=$GOOGLE_MAP_API';
+
+    final response = await http.get(Uri.parse(apiUrl));
+
+    if (response.statusCode == 200) {
+      final decodedData = json.decode(response.body);
+      form.control('generalInformation.latitude').value="${decodedData['result']['geometry']['location']['lat']}";
+      form.control('generalInformation.longitude').value="${decodedData['result']['geometry']['location']['lng']}";
+      return decodedData;
+    } else {
+      throw Exception('Failed to fetch location data');
+    }
+  }
+
   //STEP 1 : GENERAL INFORMATION
   _generalInformation (){
     return Column(
@@ -297,170 +369,333 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           formGroup: form,
           child: Column(
             children: [
-              ReactiveTextField<String>(
-                formControlName: 'generalInformation.activityDate',
-                controller: activityDateController,
-                validationMessages: {
-                  ValidationMessage.required: (_) => 'required',
-                },
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.calendar_today),
-                    onPressed: () async {
-                      final selectedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2100),
-                      );
-                      if (selectedDate != null) {
-                        activityDateController.text =
-                            selectedDate.toIso8601String().substring(0, 10);
-                        form.control('generalInformation.activityDate').value=activityDateController.text;
-                      }
-                    },
-                  ),
-                  labelText: 'Activity Date ',
-                  labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
-                      width: 1.0,         // Replace with your desired focus border width
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text:  TextSpan(
+                      text: 'Activity Date',
+                      style: TextStyle(
+                        fontSize: 12.0,
+                        fontFamily: 'Montserrat',
+                        color:  Resources.colors.appTheme.darkBlue
+                      ),
+                      children: const [
+                        TextSpan(
+                          text: ' *',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  helperText: '',
-                  helperStyle: TextStyle(height: 0.7),
-                  errorStyle: TextStyle(height: 1),
-                ),
+                  ReactiveTextField<String>(
+                    formControlName: 'generalInformation.activityDate',
+                    controller: activityDateController,
+                    validationMessages: {
+                      ValidationMessage.required: (_) => 'Required field',
+                    },
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.calendar_today),
+                        onPressed: () async {
+                          final selectedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2100),
+                          );
+                          if (selectedDate != null) {
+                            activityDateController.text =
+                                selectedDate.toIso8601String().substring(0, 10);
+                            form.control('generalInformation.activityDate').value=activityDateController.text;
+                          }
+                        },
+                      ),
+                      labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
+                          width: 1.0,         // Replace with your desired focus border width
+                        ),
+                      ),
+                      helperText: '',
+                      helperStyle: TextStyle(height: 0.7),
+                      errorStyle: TextStyle(height: 1),
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 10,),
-              ReactiveTextField<String>(
-                formControlName: 'generalInformation.activityTime',
-                controller: activityTimeController,
-                validationMessages: {
-                  ValidationMessage.required: (_) => 'required',
-                },
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.schedule),
-                    onPressed: () async {
-                      final selectedTime = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.now(),
-                      );
-                      if (selectedTime != null) {
-                        activityTimeController.text =
-                            selectedTime.format(context);
-                        form.control('generalInformation.activityTime').value=activityTimeController.text;
-                      }
-                    },
-                  ),
-                  labelText: 'Activity Time ',
-                  labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
-                      width: 1.0,         // Replace with your desired focus border width
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text:  TextSpan(
+                      text: 'Activity Time',
+                      style: TextStyle(
+                          fontSize: 12.0,
+                          fontFamily: 'Montserrat',
+                          color: Resources.colors.appTheme.darkBlue
+                      ),
+                      children: const [
+                        TextSpan(
+                          text: ' *',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  helperText: '',
-                  helperStyle: TextStyle(height: 0.7),
-                  errorStyle: TextStyle(height: 1),
-                ),
+                  ReactiveTextField<String>(
+                    formControlName: 'generalInformation.activityTime',
+                    controller: activityTimeController,
+                    validationMessages: {
+                      ValidationMessage.required: (_) => 'Required field',
+                    },
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.schedule),
+                        onPressed: () async {
+                          final selectedTime = await showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay.now(),
+                          );
+                          if (selectedTime != null) {
+                            activityTimeController.text =
+                                selectedTime.format(context);
+                            form.control('generalInformation.activityTime').value=activityTimeController.text;
+                          }
+                        },
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
+                          width: 1.0,         // Replace with your desired focus border width
+                        ),
+                      ),
+                      helperText: '',
+                      helperStyle: TextStyle(height: 0.7),
+                      errorStyle: TextStyle(height: 1),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
-              ReactiveTextField<String>(
-                formControlName: 'generalInformation.testerName',
-                validationMessages: {
-                  ValidationMessage.required: (_) => 'required',
-                },
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  labelText: 'Tester Name',
-                  labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
-                      width: 1.0,         // Replace with your desired focus border width
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text:  TextSpan(
+                      text: 'Tester Name',
+                      style: TextStyle(
+                          fontSize: 12.0,
+                          fontFamily: 'Montserrat',
+                          color: Resources.colors.appTheme.darkBlue
+                      ),
+                      children: const [
+                        TextSpan(
+                          text: ' *',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  helperText: '',
-                  helperStyle: TextStyle(height: 0.7),
-                  errorStyle: TextStyle(height: 1),
-                ),
-              ),
-              SizedBox(width: 10,),
-              ReactiveTextField<String>(
-                formControlName: 'generalInformation.location',
-                validationMessages: {
-                  ValidationMessage.required: (_) => 'required',
-                },
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  labelText: 'Location',
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.gps_fixed),
-                    onPressed: () async {
-                      _navigateToMap();
+                  ReactiveTextField<String>(
+                    formControlName: 'generalInformation.testerName',
+                    validationMessages: {
+                      ValidationMessage.required: (_) => 'Required field',
                     },
-                  ),
-                  labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
-                      width: 1.0,         // Replace with your desired focus border width
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
+                          width: 1.0,         // Replace with your desired focus border width
+                        ),
+                      ),
+                      // helperText: '',
+                      // helperStyle: TextStyle(height: 0.7),
+                      errorStyle: TextStyle(height: 1),
                     ),
                   ),
-                  helperText: '',
-                  helperStyle: TextStyle(height: 0.7),
-                  errorStyle: TextStyle(height: 1),
-                ),
+                ],
+              ),
+              SizedBox(height: 10,),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text:  TextSpan(
+                      text: 'Location',
+                      style: TextStyle(
+                          fontSize: 12.0,
+                          fontFamily: 'Montserrat',
+                          color: Resources.colors.appTheme.darkBlue
+                      ),
+                      children: const [
+                        TextSpan(
+                          text: ' *',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Form(
+                    key: this._formKey,
+                    autovalidateMode: _autoValidate
+                        ? AutovalidateMode.always
+                        : AutovalidateMode.disabled,
+                    child: TypeAheadFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Required field';
+                        }
+                        return null;
+                      },
+                      textFieldConfiguration:  TextFieldConfiguration(
+                        controller:_searchController,
+                        autofocus: true,
+                        decoration:  InputDecoration(
+                          border: UnderlineInputBorder(),
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.gps_fixed),
+                            onPressed: () async {
+                              _navigateToMap();
+                            },
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
+                              width: 1.0,         // Replace with your desired focus border width
+                            ),
+                          ),
+                        ),
+                      ),
+                      suggestionsCallback: (pattern) async {
+                        form.control('generalInformation.location').value=pattern;
+                        _onSearchTextChanged(pattern);
+                        return _searchResults.where((place) =>
+                            place.name.toLowerCase().contains(pattern.toLowerCase()));
+                      },
+                      itemBuilder: (context, suggestion) {
+                        return _searchResults.length>0?ListTile(
+                          title: Text(suggestion.name),
+                          subtitle: Text(suggestion.formattedAddress==null?"":"${suggestion.formattedAddress}"),
+                        ):SizedBox();
+                      },
+                      onSuggestionSelected: (suggestion) {
+                        var location= "${suggestion.name}, ${suggestion.formattedAddress!=null?suggestion.formattedAddress:''}";
+                        getLocationFromPlaceId(suggestion.placeId);
+                        setState(() {
+                          _searchController.text=location;
+                          form.control('generalInformation.location').value=location;
+                        });
+                      },
+                    ),
+                  ),
+
+                ],
               ),
               const SizedBox(height: 10),
-              ReactiveTextField<String>(
-                formControlName: 'generalInformation.latitude',
-                keyboardType: TextInputType.number,
-                validationMessages: {
-                  ValidationMessage.required: (_) => 'required',
-                },
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  labelText: 'Latitude',
-                  labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
-                      width: 1.0,         // Replace with your desired focus border width
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text:  TextSpan(
+                      text: 'Latitude',
+                      style: TextStyle(
+                          fontSize: 12.0,
+                          fontFamily: 'Montserrat',
+                          color: Resources.colors.appTheme.darkBlue
+                      ),
+                      children: const [
+                        TextSpan(
+                          text: ' *',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  helperText: '',
-                  helperStyle: TextStyle(height: 0.7),
-                  errorStyle: TextStyle(height: 1),
-                ),
+                  ReactiveTextField<String>(
+                    formControlName: 'generalInformation.latitude',
+                    keyboardType: TextInputType.number,
+                    validationMessages: {
+                      ValidationMessage.required: (_) => 'Required field',
+                    },
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
+                          width: 1.0,         // Replace with your desired focus border width
+                        ),
+                      ),
+                      helperText: '',
+                      helperStyle: TextStyle(height: 0.7),
+                      errorStyle: TextStyle(height: 1),
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(width: 10,),
-              ReactiveTextField<String>(
-                formControlName: 'generalInformation.longitude',
-                keyboardType: TextInputType.number,
-                validationMessages: {
-                  ValidationMessage.required: (_) => 'required',
-                },
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  labelText: 'Longitude',
-                  labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
-                      width: 1.0,         // Replace with your desired focus border width
+              const SizedBox(height: 10,),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text:  TextSpan(
+                      text: 'Longitude',
+                      style: TextStyle(
+                          fontSize: 12.0,
+                          fontFamily: 'Montserrat',
+                          color: Resources.colors.appTheme.darkBlue
+                      ),
+                      children: const [
+                        TextSpan(
+                          text: ' *',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  helperText: '',
-                  helperStyle: TextStyle(height: 0.7),
-                  errorStyle: TextStyle(height: 1),
-                ),
+                  ReactiveTextField<String>(
+                    formControlName: 'generalInformation.longitude',
+                    keyboardType: TextInputType.number,
+                    validationMessages: {
+                      ValidationMessage.required: (_) => 'Required field',
+                    },
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
+                          width: 1.0,         // Replace with your desired focus border width
+                        ),
+                      ),
+                      helperText: '',
+                      helperStyle: TextStyle(height: 0.7),
+                      errorStyle: TextStyle(height: 1),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -485,29 +720,69 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ReactiveTextField<String>(
-                  formControlName: 'waterLevelAndWeather.airTemperature',
-                  keyboardType: TextInputType.number,
-                  validationMessages: {
-                    ValidationMessage.required: (_) => 'required',
-                  },
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: 'Measure the air temperature',
-                    suffix: Text("°C"),
-                    labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
-                        width: 1.0,         // Replace with your desired focus border width
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text:  TextSpan(
+                        text: 'Measure the air temperature',
+                        style: TextStyle(
+                            fontSize: 12.0,
+                            fontFamily: 'Montserrat',
+                            color: Resources.colors.appTheme.darkBlue
+                        ),
+                        children: const [
+                          TextSpan(
+                            text: ' *',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    helperText: '',
-                    helperStyle: TextStyle(height: 0.7),
-                    errorStyle: TextStyle(height: 1),
+                    ReactiveTextField<String>(
+                      formControlName: 'waterLevelAndWeather.airTemperature',
+                      keyboardType: TextInputType.number,
+                      validationMessages: {
+                        ValidationMessage.required: (_) => 'Required field',
+                      },
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        suffix: Text("°C"),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
+                            width: 1.0,         // Replace with your desired focus border width
+                          ),
+                        ),
+                        helperText: '',
+                        helperStyle: TextStyle(height: 0.7),
+                        errorStyle: TextStyle(height: 1),
+                      ),
+                    ),
+                  ],
+                ),
+                RichText(
+                  text:  TextSpan(
+                    text: 'Observe the Water Level',
+                    style: TextStyle(
+                        fontSize: 12.0,
+                        fontFamily: 'Montserrat',
+                        color: Resources.colors.appTheme.darkBlue
+                    ),
+                    children: const [
+                      TextSpan(
+                        text: ' *',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Text("Observe the Water Level",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
                 Container(
                     height: 100,
                     child: ListView.builder(
@@ -544,7 +819,25 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             ),
                           );
                         })),
-                Text("Weather Condtions",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),),
+                RichText(
+                  text:  TextSpan(
+                    text: 'Weather Condtions',
+                    style: TextStyle(
+                        fontSize: 12.0,
+                        fontFamily: 'Montserrat',
+                        color: Resources.colors.appTheme.darkBlue
+                    ),
+                    children: const [
+                      TextSpan(
+                        text: ' *',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 Container(
                     height: 100,
                     child: ListView.builder(
@@ -581,14 +874,41 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             ),
                           );
                         })),
-                Text("River Pictures",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16),),
+                RichText(
+                  text:  TextSpan(
+                    text: 'River Pictures',
+                    style: TextStyle(
+                        fontSize: 12.0,
+                        fontFamily: 'Montserrat',
+                        color: Resources.colors.appTheme.darkBlue
+                    ),
+                    children: const [
+                      TextSpan(
+                        text: ' *',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
           const SizedBox(height: 16.0),
           ElevatedButton(
-            onPressed: (){
-              pickImages('riverPicture');
+            onPressed: () async {
+              var camOrGallery = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return PictureOptions();
+                  });
+              if (camOrGallery.toString() == "Gallery") {
+                var img = pickImages('riverPicture','Gallery');
+              } else if (camOrGallery.toString() == "Camera") {
+                var img = pickImages('riverPicture','Camera');
+              }
             },
             child: const Text('Upload Images'),
           ),
@@ -683,6 +1003,25 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              RichText(
+                text:  TextSpan(
+                  text: 'Surroundings',
+                  style: TextStyle(
+                      fontSize: 12.0,
+                      fontFamily: 'Montserrat',
+                      color: Resources.colors.appTheme.darkBlue
+                  ),
+                  children: const [
+                    TextSpan(
+                      text: ' *',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               Wrap(
                 children: WATERANDWEATHER.surroundings.map((item) {
                   return Padding(
@@ -710,22 +1049,48 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                           _steps = _generateSteps();
                         });
                         form.control('surroundings').value=selectedSurroundings;
-                        // print(jsonEncode(selectedSurroundings));
-                        // print(jsonEncode(form.value['surroundings']);
                       },
                     ),
                   );
                 }).toList(),
               ),
               SizedBox(height: 16.0),
-              Text("Surrounding Pictures",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16),),
+              RichText(
+                text:  TextSpan(
+                  text: 'Surrounding Pictures',
+                  style: TextStyle(
+                      fontSize: 12.0,
+                      fontFamily: 'Montserrat',
+                      color: Resources.colors.appTheme.darkBlue
+                  ),
+                  children: const [
+                    TextSpan(
+                      text: ' *',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
         SizedBox(height: 16.0),
         ElevatedButton(
-          onPressed: (){
-            pickImages('surroundingImages');
+          onPressed: () async {
+            var camOrGallery = await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return PictureOptions();
+                });
+
+            if (camOrGallery.toString() == "Gallery") {
+              var img = pickImages('surroundingImages','Gallery');
+            } else if (camOrGallery.toString() == "Camera") {
+              var img = pickImages('surroundingImages','Camera');
+            }
           },
           child: Text('Upload Images'),
         ),
@@ -821,7 +1186,16 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
             children: [
               ...waterQualityFormFields(),
               SizedBox(height: 16.0),
-              Text("Bacteria",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16),),
+              RichText(
+                text:  TextSpan(
+                  text: "Bacteria",
+                  style: TextStyle(
+                      fontSize: 12.0,
+                      fontFamily: 'Montserrat',
+                      color: Resources.colors.appTheme.darkBlue
+                  ),
+                ),
+              ),
               SizedBox(height: 20,),
               Row(
                 children: [
@@ -892,11 +1266,30 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           Text("Flora & Fauna",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 15,fontWeight: FontWeight.w600),),
           const SizedBox(height: 10,),
           _error==true?const Text("Please fill all details",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
-          Text("Flora",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16),),
+          RichText(
+            text:  TextSpan(
+              text: "Flora",
+              style: TextStyle(
+                  fontSize: 12.0,
+                  fontFamily: 'Montserrat',
+                  color: Resources.colors.appTheme.darkBlue
+              ),
+            ),
+          ),
           SizedBox(height: 16.0),
           ElevatedButton(
-            onPressed: (){
-              pickImages('flora');
+            onPressed: () async {
+              var camOrGallery = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return PictureOptions();
+                  });
+
+              if (camOrGallery.toString() == "Gallery") {
+                var img = pickImages('flora','Gallery');
+              } else if (camOrGallery.toString() == "Camera") {
+                var img = pickImages('flora','Camera');
+              }
             },
             child: Text('Upload Images'),
           ),
@@ -970,11 +1363,30 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         })
                 )
             ),
-          Text("Fauna",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16),),
+          RichText(
+            text:  TextSpan(
+              text: "Fauna",
+              style: TextStyle(
+                  fontSize: 12.0,
+                  fontFamily: 'Montserrat',
+                  color: Resources.colors.appTheme.darkBlue
+              ),
+            ),
+          ),
           SizedBox(height: 16.0),
           ElevatedButton(
-            onPressed: (){
-              pickImages('fauna');
+            onPressed: () async {
+              var camOrGallery = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return PictureOptions();
+                  });
+
+              if (camOrGallery.toString() == "Gallery") {
+                var img = pickImages('fauna','Gallery');
+              } else if (camOrGallery.toString() == "Camera") {
+                var img = pickImages('fauna','Camera');
+              }
             },
             child: Text('Upload Images'),
           ),
@@ -1064,11 +1476,30 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           Text("Water Level & Weather",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 15,fontWeight: FontWeight.w600),),
           const SizedBox(height: 10,),
           _error==true?const Text("Please fill all details",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
-          Text("Group pictures",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16),),
+          RichText(
+            text:  TextSpan(
+              text: "Group pictures",
+              style: TextStyle(
+                  fontSize: 12.0,
+                  fontFamily: 'Montserrat',
+                  color: Resources.colors.appTheme.darkBlue
+              ),
+            ),
+          ),
           SizedBox(height: 16.0),
           ElevatedButton(
-            onPressed: (){
-              pickImages('group');
+            onPressed: () async {
+              var camOrGallery = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return PictureOptions();
+                  });
+
+              if (camOrGallery.toString() == "Gallery") {
+                var img = pickImages('group','Gallery');
+              } else if (camOrGallery.toString() == "Camera") {
+                var img = pickImages('group','Camera');
+              }
             },
             child: Text('Upload Images'),
           ),
@@ -1142,11 +1573,30 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         })
                 )
             ),
-          Text("Activity pictures",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16),),
+          RichText(
+            text:  TextSpan(
+              text: "Activity pictures",
+              style: TextStyle(
+                  fontSize: 12.0,
+                  fontFamily: 'Montserrat',
+                  color: Resources.colors.appTheme.darkBlue
+              ),
+            ),
+          ),
           SizedBox(height: 16.0),
           ElevatedButton(
-            onPressed: (){
-              pickImages('activity');
+            onPressed: () async {
+              var camOrGallery = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return PictureOptions();
+                  });
+
+              if (camOrGallery.toString() == "Gallery") {
+                var img = pickImages('activity','Gallery');
+              } else if (camOrGallery.toString() == "Camera") {
+                var img = pickImages('activity','Camera');
+              }
             },
             child: Text('Upload Images'),
           ),
@@ -1221,11 +1671,30 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         })
                 )
             ),
-          Text("Artworks",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16),),
+          RichText(
+            text:  TextSpan(
+              text: "Artworks",
+              style: TextStyle(
+                  fontSize: 12.0,
+                  fontFamily: 'Montserrat',
+                  color: Resources.colors.appTheme.darkBlue
+              ),
+            ),
+          ),
           SizedBox(height: 16.0),
           ElevatedButton(
-            onPressed: (){
-              pickImages('artwork');
+            onPressed: () async {
+              var camOrGallery = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return PictureOptions();
+                  });
+
+              if (camOrGallery.toString() == "Gallery") {
+                var img = pickImages('artwork','Gallery');
+              } else if (camOrGallery.toString() == "Camera") {
+                var img = pickImages('artwork','Camera');
+              }
             },
             child: Text('Upload Images'),
           ),
@@ -2643,7 +3112,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add river monitoring"),
+        title: Text("Monitor River"),
       ),
       body: Stack(
         alignment: Alignment.center,
@@ -2659,15 +3128,15 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
             // });
             if (steps[_index]!='flora'&&steps[_index]!='waterLevelAndWeather'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType==FormGroup&&form.control(steps[_index]).valid) {
               setState(() {
-                _index++;
                 _error=false;
+                _index = index;
                 _steps = _generateSteps();
               });
             }
             else if(steps[_index]=="waterLevelAndWeather"){
               if(form.control(steps[_index]).valid&&selectedRiverImages.length>0){
                 setState(() {
-                  _index++;
+                  _index = index;
                   _error=false;
                   _steps = _generateSteps();
                 });
@@ -2681,14 +3150,14 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
             }
             else if (steps[_index]!='flora'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType!=FormGroup&&((form.value['surroundings'] as List<String>).isNotEmpty&&selectedSurroundingImages.length!=0)) {
               setState(() {
-                _index++;
+                _index = index;
                 _error=false;
                 _steps = _generateSteps();
               });
             }
             else if (steps[_index]=='flora'||steps[_index]=='preview') {
               setState(() {
-                _index++;
+                _index = index;
                 _error=false;
                 _steps = _generateSteps();
               });
@@ -2818,7 +3287,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
                   ),
                   onPressed: (){
-                    if (steps[_index]!='flora'&&steps[_index]!='waterLevelAndWeather'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType==FormGroup&&form.control(steps[_index]).valid) {
+                    if (this._formKey.currentState!.validate()&&steps[_index]!='flora'&&steps[_index]!='waterLevelAndWeather'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType==FormGroup&&form.control(steps[_index]).valid) {
                       setState(() {
                         _index++;
                         _error=false;
@@ -2857,6 +3326,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     else {
                       setState(() {
                         _error=true;
+                        _autoValidate = true;
                         _steps = _generateSteps();
                       });
                       form.control(steps[_index]).markAllAsTouched();
