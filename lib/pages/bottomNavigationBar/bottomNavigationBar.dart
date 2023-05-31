@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_orol_v2/pages/riverMonitoringList.dart';
-
 import '../../utils/resources.dart';
 
 class AppBottomNavigationBar extends StatefulWidget {
@@ -16,6 +15,7 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
     RiverMonitoringPage(),
+    // WaterTestingPage(),
   ];
   void _onItemTapped(int index) {
     setState(() {
@@ -36,6 +36,10 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
             icon: Icon(Icons.water),
             label: 'River Monitoring',
           ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.water),
+          //   label: 'Water testing',
+          // ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Resources.colors.appTheme.darkBlue,

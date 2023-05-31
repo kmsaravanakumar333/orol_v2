@@ -21,6 +21,12 @@ _navigateToHomeScreen(BuildContext context) {
       MaterialPageRoute(
           builder: (context) => HomePage()));
 }
+class WaterTestResult {
+  List<WaterTestDetails> details;
+  int count;
+
+  WaterTestResult({required this.details, required this.count});
+}
 
 class WaterTestDetails {
   String? id='';
@@ -39,6 +45,7 @@ class WaterTestDetails {
   List? surroundingPictures = [];
   String? certificateURL="";
   String? createdAt='';
+  int? count;
 
   WaterTestDetails({
     this.id,
@@ -56,7 +63,8 @@ class WaterTestDetails {
     this.riverPictures,
     this.surroundingPictures,
     this.certificateURL,
-    this.createdAt
+    this.createdAt,
+    this.count
   });
 
   Map<String, dynamic> toJson() => {
@@ -75,7 +83,8 @@ class WaterTestDetails {
     "riverPictures":riverPictures,
     "surroundingPictures":surroundingPictures,
     "certificateURL":certificateURL,
-    "createdAt":createdAt
+    "createdAt":createdAt,
+    "count":null
   };
 
   factory WaterTestDetails.fromJson(Map<String, dynamic> json) {
@@ -95,7 +104,8 @@ class WaterTestDetails {
       riverPictures:json["riverPictures"],
       surroundingPictures:json["surroundingPictures"],
       certificateURL:json["certificateURL"],
-      createdAt:json["createdAt"]
+      createdAt:json["createdAt"],
+      count:null
     );
   }
 
@@ -393,7 +403,7 @@ class WaterTestDetails {
     }
   }
 
-  Future<List<WaterTestDetails>> getWaterTestDetails(page) async {
+   getWaterTestDetails(page) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var accessToken = prefs.getString('access_token') ;
     var _user = (await AppSharedPreference().getUserInfo())as Users;
@@ -403,16 +413,17 @@ class WaterTestDetails {
         "Authorization": 'Bearer '+ accessToken!
       },
     );
-
-    print(URL.apiURL+'/water-test-details?page$page&limit=15');
     if (response.statusCode == 200) {
       var rows = jsonDecode(response.body);
-      print(rows['count']);
+      var count = rows['count'];
       var x = await List<WaterTestDetails>.from(
           (rows["rows"])
-              .map((data) => WaterTestDetails.fromJson(data))
-      );
-      return x;
+              .map((data) {
+            var waterTestDetails = WaterTestDetails.fromJson(data);
+            waterTestDetails.count = count;
+            return waterTestDetails;
+          }));
+      return WaterTestResult(details: x, count: count);
     } else {
       throw Exception('Failed to load water test details');
     }
@@ -456,6 +467,33 @@ class WaterTestDetails {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor:Colors.green,content: Text("Failed to delete water test details")));
       throw Exception('Failed to delete water test details');
+    }
+  }
+
+  Future<WaterTestDetails> generateCertificate(waterDetailsId,context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var accessToken = prefs.getString('access_token') ;
+    var _user = (await AppSharedPreference().getUserInfo())as Users;
+    final response = await http.delete(
+      Uri.parse(URL.apiURL+'/pdf/generateReport'),
+      headers: <String, String>{
+        "Authorization": 'Bearer '+ accessToken!
+      },
+      body:{
+        "id":waterDetailsId.toString()
+      }
+    );
+    if (response.statusCode == 200) {
+      Navigator.of(context).pop();
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => RiverMonitoringPage()));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor:Colors.green,content: Text("Certificate generated successfully")));
+      return WaterTestDetails.fromJson(jsonDecode(response.body));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor:Colors.green,content: Text("Failed to delete water test details")));
+      throw Exception('Failed to generate certificate');
     }
   }
 

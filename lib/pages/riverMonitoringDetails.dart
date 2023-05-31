@@ -1257,7 +1257,7 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                               bottom: 5,
                                             ),
                                             child: SvgPicture.asset(
-                                              "assets/Flora-1.svg",
+                                              "assets/images/Flora-1.svg",
                                               width: 30,
                                               height: 30,
                                             ),
@@ -1322,7 +1322,7 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                         top: 20,
                                       ),
                                       child: SvgPicture.asset(
-                                        "assets/Fauna-1.svg",
+                                        "assets/images/Fauna-1.svg",
                                         width: 30,
                                         height: 30,
                                       ),
@@ -1419,7 +1419,7 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                         bottom: 5,
                                       ),
                                       child: SvgPicture.asset(
-                                        "assets/Flora-1.svg",
+                                        "assets/images/Flora-1.svg",
                                         width: 30,
                                         height: 30,
                                       ),
@@ -1478,7 +1478,7 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                         bottom: 5,
                                       ),
                                       child: SvgPicture.asset(
-                                        "assets/Flora-1.svg",
+                                        "assets/images/Flora-1.svg",
                                         width: 30,
                                         height: 30,
                                       ),
@@ -1537,7 +1537,7 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                         bottom: 5,
                                       ),
                                       child: SvgPicture.asset(
-                                        "assets/Flora-1.svg",
+                                        "assets/images/Flora-1.svg",
                                         width: 30,
                                         height: 30,
                                       ),
@@ -1635,10 +1635,24 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                         Container(
                                             width: (MediaQuery.of(context).size.width - 100) ,
                                             alignment: Alignment.centerLeft,
-                                            child: InkWell(
-                                                child: Center(child: Text('${snapshot.data.certificateURL}',style: const TextStyle(color: Colors.indigo),)),
-                                                onTap: () => launch(snapshot.data.certificateURL)
-                                            ))
+                                            child: snapshot.data.certificateURL!='undefined'?
+                                            InkWell(
+                                                child: Center(child: Text(snapshot.data.certificateURL!='undefined'?'${snapshot.data.certificateURL}':'No certificate found',style: const TextStyle(color: Colors.indigo),)),
+                                                onTap: (){
+                                                  if(snapshot.data.certificateURL!='undefined'){
+                                                    launch(snapshot.data.certificateURL);
+                                                  }
+                                                }
+                                            ):
+                                            Center(
+                                              child: TextButton(
+                                                  onPressed: (){
+                                                    _waterTestDetail.generateCertificate(snapshot.data.id,context);
+                                                  },
+                                                  child: Text('Generate certificate')
+                                              ),
+                                            )
+                                        )
                                       ],
                                     ),
                                   ),
