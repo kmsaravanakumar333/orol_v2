@@ -79,11 +79,6 @@ class Users {
           'email': _user['email'],
         }),
       );
-      print('response');
-      print(response.statusCode);
-      print('response1');
-      // print(response.body);
-      // print(jsonDecode(response.body)['user']);
       var data;
       if(response.body!="Email is incorrect"){
         data = jsonDecode(response.body);
@@ -126,8 +121,6 @@ class Users {
 
   //Function to login the user using phone number
   loginByPhone(_user, context, mode) async {
-    print("USER");
-    print(_user['email']);
     var body;
     if(_user['email']!=''||_user['email']==null){
       body=jsonEncode(<String, String>{
@@ -177,7 +170,6 @@ class Users {
   //Function to register the user
   Future<Users> registerUser(_user, context,mode) async {
     var body;
-    print("USER");
     if(mode=='emailOTP'){
       body=jsonEncode(<String, String>{
         'firstName': _user['firstName'].toString(),
@@ -205,7 +197,7 @@ class Users {
       body: body,
     );
     print(response.statusCode);
-    print(response.body);
+
     if (response.statusCode == 201) {
       Map<String, dynamic> data = jsonDecode(response.body);
       //Auto Login
@@ -219,7 +211,8 @@ class Users {
       //Push to success only if we get 201
 
       return Users.fromJson(jsonDecode(response.body));
-    } else {
+    }
+    else {
       // If the server did not return a 201 CREATED response,
       // then throw an exception.
       if (response.statusCode == 401) {
@@ -243,9 +236,6 @@ class Users {
 
   //Function to reset password
   resetPassword(_user, context, mode) async {
-    print("USER");
-    print(_user['email']);
-
     var body=jsonEncode(<String, String>{
         'email': _user['email'],
         'requestType': "PASSWORD_RESET",

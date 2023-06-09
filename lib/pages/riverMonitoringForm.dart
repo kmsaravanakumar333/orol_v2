@@ -225,7 +225,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
               text:  TextSpan(
                 text: label,
                 style: TextStyle(
-                    fontSize: 12.0,
+                    fontSize: 14.0,
                     fontFamily: 'Montserrat',
                     color: Resources.colors.appTheme.darkBlue
                 ),
@@ -363,7 +363,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("General Information",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 15,fontWeight: FontWeight.w600),),
+        Text("General Information",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16,fontWeight: FontWeight.w600),),
         const SizedBox(height: 10,),
         ReactiveForm(
           formGroup: form,
@@ -376,7 +376,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     text:  TextSpan(
                       text: 'Activity Date',
                       style: TextStyle(
-                        fontSize: 12.0,
+                        fontSize: 14.0,
                         fontFamily: 'Montserrat',
                         color:  Resources.colors.appTheme.darkBlue
                       ),
@@ -437,7 +437,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     text:  TextSpan(
                       text: 'Activity Time',
                       style: TextStyle(
-                          fontSize: 12.0,
+                          fontSize: 14.0,
                           fontFamily: 'Montserrat',
                           color: Resources.colors.appTheme.darkBlue
                       ),
@@ -495,7 +495,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     text:  TextSpan(
                       text: 'Tester Name',
                       style: TextStyle(
-                          fontSize: 12.0,
+                          fontSize: 14.0,
                           fontFamily: 'Montserrat',
                           color: Resources.colors.appTheme.darkBlue
                       ),
@@ -538,7 +538,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     text:  TextSpan(
                       text: 'Location',
                       style: TextStyle(
-                          fontSize: 12.0,
+                          fontSize: 14.0,
                           fontFamily: 'Montserrat',
                           color: Resources.colors.appTheme.darkBlue
                       ),
@@ -617,7 +617,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     text:  TextSpan(
                       text: 'Latitude',
                       style: TextStyle(
-                          fontSize: 12.0,
+                          fontSize: 14.0,
                           fontFamily: 'Montserrat',
                           color: Resources.colors.appTheme.darkBlue
                       ),
@@ -661,7 +661,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     text:  TextSpan(
                       text: 'Longitude',
                       style: TextStyle(
-                          fontSize: 12.0,
+                          fontSize: 14.0,
                           fontFamily: 'Montserrat',
                           color: Resources.colors.appTheme.darkBlue
                       ),
@@ -712,7 +712,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Water Level & Weather",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 15,fontWeight: FontWeight.w600),),
+          Text("Water Level & Weather",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16,fontWeight: FontWeight.w600),),
           const SizedBox(height: 10,),
           _error==true?const Text("Please fill all details",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
           ReactiveForm(
@@ -727,7 +727,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       text:  TextSpan(
                         text: 'Measure the air temperature',
                         style: TextStyle(
-                            fontSize: 12.0,
+                            fontSize: 14.0,
                             fontFamily: 'Montserrat',
                             color: Resources.colors.appTheme.darkBlue
                         ),
@@ -768,7 +768,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   text:  TextSpan(
                     text: 'Observe the Water Level',
                     style: TextStyle(
-                        fontSize: 12.0,
+                        fontSize: 14.0,
                         fontFamily: 'Montserrat',
                         color: Resources.colors.appTheme.darkBlue
                     ),
@@ -823,7 +823,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   text:  TextSpan(
                     text: 'Weather Condtions',
                     style: TextStyle(
-                        fontSize: 12.0,
+                        fontSize: 14.0,
                         fontFamily: 'Montserrat',
                         color: Resources.colors.appTheme.darkBlue
                     ),
@@ -878,7 +878,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   text:  TextSpan(
                     text: 'River Pictures',
                     style: TextStyle(
-                        fontSize: 12.0,
+                        fontSize: 14.0,
                         fontFamily: 'Montserrat',
                         color: Resources.colors.appTheme.darkBlue
                     ),
@@ -960,21 +960,21 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                 Container(
                                     width: 170,
                                     height: 20,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                         color: Colors.white,
-                                        borderRadius:
-                                        BorderRadius.circular(5)),
-                                    padding:
-                                    EdgeInsets.symmetric(horizontal: 5),
+                                       ),
+                                    // padding: EdgeInsets.symmetric(horizontal: 5),
                                     child: TextFormField(
                                       autofocus: false,
                                       controller:
                                       riverDescriptions[Index],
                                       style: TextStyle(fontSize: 12),
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
+                                        border:OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                        ),
                                         focusedBorder:OutlineInputBorder(
-                                          borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                          borderRadius: BorderRadius.circular(25.0),
+                                          borderSide: BorderSide(color: Colors.black, width: 1.0),
                                         ),
                                       ),
                                     )),
@@ -995,7 +995,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Observe your Surroundings",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 15,fontWeight: FontWeight.w600),),
+        Text("Observe your Surroundings",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16,fontWeight: FontWeight.w600),),
         const SizedBox(height: 10,),
         _error==true?const Text("Please fill all details",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
         ReactiveForm(
@@ -1007,7 +1007,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 text:  TextSpan(
                   text: 'Surroundings',
                   style: TextStyle(
-                      fontSize: 12.0,
+                      fontSize: 14.0,
                       fontFamily: 'Montserrat',
                       color: Resources.colors.appTheme.darkBlue
                   ),
@@ -1059,7 +1059,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 text:  TextSpan(
                   text: 'Surrounding Pictures',
                   style: TextStyle(
-                      fontSize: 12.0,
+                      fontSize: 14.0,
                       fontFamily: 'Montserrat',
                       color: Resources.colors.appTheme.darkBlue
                   ),
@@ -1142,21 +1142,20 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               ),
                               Container(  width: 170,
                                   height: 20,
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                       color: Colors.white,
-                                      borderRadius:
-                                      BorderRadius.circular(5)),
-                                  padding:
-                                  EdgeInsets.symmetric(horizontal: 5),
+                                  ),
                                   child: TextFormField(
                                     autofocus: false,
                                     controller:
                                     surroundingDescriptions[Index],
-                                    style: TextStyle(fontSize: 12),
-                                    decoration: InputDecoration(
+                                    style: const TextStyle(fontSize: 12),
+                                    decoration: const InputDecoration(
+                                      border:OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                      ),
                                       focusedBorder:OutlineInputBorder(
-                                        borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                        borderRadius: BorderRadius.circular(25.0),
+                                        borderSide: BorderSide(color: Colors.white, width: 1.0),
                                       ),
                                     ),
                                   )),
@@ -1176,7 +1175,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Water Quality Testing",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 15,fontWeight: FontWeight.w600),),
+        Text("Water Quality Testing",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16,fontWeight: FontWeight.w600),),
         const SizedBox(height: 10,),
         _error==true?const Text("Please fill all details",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
         ReactiveForm(
@@ -1190,7 +1189,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 text:  TextSpan(
                   text: "Bacteria",
                   style: TextStyle(
-                      fontSize: 12.0,
+                      fontSize: 14.0,
                       fontFamily: 'Montserrat',
                       color: Resources.colors.appTheme.darkBlue
                   ),
@@ -1263,14 +1262,14 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Flora & Fauna",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 15,fontWeight: FontWeight.w600),),
+          Text("Flora & Fauna",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16,fontWeight: FontWeight.w600),),
           const SizedBox(height: 10,),
           _error==true?const Text("Please fill all details",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
           RichText(
             text:  TextSpan(
               text: "Flora",
               style: TextStyle(
-                  fontSize: 12.0,
+                  fontSize: 14.0,
                   fontFamily: 'Montserrat',
                   color: Resources.colors.appTheme.darkBlue
               ),
@@ -1337,23 +1336,22 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                             ))),
                                   ],
                                 ),
-                                Container(    width: 170,
+                                Container(
+                                    width: 170,
                                     height: 20,
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius:
-                                        BorderRadius.circular(5)),
-                                    padding:
-                                    EdgeInsets.symmetric(horizontal: 5),
+                                    decoration: const BoxDecoration(
+                                        color: Colors.white,),
                                     child: TextFormField(
                                       autofocus: false,
                                       controller:
                                       floraDescriptions[Index],
                                       style: TextStyle(fontSize: 12),
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
+                                        border:OutlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                        ),
                                         focusedBorder:OutlineInputBorder(
-                                          borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                          borderRadius: BorderRadius.circular(25.0),
+                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
                                         ),
                                       ),
                                     )),
@@ -1367,7 +1365,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
             text:  TextSpan(
               text: "Fauna",
               style: TextStyle(
-                  fontSize: 12.0,
+                  fontSize: 14.0,
                   fontFamily: 'Montserrat',
                   color: Resources.colors.appTheme.darkBlue
               ),
@@ -1437,21 +1435,20 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                 Container(
                                     width: 170,
                                     height: 20,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                         color: Colors.white,
-                                        borderRadius:
-                                        BorderRadius.circular(5)),
-                                    padding:
-                                    EdgeInsets.symmetric(horizontal: 5),
+                                        ),
                                     child: TextFormField(
                                       autofocus: false,
                                       controller:
                                       faunaDescriptions[Index],
                                       style: TextStyle(fontSize: 12),
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
+                                        border:OutlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                        ),
                                         focusedBorder:OutlineInputBorder(
-                                          borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                          borderRadius: BorderRadius.circular(25.0),
+                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
                                         ),
                                       ),
                                     )),
@@ -1473,14 +1470,14 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Water Level & Weather",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 15,fontWeight: FontWeight.w600),),
+          Text("Water Level & Weather",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16,fontWeight: FontWeight.w600),),
           const SizedBox(height: 10,),
           _error==true?const Text("Please fill all details",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
           RichText(
             text:  TextSpan(
               text: "Group pictures",
               style: TextStyle(
-                  fontSize: 12.0,
+                  fontSize: 14.0,
                   fontFamily: 'Montserrat',
                   color: Resources.colors.appTheme.darkBlue
               ),
@@ -1549,21 +1546,20 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                 ),
                                 Container(    width: 170,
                                     height: 20,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                         color: Colors.white,
-                                        borderRadius:
-                                        BorderRadius.circular(5)),
-                                    padding:
-                                    EdgeInsets.symmetric(horizontal: 5),
+                                       ),
                                     child: TextFormField(
                                       autofocus: false,
                                       controller:
                                       groupImageDescriptions[Index],
-                                      style: TextStyle(fontSize: 12),
-                                      decoration: InputDecoration(
+                                      style: const TextStyle(fontSize: 12),
+                                      decoration: const InputDecoration(
+                                        border:OutlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                        ),
                                         focusedBorder:OutlineInputBorder(
-                                          borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                          borderRadius: BorderRadius.circular(25.0),
+                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
                                         ),
                                       ),
                                     )),
@@ -1577,7 +1573,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
             text:  TextSpan(
               text: "Activity pictures",
               style: TextStyle(
-                  fontSize: 12.0,
+                  fontSize: 14.0,
                   fontFamily: 'Montserrat',
                   color: Resources.colors.appTheme.darkBlue
               ),
@@ -1647,21 +1643,20 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                 ),
                                 Container(    width: 170,
                                     height: 20,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                         color: Colors.white,
-                                        borderRadius:
-                                        BorderRadius.circular(5)),
-                                    padding:
-                                    EdgeInsets.symmetric(horizontal: 5),
+                                    ),
                                     child: TextFormField(
                                       autofocus: false,
                                       controller:
                                       activityImageDescriptions[Index],
-                                      style: TextStyle(fontSize: 12),
-                                      decoration: InputDecoration(
+                                      style: const TextStyle(fontSize: 12),
+                                      decoration: const InputDecoration(
+                                        border:OutlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                        ),
                                         focusedBorder:OutlineInputBorder(
-                                          borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                          borderRadius: BorderRadius.circular(25.0),
+                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
                                         ),
                                       ),
                                     )),
@@ -1675,7 +1670,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
             text:  TextSpan(
               text: "Artworks",
               style: TextStyle(
-                  fontSize: 12.0,
+                  fontSize: 14.0,
                   fontFamily: 'Montserrat',
                   color: Resources.colors.appTheme.darkBlue
               ),
@@ -1744,21 +1739,21 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                 ),
                                 Container(    width: 170,
                                     height: 20,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                         color: Colors.white,
-                                        borderRadius:
-                                        BorderRadius.circular(5)),
-                                    padding:
-                                    EdgeInsets.symmetric(horizontal: 5),
+                                       ),
+
                                     child: TextFormField(
                                       autofocus: false,
                                       controller:
                                       artworkDescriptions[Index],
                                       style: TextStyle(fontSize: 12),
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
+                                        border:OutlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                        ),
                                         focusedBorder:OutlineInputBorder(
-                                          borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                          borderRadius: BorderRadius.circular(25.0),
+                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
                                         ),
                                       ),
                                     )),
@@ -2131,11 +2126,16 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           fontFamily: "Montserrat"))),
                               Container(
                                   alignment: Alignment.centerLeft,
-                                  child: Text(
-                                      ' ${form.control('waterTesting.waterTemperature').value ?? ''}' + " °C",
+                                  child: form.control('waterTesting.waterTemperature').value!=null?
+                                    Text('${form.control('waterTesting.waterTemperature').value }' + " °C",
                                       style: const TextStyle(
                                           color: Colors.black,
-                                          fontWeight: FontWeight.bold)))
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "Montserrat",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
                             ],
                           ),
                         ),
@@ -2152,10 +2152,20 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           fontFamily: "Montserrat"))),
                               Container(
                                   alignment: Alignment.centerLeft,
-                                  child: Text(' ${form.control('waterTesting.pH').value ?? ''}' + " units",
+                                  child: form.control('waterTesting.pH').value!=null?
+                                      Text(' ${form.control('waterTesting.pH').value}' + " ph",
                                       style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold)))
+                                          color: double.parse(form.control('waterTesting.pH').value)>=6.5&&double.parse(form.control('waterTesting.pH').value)<=8.5
+                                              ?Colors.green
+                                              :double.parse(form.control('waterTesting.pH').value)<6.5||double.parse(form.control('waterTesting.pH').value)>8.5
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "Montserrat",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
                             ],
                           ),
                         ),
@@ -2172,11 +2182,21 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           fontFamily: "Montserrat"))),
                               Container(
                                   alignment: Alignment.centerLeft,
-                                  child: Text('${form.control('waterTesting.alkalinity').value ?? ''}' + " mg/L",
+                                  child: form.control('waterTesting.alkalinity').value!=null?
+                                  Text('${form.control('waterTesting.alkalinity').value}' + " mg/L",
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: double.parse(form.control('waterTesting.alkalinity').value)>=20&&double.parse(form.control('waterTesting.alkalinity').value)<=250
+                                              ?Colors.green
+                                              :double.parse(form.control('waterTesting.alkalinity').value)<20||double.parse(form.control('waterTesting.alkalinity').value)>250
+                                              ?Colors.red
+                                              :Colors.black,
                                           fontWeight:
-                                          FontWeight.bold))),
+                                          FontWeight.bold))
+                                      :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "Montserrat",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600))),
                             ],
                           ),
                         ),
@@ -2193,10 +2213,20 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           fontFamily: "Montserrat"))),
                               Container(
                                   alignment: Alignment.centerLeft,
-                                  child: Text('${form.control('waterTesting.nitrate').value ?? ''}' + " mg/L",
-                                      style: const TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold)))
+                                  child: form.control('waterTesting.nitrate').value!=null?
+                                  Text('${form.control('waterTesting.nitrate').value}' + " mg/L",
+                                      style:  TextStyle(
+                                          color: int.parse(form.control('waterTesting.nitrate').value)<=1
+                                              ?Colors.green
+                                              :int.parse(form.control('waterTesting.nitrate').value)>1
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "Montserrat",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
                             ],
                           ),
                         ),
@@ -2213,10 +2243,20 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           fontFamily: "Montserrat"))),
                               Container(
                                   alignment: Alignment.centerLeft,
-                                  child: Text('${form.control('waterTesting.nitrite').value ?? ''}' + " mg/L",
+                                  child:form.control('waterTesting.nitrite').value!=null?
+                                  Text('${form.control('waterTesting.nitrite').value}' + " mg/L",
                                       style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold)))
+                                          color: double.parse(form.control('waterTesting.nitrite').value)<=1
+                                              ?Colors.green
+                                              :double.parse(form.control('waterTesting.nitrite').value)>1
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "Montserrat",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
                             ],
                           ),
                         ),
@@ -2233,10 +2273,16 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           fontFamily: "Montserrat"))),
                               Container(
                                   alignment: Alignment.centerLeft,
-                                  child: Text('${form.control('waterTesting.hardness').value ?? ''}' + " mg/L",
+                                  child: form.control('waterTesting.hardness').value!=null?
+                                  Text('${form.control('waterTesting.hardness').value }' + " mg/L",
                                       style: TextStyle(
                                           color: Colors.black,
-                                          fontWeight: FontWeight.bold)))
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "Montserrat",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
                             ],
                           ),
                         ),
@@ -2253,10 +2299,20 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           fontFamily: "Montserrat"))),
                               Container(
                                   alignment: Alignment.centerLeft,
-                                  child: Text('${form.control('waterTesting.chlorine').value ?? ''}' + " mg/L",
+                                  child: form.control('waterTesting.chlorine').value!=null?
+                                  Text('${form.control('waterTesting.chlorine').value}' + " mg/L",
                                       style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold)))
+                                          color: double.parse(form.control('waterTesting.chlorine').value)>=0.2&&double.parse(form.control('waterTesting.chlorine').value)<=1.0
+                                              ?Colors.green
+                                              :double.parse(form.control('waterTesting.chlorine').value)<0.2||double.parse(form.control('waterTesting.chlorine').value)>1.0
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "Montserrat",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
                             ],
                           ),
                         ),
@@ -2273,10 +2329,20 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           fontFamily: "Montserrat"))),
                               Container(
                                   alignment: Alignment.centerLeft,
-                                  child: Text('${form.control('waterTesting.iron').value ?? ''}' + " mg/L",
+                                  child: form.control('waterTesting.iron').value!=null?
+                                  Text('${form.control('waterTesting.iron').value }' + " mg/L",
                                       style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold)))
+                                          color: double.parse(form.control('waterTesting.iron').value)>=0.2&&double.parse(form.control('waterTesting.iron').value)<=2.0
+                                              ?Colors.green
+                                              :double.parse(form.control('waterTesting.iron').value)<0.2||double.parse(form.control('waterTesting.iron').value)>2.0
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "Montserrat",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
                             ],
                           ),
                         ),
@@ -2293,11 +2359,21 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           fontFamily: "Montserrat"))),
                               Container(
                                   alignment: Alignment.centerLeft,
-                                  child: Text(
+                                  child: form.control('waterTesting.dissolvedOxygen').value!=null?
+                                  Text(
                                       '${form.control('waterTesting.dissolvedOxygen').value ?? ''}' + " mg/L",
                                       style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold)))
+                                          color: double.parse(form.control('waterTesting.dissolvedOxygen').value)>=4.0&&double.parse(form.control('waterTesting.dissolvedOxygen').value)<=20.0
+                                              ?Colors.green
+                                              :double.parse(form.control('waterTesting.dissolvedOxygen').value)<4.0||double.parse(form.control('waterTesting.dissolvedOxygen').value)>20.0
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "Montserrat",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
                             ],
                           ),
                         ),
@@ -2315,11 +2391,21 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           fontFamily: "Montserrat"))),
                               Container(
                                   alignment: Alignment.centerLeft,
-                                  child: Text(
-                                      '${form.control('waterTesting.bacteria').value ?? ''}' + " ",
+                                  child: form.control('waterTesting.bacteria').value!=null?
+                                  Text(
+                                      '${form.control('waterTesting.bacteria').value}' + " ",
                                       style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold)))
+                                          color: form.control('waterTesting.bacteria').value=="Absent"
+                                              ?Colors.green
+                                              :form.control('waterTesting.bacteria').value=="Present"
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "Montserrat",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
                             ],
                           ),
                         ),
@@ -2336,10 +2422,20 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           fontFamily: "Montserrat"))),
                               Container(
                                   alignment: Alignment.centerLeft,
-                                  child: Text('${form.control('waterTesting.turbidity').value ?? ''}' + " NTU",
+                                  child: form.control('waterTesting.turbidity').value!=null?
+                                  Text('${form.control('waterTesting.turbidity').value}' + " NTU",
                                       style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold)))
+                                          color: int.parse(form.control('waterTesting.turbidity').value)<=15000
+                                              ?Colors.green
+                                              :int.parse(form.control('waterTesting.turbidity').value)>15000
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "Montserrat",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
                             ],
                           ),
                         ),
@@ -2356,10 +2452,20 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           fontFamily: "Montserrat"))),
                               Container(
                                   alignment: Alignment.centerLeft,
-                                  child: Text('${form.control('waterTesting.phosphate').value ?? ''}' + " mg/L",
+                                  child: form.control('waterTesting.phosphate').value!=null?
+                                  Text('${form.control('waterTesting.phosphate').value }' + " mg/L",
                                       style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold)))
+                                          color: double.parse(form.control('waterTesting.phosphate').value)<=0.1
+                                              ?Colors.green
+                                              :double.parse(form.control('waterTesting.phosphate').value)>0.1
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "Montserrat",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
                             ],
                           ),
                         ),
@@ -2376,10 +2482,20 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           fontFamily: "Montserrat"))),
                               Container(
                                   alignment: Alignment.centerLeft,
-                                  child: Text('${form.control('waterTesting.ammonia').value ?? ''}' + " mg/L",
+                                  child:form.control('waterTesting.ammonia').value!=null?
+                                  Text('${form.control('waterTesting.ammonia').value }' + " mg/L",
                                       style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold)))
+                                          color: double.parse(form.control('waterTesting.ammonia').value)>=0.2&&double.parse(form.control('waterTesting.ammonia').value)<=1.2
+                                              ?Colors.green
+                                              :double.parse(form.control('waterTesting.ammonia').value)<0.2||double.parse(form.control('waterTesting.ammonia').value)>1.2
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "Montserrat",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
                             ],
                           ),
                         ),
@@ -2396,10 +2512,20 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           fontFamily: "Montserrat"))),
                               Container(
                                   alignment: Alignment.centerLeft,
-                                  child: Text('${form.control('waterTesting.lead').value ?? ''}' + " mg/L",
+                                  child: form.control('waterTesting.lead').value!=null?
+                                  Text('${form.control('waterTesting.lead').value}' + " mg/L",
                                       style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold)))
+                                          color: double.parse(form.control('waterTesting.lead').value)==0
+                                              ?Colors.green
+                                              :double.parse(form.control('waterTesting.lead').value)>0
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "Montserrat",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
                             ],
                           ),
                         ),
@@ -2416,10 +2542,20 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           fontFamily: "Montserrat"))),
                               Container(
                                   alignment: Alignment.centerLeft,
-                                  child: Text('${form.control('waterTesting.totalDissolvedSolids').value ?? ''}' + " ppm",
+                                  child: form.control('waterTesting.totalDissolvedSolids').value!=null?
+                                  Text('${form.control('waterTesting.totalDissolvedSolids').value}' + " ppm",
                                       style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold)))
+                                          color: double.parse(form.control('waterTesting.totalDissolvedSolids').value)<900
+                                              ?Colors.green
+                                              :double.parse(form.control('waterTesting.totalDissolvedSolids').value)>=900
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "Montserrat",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
                             ],
                           ),
                         ),
@@ -2436,10 +2572,20 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           fontFamily: "Montserrat"))),
                               Container(
                                   alignment: Alignment.centerLeft,
-                                  child: Text('${form.control('waterTesting.conductivity').value ?? ''}' + " µs",
+                                  child: form.control('waterTesting.conductivity').value!=null?
+                                  Text('${form.control('waterTesting.conductivity').value }' + " µs",
                                       style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold)))
+                                          color: double.parse(form.control('waterTesting.conductivity').value)<1000&&double.parse(form.control('waterTesting.conductivity').value)>10000
+                                              ?Colors.green
+                                              :double.parse(form.control('waterTesting.conductivity').value)>=1000||double.parse(form.control('waterTesting.conductivity').value)<=10000
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "Montserrat",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
                             ],
                           ),
                         ),
@@ -2516,16 +2662,22 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                                 File(selectedRiverImages[Index]!.path)
                                             )
                                         ),
-                                        TextFormField(
-                                          controller:
-                                          riverDescriptions[Index],
-                                          style:
-                                          TextStyle(fontSize: 12),
-                                          readOnly:true,
-                                          decoration: InputDecoration(
-                                            focusedBorder:OutlineInputBorder(
-                                              borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                              borderRadius: BorderRadius.circular(25.0),
+                                        SizedBox(height:20),
+                                        Container(
+                                          height: 30,
+                                          child: TextFormField(
+                                            controller:
+                                            riverDescriptions[Index],
+                                            style:
+                                            const TextStyle(fontSize: 12),
+                                            readOnly:true,
+                                            decoration: const InputDecoration(
+                                              border:OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                              ),
+                                              focusedBorder:OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -2610,13 +2762,25 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                                 File(selectedSurroundingImages[Index]!.path)
                                             )
                                         ),
-                                        TextFormField(
-                                          controller:
-                                          surroundingDescriptions[
-                                          Index],
-                                          style:
-                                          TextStyle(fontSize: 12),
-                                          readOnly:true,
+                                        SizedBox(height: 20,),
+                                        Container(
+                                          height:30,
+                                          child: TextFormField(
+                                            controller:
+                                            surroundingDescriptions[
+                                            Index],
+                                            style:
+                                            TextStyle(fontSize: 12),
+                                            readOnly:true,
+                                            decoration: const InputDecoration(
+                                              border:OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                              ),
+                                              focusedBorder:OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -2733,17 +2897,23 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                                 File(selectedFloraImages[Index]!.path)
                                             )
                                         ),
-                                        TextFormField(
-                                          controller:
-                                          floraDescriptions[
-                                          Index],
-                                          style:
-                                          TextStyle(fontSize: 12),
-                                          readOnly:true,
-                                          decoration: InputDecoration(
-                                            focusedBorder:OutlineInputBorder(
-                                              borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                              borderRadius: BorderRadius.circular(25.0),
+                                        SizedBox(height: 20,),
+                                        Container(
+                                          height:30,
+                                          child: TextFormField(
+                                            controller:
+                                            floraDescriptions[
+                                            Index],
+                                            style:
+                                            TextStyle(fontSize: 12),
+                                            readOnly:true,
+                                            decoration: const InputDecoration(
+                                              border:OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                              ),
+                                              focusedBorder:OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -2817,17 +2987,23 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                                 File(selectedFaunaImages[Index]!.path)
                                             )
                                         ),
-                                        TextFormField(
-                                          controller:
-                                          faunaDescriptions[
-                                          Index],
-                                          style:
-                                          TextStyle(fontSize: 12),
-                                          readOnly:true,
-                                          decoration: InputDecoration(
-                                            focusedBorder:OutlineInputBorder(
-                                              borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                              borderRadius: BorderRadius.circular(25.0),
+                                        SizedBox(height: 20,),
+                                        Container(
+                                          height:30,
+                                          child: TextFormField(
+                                            controller:
+                                            faunaDescriptions[
+                                            Index],
+                                            style:
+                                            TextStyle(fontSize: 12),
+                                            readOnly:true,
+                                            decoration: const InputDecoration(
+                                              border:OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                              ),
+                                              focusedBorder:OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -2935,15 +3111,21 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                                 File(selectedGroupImages[Index]!.path)
                                             )
                                         ),
-                                        TextFormField(
-                                          controller:
-                                          groupImageDescriptions[Index],
-                                          style: TextStyle(fontSize: 12),
-                                          readOnly:true,
-                                          decoration: InputDecoration(
-                                            focusedBorder:OutlineInputBorder(
-                                              borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                              borderRadius: BorderRadius.circular(25.0),
+                                        SizedBox(height: 20,),
+                                        Container(
+                                          height:30,
+                                          child: TextFormField(
+                                            controller:
+                                            groupImageDescriptions[Index],
+                                            style: TextStyle(fontSize: 12),
+                                            readOnly:true,
+                                            decoration: const InputDecoration(
+                                              border:OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                              ),
+                                              focusedBorder:OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.white, width: 2.0),
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -3010,15 +3192,21 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                                 File(selectedActivityImages[Index]!.path)
                                             )
                                         ),
-                                        TextFormField(
-                                          controller:
-                                          activityImageDescriptions[Index],
-                                          style: TextStyle(fontSize: 12),
-                                          readOnly:true,
-                                          decoration: InputDecoration(
-                                            focusedBorder:OutlineInputBorder(
-                                              borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                              borderRadius: BorderRadius.circular(25.0),
+                                        SizedBox(height: 20,),
+                                        Container(
+                                          height:30,
+                                          child: TextFormField(
+                                            controller:
+                                            activityImageDescriptions[Index],
+                                            style: TextStyle(fontSize: 12),
+                                            readOnly:true,
+                                            decoration: const InputDecoration(
+                                              border:OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                              ),
+                                              focusedBorder:OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -3085,15 +3273,21 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                                 File(selectedArtworkImages[Index]!.path)
                                             )
                                         ),
-                                        TextFormField(
-                                          controller:
-                                          artworkDescriptions[Index],
-                                          style: TextStyle(fontSize: 12),
-                                          readOnly:true,
-                                          decoration: InputDecoration(
-                                            focusedBorder:OutlineInputBorder(
-                                              borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                              borderRadius: BorderRadius.circular(25.0),
+                                        SizedBox(height: 20,),
+                                        Container(
+                                          height:30,
+                                          child: TextFormField(
+                                            controller:
+                                            artworkDescriptions[Index],
+                                            style: const TextStyle(fontSize: 12),
+                                            readOnly:true,
+                                            decoration: const InputDecoration(
+                                              border:OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                              ),
+                                              focusedBorder:OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -3287,6 +3481,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
                   ),
                   onPressed: (){
+
                     if (this._formKey.currentState!.validate()&&steps[_index]!='flora'&&steps[_index]!='waterLevelAndWeather'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType==FormGroup&&form.control(steps[_index]).valid) {
                       setState(() {
                         _index++;

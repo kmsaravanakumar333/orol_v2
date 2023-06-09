@@ -15,6 +15,43 @@
       },
       "oauth_client": [
         {
+          "client_id": "1085141870142-pqqj2fqgv8hd66qr529dc6mr529qr5ma.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.flutter_orol_v2",
+            "certificate_hash": "8fe6565bef9700a00c8a59366808f592c9a3b453"
+          }
+        },
+        {
+          "client_id": "1085141870142-vdpk5fctvam0jkjakpkrao8peb20o5f9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQpCK-TfjGpcCChspnhpQOh2lq6EYSLw8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1085141870142-vdpk5fctvam0jkjakpkrao8peb20o5f9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085141870142:android:79e5e3611584904f80136f",
+        "android_client_info": {
+          "package_name": "com.our_river_our_life.app"
+        }
+      },
+      "oauth_client": [
+        {
           "client_id": "1085141870142-vdpk5fctvam0jkjakpkrao8peb20o5f9.apps.googleusercontent.com",
           "client_type": 3
         }

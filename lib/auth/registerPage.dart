@@ -57,7 +57,6 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
   _navigateToVerifyOtpScreen(BuildContext context){
-    print("NAVGATE TO OTP");
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -124,6 +123,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future checkEmailVerified(user) async{
     await FirebaseAuth.instance.currentUser!.reload();
+    timer?.cancel();
     if(FirebaseAuth.instance.currentUser!.emailVerified==true){
       timer?.cancel();
       _user.registerUser(user, context,'emailOTP');
@@ -330,7 +330,6 @@ class _RegisterPageState extends State<RegisterPage> {
                             padding: MaterialStateProperty.all<EdgeInsetsGeometry>(const EdgeInsets.only(top: 10.0,bottom: 10.0,left: 20.0,right: 20.0)),
                           ),
                           onPressed: () {
-                            print("Form value");
                             if (form.valid) {
                               AppSharedPreference().saveUserInfo(Users.fromJson(form.value));
                                 if(form.value['emailOTP']==false){

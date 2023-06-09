@@ -29,7 +29,6 @@ class _OtpPageState extends State<OtpPage> {
 
   Future<void>  _getUserDetails() async {
     _user = (await AppSharedPreference().getUserInfo())as Users;
-    print(_user.firstName);
   }
   void _verifyMobileOTP(BuildContext context,otp){
     FirebaseAuth.instance
@@ -100,10 +99,7 @@ class _OtpPageState extends State<OtpPage> {
                           padding: MaterialStateProperty.all<EdgeInsetsGeometry>(const EdgeInsets.only(top: 10.0,bottom: 10.0,left: 20.0,right: 20.0)),
                         ),
                         onPressed: () {
-                          print("form value");
                           if (form.valid) {
-                            print("form value");
-                            print(form.value['verifyOtp']);
                             _verifyMobileOTP(context,form.value);
                           } else {
                             form.markAllAsTouched();

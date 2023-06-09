@@ -134,7 +134,6 @@ class WaterTestDetails {
 
     // Add the river image files to the request
     for (int i = 0; i < riverPictures.length; i++) {
-      print('riverPictures ${riverPictures[i].path}');
       var multipartFile = await http.MultipartFile.fromPath('riverFiles', riverPictures[i].path);
       request.files.add(multipartFile);
     }
@@ -202,15 +201,10 @@ class WaterTestDetails {
     request.fields['groupPictures'] = jsonEncode(waterTestObj['groupPictures']);
     request.fields['activityPictures'] = jsonEncode(waterTestObj['activityPictures']);
     // Add generalInformation fields
-      print('BEFORE');
-      print(request.fields);
     request.headers.addAll(headers);
     // var response;
     http.StreamedResponse response = await request.send();
     var responseBody = await response.stream.bytesToString();
-    print('After');
-    print(response.statusCode);
-    print(responseBody);
     if (response.statusCode == 201) {
       await showDialog(
           context: context,
@@ -265,7 +259,6 @@ class WaterTestDetails {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var user = await AppSharedPreference().getUserInfo() as Users;
     var accessToken = prefs.getString('access_token') ;
-    print(surr);
     String valuesString = surr.join(',');
     var request = http.MultipartRequest('PUT', Uri.parse(URL.apiURL+'/water-test-details/'+id));
     for (var i=0;i<riverFiles.length;i++) {
@@ -333,7 +326,6 @@ class WaterTestDetails {
       final directory = await getTemporaryDirectory();
       final tempFile = File('${directory.path}/artwork_image_${i}.jpg');
       await tempFile.writeAsBytes(bytes);
-      print(tempFile.path);
       request.files.add(await http.MultipartFile.fromPath(
         'artworkFiles',
         tempFile.path,

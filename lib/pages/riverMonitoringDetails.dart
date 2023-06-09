@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_orol_v2/pages/riverMonitoringForm.dart';
+import 'package:flutter_orol_v2/utils/resources.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -47,7 +48,6 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
   }
 
   _navigateToRiverMonitoringScreen(BuildContext context) {
-    print("EDIT RIVER MONITORING");
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -116,7 +116,7 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Details",
+          "Water Test Details",
           style: TextStyle(
               fontFamily: 'Montserrat', fontWeight: FontWeight.bold),
         ),
@@ -182,9 +182,11 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                         Text(
                                           "General Information",
                                           style: TextStyle(
+                                            fontWeight: FontWeight.w600,
                                               color: Color(
                                                 0xFF1C3764,
                                               )),
+
                                         ),
                                       ],
                                     )),
@@ -412,6 +414,7 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                         Text(
                                           "Water Level & Weather",
                                           style: TextStyle(
+                                              fontWeight: FontWeight.w600,
                                               color: Color(
                                                 0xFF1C3764,
                                               )),
@@ -550,6 +553,7 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                         Text(
                                           "Water Quality Testing",
                                           style: TextStyle(
+                                              fontWeight: FontWeight.w600,
                                               color: Color(
                                                 0xFF1C3764,
                                               )),
@@ -584,12 +588,18 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     100) /
                                                     2,
                                                 alignment: Alignment.centerLeft,
-                                                child: Text(
+                                                child: snapshot.data.waterTesting['waterTemperature']!=null?Text(
                                                     "${snapshot.data.waterTesting['waterTemperature']}" + " °C",
                                                     style: const TextStyle(
                                                         color: Colors.black,
                                                         fontFamily: "Montserrat",
-                                                        fontWeight: FontWeight.w600)))
+                                                        fontWeight: FontWeight.w600))
+                                                    :const Text("--",style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontFamily: "Montserrat",
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600))
+                                            )
                                           ],
                                         ),
                                       ),
@@ -616,11 +626,20 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     100) /
                                                     2,
                                                 alignment: Alignment.centerLeft,
-                                                child: Text("${snapshot.data.waterTesting['pH']}" + " units",
-                                                    style: TextStyle(
-                                                        color: Colors.black,
+                                                child:snapshot.data.waterTesting['pH']!=null?
+                                                Text("${snapshot.data.waterTesting['pH']}" + " ph",
+                                                    style:  TextStyle(
+                                                        color: snapshot.data.waterTesting['waterTemperature']>=6.5&&snapshot.data.waterTesting['waterTemperature']<=8.5
+                                                            ?Colors.green
+                                                            :snapshot.data.waterTesting['waterTemperature']<6.5||snapshot.data.waterTesting['waterTemperature']>8.5?Colors.red
+                                                            :Colors.black,
                                                         fontFamily: "Montserrat",
-                                                        fontWeight: FontWeight.w600)))
+                                                        fontWeight: FontWeight.w600))
+                                                    :const Text("--",style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontFamily: "Montserrat",
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600)))
                                           ],
                                         ),
                                       ),
@@ -647,12 +666,21 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     100) /
                                                     2,
                                                 alignment: Alignment.centerLeft,
-                                                child: Text("${snapshot.data.waterTesting['alkalinity']}" + " mg/L",
+                                                child: snapshot.data.waterTesting['alkalinity']!=null?
+                                                Text("${snapshot.data.waterTesting['alkalinity']}" + " mg/L",
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: snapshot.data.waterTesting['alkalinity']>=20&&snapshot.data.waterTesting['alkalinity']<=250
+                                                            ?Colors.green
+                                                            :snapshot.data.waterTesting['alkalinity']<20||snapshot.data.waterTesting['alkalinity']>250?Colors.red
+                                                            :Colors.black,
                                                         fontFamily: "Montserrat",
                                                         fontWeight:
-                                                        FontWeight.w600))),
+                                                        FontWeight.w600))
+                                            :const Text("--",style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontFamily: "Montserrat",
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600))),
                                           ],
                                         ),
                                       ),
@@ -679,11 +707,21 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     100) /
                                                     2,
                                                 alignment: Alignment.centerLeft,
-                                                child: Text("${snapshot.data.waterTesting['nitrate']}" + " mg/L",
+                                                child: snapshot.data.waterTesting['nitrate']!=null?
+                                                Text("${snapshot.data.waterTesting['nitrate']}" + " mg/L",
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: snapshot.data.waterTesting['nitrate']<=1
+                                                            ?Colors.green
+                                                            :snapshot.data.waterTesting['nitrate']>1
+                                                            ?Colors.red
+                                                            :Colors.black,
                                                         fontFamily: "Montserrat",
-                                                        fontWeight: FontWeight.w600)))
+                                                        fontWeight: FontWeight.w600))
+                                            :const Text("--",style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontFamily: "Montserrat",
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600)))
                                           ],
                                         ),
                                       ),
@@ -710,11 +748,21 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     100) /
                                                     2,
                                                 alignment: Alignment.centerLeft,
-                                                child: Text("${snapshot.data.waterTesting['nitrite']}" + " mg/L",
+                                                child: snapshot.data.waterTesting['nitrite']!=null?
+                                                Text("${snapshot.data.waterTesting['nitrite']}" + " mg/L",
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: snapshot.data.waterTesting['nitrite']<=1
+                                                            ?Colors.green
+                                                            :snapshot.data.waterTesting['nitrite']>1
+                                                            ?Colors.red
+                                                            :Colors.black,
                                                         fontFamily: "Montserrat",
-                                                        fontWeight: FontWeight.w600)))
+                                                        fontWeight: FontWeight.w600))
+                                                   :const Text("--",style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontFamily: "Montserrat",
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600)))
                                           ],
                                         ),
                                       ),
@@ -741,11 +789,17 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     100) /
                                                     2,
                                                 alignment: Alignment.centerLeft,
-                                                child: Text("${snapshot.data.waterTesting['hardness']}" + " mg/L",
+                                                child: snapshot.data.waterTesting['hardness']!=null?
+                                                Text("${snapshot.data.waterTesting['hardness']}" + " mg/L",
                                                     style: TextStyle(
                                                         color: Colors.black,
                                                         fontFamily: "Montserrat",
-                                                        fontWeight: FontWeight.w600)))
+                                                        fontWeight: FontWeight.w600))
+                                            :const Text("--",style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontFamily: "Montserrat",
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600)))
                                           ],
                                         ),
                                       ),
@@ -772,10 +826,21 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     100) /
                                                     2,
                                                 alignment: Alignment.centerLeft,
-                                                child: Text("${snapshot.data.waterTesting['chlorine']}"+ " mg/L",
+                                                child:snapshot.data.waterTesting['chlorine']!=null?
+                                                Text("${snapshot.data.waterTesting['chlorine']}"+ " mg/L",
                                                     style: TextStyle(
-                                                        color: Colors.black,fontFamily: "Montserrat",
-                                                        fontWeight: FontWeight.w600)))
+                                                        color: snapshot.data.waterTesting['chlorine']<=1.0
+                                                            ?Colors.green
+                                                            :snapshot.data.waterTesting['chlorine']>1.0
+                                                            ?Colors.red
+                                                            :Colors.black,
+                                                        fontFamily: "Montserrat",
+                                                        fontWeight: FontWeight.w600))
+                                            :const Text("--",style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontFamily: "Montserrat",
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600)))
                                           ],
                                         ),
                                       ),
@@ -802,11 +867,21 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     100) /
                                                     2,
                                                 alignment: Alignment.centerLeft,
-                                                child: Text("${snapshot.data.waterTesting['iron']}"+ " mg/L",
+                                                child: snapshot.data.waterTesting['iron']!=null?
+                                                Text("${snapshot.data.waterTesting['iron']}"+ " mg/L",
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: snapshot.data.waterTesting['iron']>=4.0&&snapshot.data.waterTesting['iron']<=20.0
+                                                            ?Colors.green
+                                                            :snapshot.data.waterTesting['iron']<4.0||snapshot.data.waterTesting['iron']>20.0
+                                                            ?Colors.red
+                                                            :Colors.black,
                                                         fontFamily: "Montserrat",
-                                                        fontWeight: FontWeight.w600)))
+                                                        fontWeight: FontWeight.w600))
+                                            :const Text("--",style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontFamily: "Montserrat",
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600)))
                                           ],
                                         ),
                                       ),
@@ -833,12 +908,22 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     100) /
                                                     2,
                                                 alignment: Alignment.centerLeft,
-                                                child: Text(
-                                                    "${snapshot.data.waterTesting['dissolvedOxygen']}" + " mg/L",
+                                                child: snapshot.data.waterTesting['dissolvedOxygen']!=null?
+                                                Text("${snapshot.data.waterTesting['dissolvedOxygen']}" + " mg/L",
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: snapshot.data.waterTesting['dissolvedOxygen']>=4.0&&snapshot.data.waterTesting['dissolvedOxygen']<=20.0
+                                                            ?Colors.green
+                                                            :snapshot.data.waterTesting['dissolvedOxygen']<4.0||snapshot.data.waterTesting['dissolvedOxygen']>20.0
+                                                            ?Colors.red
+                                                            :Colors.black,
                                                         fontFamily: "Montserrat",
-                                                        fontWeight: FontWeight.w600)))
+                                                        fontWeight: FontWeight.w600))
+                                                    :const Text("--",style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontFamily: "Montserrat",
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600))
+                                            )
                                           ],
                                         ),
                                       ),
@@ -866,11 +951,20 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     100) /
                                                     2,
                                                 alignment: Alignment.centerLeft,
-                                                child: Text(
-                                                    "${snapshot.data.waterTesting['bacteria']}" + " ",
+                                                child: snapshot.data.waterTesting['bacteria']!=""?
+                                                Text("${snapshot.data.waterTesting['bacteria']}",
                                                     style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontWeight: FontWeight.bold)))
+                                                        color: snapshot.data.waterTesting['bacteria']=="Absent"
+                                                            ?Colors.green
+                                                            :snapshot.data.waterTesting['bacteria']=="Present"
+                                                            ?Colors.red
+                                                            :Colors.black,
+                                                        fontWeight: FontWeight.bold))
+                                            :const Text("--",style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontFamily: "Montserrat",
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600)))
                                           ],
                                         ),
                                       ),
@@ -897,11 +991,21 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     100) /
                                                     2,
                                                 alignment: Alignment.centerLeft,
-                                                child: Text("${snapshot.data.waterTesting['turbidity']}" + " NTU",
+                                                child: snapshot.data.waterTesting['turbidity']!=null?
+                                                Text("${snapshot.data.waterTesting['turbidity']}" + " NTU",
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: snapshot.data.waterTesting['turbidity']<=15000
+                                                            ?Colors.green
+                                                            :snapshot.data.waterTesting['turbidity']>15000
+                                                            ?Colors.red
+                                                            :Colors.black,
                                                         fontFamily: "Montserrat",
-                                                        fontWeight: FontWeight.w600)))
+                                                        fontWeight: FontWeight.w600))
+                                            :const Text("--",style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontFamily: "Montserrat",
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600)))
                                           ],
                                         ),
                                       ),
@@ -928,11 +1032,21 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     100) /
                                                     2,
                                                 alignment: Alignment.centerLeft,
-                                                child: Text("${snapshot.data.waterTesting['phosphate']}" + " mg/L",
+                                                child: snapshot.data.waterTesting['phosphate']!=null?
+                                                Text("${snapshot.data.waterTesting['phosphate']}" + " mg/L",
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: snapshot.data.waterTesting['phosphate']<=1.0
+                                                            ?Colors.green
+                                                            :snapshot.data.waterTesting['phosphate']>1.0
+                                                            ?Colors.red
+                                                            :Colors.black,
                                                         fontFamily: "Montserrat",
-                                                        fontWeight: FontWeight.w600)))
+                                                        fontWeight: FontWeight.w600))
+                                            :const Text("--",style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontFamily: "Montserrat",
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600)))
                                           ],
                                         ),
                                       ),
@@ -959,11 +1073,21 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     100) /
                                                     2,
                                                 alignment: Alignment.centerLeft,
-                                                child: Text("${snapshot.data.waterTesting['ammonia']}" + " mg/L",
+                                                child: snapshot.data.waterTesting['ammonia']!=null?
+                                                Text("${snapshot.data.waterTesting['ammonia']}" + " mg/L",
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: snapshot.data.waterTesting['ammonia']>=0.2&&snapshot.data.waterTesting['ammonia']<=1.2
+                                                            ?Colors.green
+                                                            :snapshot.data.waterTesting['ammonia']<0.2||snapshot.data.waterTesting['ammonia']>1.2
+                                                            ?Colors.red
+                                                            :Colors.black,
                                                         fontFamily: "Montserrat",
-                                                        fontWeight: FontWeight.w600)))
+                                                        fontWeight: FontWeight.w600))
+                                            :const Text("--",style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontFamily: "Montserrat",
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600)))
                                           ],
                                         ),
                                       ),
@@ -990,11 +1114,21 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     100) /
                                                     2,
                                                 alignment: Alignment.centerLeft,
-                                                child: Text("${snapshot.data.waterTesting['lead']}" + " mg/L",
+                                                child: snapshot.data.waterTesting['lead']!=null?
+                                                Text("${snapshot.data.waterTesting['lead']}" + " mg/L",
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: snapshot.data.waterTesting['lead']==0
+                                                            ?Colors.green
+                                                            :snapshot.data.waterTesting['lead']>0
+                                                            ?Colors.red
+                                                            :Colors.black,
                                                         fontFamily: "Montserrat",
-                                                        fontWeight: FontWeight.w600)))
+                                                        fontWeight: FontWeight.w600))
+                                            :const Text("--",style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontFamily: "Montserrat",
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600)))
                                           ],
                                         ),
                                       ),
@@ -1021,11 +1155,21 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     100) /
                                                     2,
                                                 alignment: Alignment.centerLeft,
-                                                child: Text("${snapshot.data.waterTesting['totalDissolvedSolids']}" + " ppm",
-                                                    style: TextStyle(
-                                                        color: Colors.black,
+                                                child: snapshot.data.waterTesting['totalDissolvedSolids']!=null?Text("${snapshot.data.waterTesting['totalDissolvedSolids']}" + " ppm",
+                                                    style:  TextStyle(
+                                                        color: snapshot.data.waterTesting['totalDissolvedSolids']<900
+                                                            ?Colors.green
+                                                            :snapshot.data.waterTesting['totalDissolvedSolids']>=900
+                                                            ?Colors.red
+                                                            :Colors.black,
                                                         fontFamily: "Montserrat",
-                                                        fontWeight: FontWeight.w600)))
+                                                        fontWeight: FontWeight.w600))
+                                                    :const Text("--",style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontFamily: "Montserrat",
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600))
+                                            )
                                           ],
                                         ),
                                       ),
@@ -1052,11 +1196,21 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     100) /
                                                     2,
                                                 alignment: Alignment.centerLeft,
-                                                child: Text("${snapshot.data.waterTesting['conductivity']}" + " µs",
+                                                child: snapshot.data.waterTesting['conductivity']!=null?Text("${snapshot.data.waterTesting['conductivity']}" + " µs",
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: snapshot.data.waterTesting['conductivity']<1000&&snapshot.data.waterTesting['conductivity']>10000
+                                                            ?Colors.green
+                                                            :snapshot.data.waterTesting['conductivity']>=1000||snapshot.data.waterTesting['conductivity']<=10000
+                                                            ?Colors.red
+                                                            :Colors.black,
                                                         fontFamily: "Montserrat",
-                                                        fontWeight: FontWeight.w600)))
+                                                        fontWeight: FontWeight.w600))
+                                                    :const Text("--",style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontFamily: "Montserrat",
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600))
+                                            )
                                           ],
                                         ),
                                       ),
@@ -1093,6 +1247,7 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                         Text(
                                           "Rivers",
                                           style: TextStyle(
+                                              fontWeight: FontWeight.w600,
                                               color: Color(
                                                 0xFF1C3764,
                                               )),
@@ -1161,6 +1316,7 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                         Text(
                                           "Surroundings",
                                           style: TextStyle(
+                                              fontWeight: FontWeight.w600,
                                               color: Color(
                                                 0xFF1C3764,
                                               )),
@@ -1238,6 +1394,7 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                         Text(
                                           "Flora & Fauna",
                                           style: TextStyle(
+                                              fontWeight: FontWeight.w600,
                                               color: Color(
                                                 0xFF1C3764,
                                               )),
@@ -1405,6 +1562,7 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                         Text(
                                           "Pictures",
                                           style: TextStyle(
+                                              fontWeight: FontWeight.w600,
                                               color: Color(
                                                 0xFF1C3764,
                                               )),
@@ -1616,8 +1774,9 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                       MainAxisAlignment.spaceBetween,
                                       children: const <Widget>[
                                         Text(
-                                          "certificate",
+                                          "Certificate",
                                           style: TextStyle(
+                                              fontWeight: FontWeight.w600,
                                               color: Color(
                                                 0xFF1C3764,
                                               )),
@@ -1635,7 +1794,7 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                         Container(
                                             width: (MediaQuery.of(context).size.width - 100) ,
                                             alignment: Alignment.centerLeft,
-                                            child: snapshot.data.certificateURL!='undefined'?
+                                            child: snapshot.data.certificateURL!='undefined'&&snapshot.data.certificateURL!=null?
                                             InkWell(
                                                 child: Center(child: Text(snapshot.data.certificateURL!='undefined'?'${snapshot.data.certificateURL}':'No certificate found',style: const TextStyle(color: Colors.indigo),)),
                                                 onTap: (){
@@ -1646,10 +1805,15 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                             ):
                                             Center(
                                               child: TextButton(
+                                                  style: TextButton.styleFrom(
+                                                    backgroundColor:Resources.colors.appTheme.darkBlue, // Set the background color
+                                                  ),
                                                   onPressed: (){
                                                     _waterTestDetail.generateCertificate(snapshot.data.id,context);
                                                   },
-                                                  child: Text('Generate certificate')
+                                                  child: Text('Generate certificate', style: TextStyle(
+                                                    color: Colors.white, // Set the font color
+                                                  ),)
                                               ),
                                             )
                                         )
