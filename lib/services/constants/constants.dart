@@ -1,6 +1,6 @@
 class URL {
   // static const apiURL = "http://10.0.2.2:3000"; // for local run it in emulator
-  static const apiURL = "https://orol.onrender.com";         //http://15.207.0.95:3000
+  static const apiURL = "http://orol-nodejs-rest-api-env.eba-parzzmti.ap-south-1.elasticbeanstalk.com";         //http://15.207.0.95:3000
   static const verificationKey = "AIzaSyALR2ZDTTyZXGBRFeCV0AHd0S-TV_GWYm8";
 }
 class WATERANDWEATHER{
