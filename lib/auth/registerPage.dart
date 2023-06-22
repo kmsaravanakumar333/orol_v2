@@ -123,7 +123,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future checkEmailVerified(user) async{
     await FirebaseAuth.instance.currentUser!.reload();
-    timer?.cancel();
     if(FirebaseAuth.instance.currentUser!.emailVerified==true){
       timer?.cancel();
       _user.registerUser(user, context,'emailOTP');

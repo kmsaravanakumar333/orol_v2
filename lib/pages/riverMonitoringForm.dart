@@ -1187,7 +1187,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
               SizedBox(height: 16.0),
               RichText(
                 text:  TextSpan(
-                  text: "Bacteria",
+                  text: "E Coli/Coliform Bacteria",
                   style: TextStyle(
                       fontSize: 14.0,
                       fontFamily: 'Montserrat',
