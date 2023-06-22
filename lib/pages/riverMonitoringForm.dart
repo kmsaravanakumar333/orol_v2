@@ -1187,7 +1187,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
               SizedBox(height: 16.0),
               RichText(
                 text:  TextSpan(
-                  text: "E Coli/Coliform Bacteria",
+                  text: "E-Coli/Coliform Bacteria",
                   style: TextStyle(
                       fontSize: 14.0,
                       fontFamily: 'Montserrat',
@@ -1262,202 +1262,301 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Flora & Fauna",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16,fontWeight: FontWeight.w600),),
           const SizedBox(height: 10,),
           _error==true?const Text("Please fill all details",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
-          RichText(
-            text:  TextSpan(
-              text: "Flora",
-              style: TextStyle(
-                  fontSize: 14.0,
-                  fontFamily: 'Montserrat',
-                  color: Resources.colors.appTheme.darkBlue
+          Row(
+            children: [
+              SvgPicture.asset(
+                "assets/images/Flora-1.svg",
+                width: 20,
+                height: 20,
               ),
-            ),
+              SizedBox(width: 8),
+              RichText(
+                text: TextSpan(
+                  text: "Flora",
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    color: Resources.colors.appTheme.darkBlue,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600
+                  ),
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 16.0),
-          ElevatedButton(
-            onPressed: () async {
-              var camOrGallery = await showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return PictureOptions();
-                  });
+          Column(
+            children: [
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Record the vegetation you can see around you. This could include grasses, shrubs, plants and trees', // Add your desired text here
+                  style: TextStyle(
+                    color: Colors.grey, // Set the color to gray
+                  ),
+                ),
+              ),
+              SizedBox(height: 8.0), // Add some spacing between the text and the button
+              Container(
+                width: double.infinity, // Set the button width to full width
+                child: ElevatedButton(
+                  onPressed: () async {
+                    var camOrGallery = await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return PictureOptions();
+                      },
+                    );
 
-              if (camOrGallery.toString() == "Gallery") {
-                var img = pickImages('flora','Gallery');
-              } else if (camOrGallery.toString() == "Camera") {
-                var img = pickImages('flora','Camera');
-              }
-            },
-            child: Text('Upload Images'),
+                    if (camOrGallery.toString() == "Gallery") {
+                      var img = pickImages('flora', 'Gallery');
+                    } else if (camOrGallery.toString() == "Camera") {
+                      var img = pickImages('flora', 'Camera');
+                    }
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                        side: BorderSide(
+                          color: Resources.colors.appTheme.darkBlue,
+                        ),
+                      ),
+                    ),
+                  ),
+                  child: const Text(
+                    'Upload Flora Pictures',
+                    style: TextStyle(
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 16.0),
           if (selectedFloraImages.isNotEmpty)
             Container(
-                margin:
-                EdgeInsets.symmetric(vertical: 20),
-                child: Container(
-                    height: 225,
-                    child: ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: selectedFloraImages.length,
-                        itemBuilder: (BuildContext ctxt, int Index) {
-                          return Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Stack(
-                                  alignment:Alignment.topRight,
-                                  children: [
-                                    Container(
-                                        height: (MediaQuery.of(context).size.width - 30) / 2,
-                                        width: (MediaQuery.of(context).size.width - 30) / 2,
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Image.file(
-                                            fit: BoxFit.fill,
-                                            File(selectedFloraImages[Index]!.path)
-                                        )
-                                    ),
-                                    Align(
-                                        alignment: Alignment.topRight,
-                                        child: IconButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                selectedFloraImages.removeAt(Index);
-                                                floraDescriptions.removeAt(Index);
-                                                _steps = _generateSteps();
-                                              });
-                                            },
-                                            icon: const Icon(
-                                              Icons.delete,
-                                              color: Colors.red,
-                                            ))),
-                                  ],
+              margin: EdgeInsets.symmetric(vertical: 20),
+              child: Container(
+                height: 225,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: selectedFloraImages.length,
+                  itemBuilder: (BuildContext ctxt, int Index) {
+                    return Container(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Stack(
+                            alignment: Alignment.topRight,
+                            children: [
+                              Container(
+                                height: (MediaQuery.of(context).size.width - 30) / 2,
+                                width: (MediaQuery.of(context).size.width - 30) / 2,
+                                padding: EdgeInsets.all(8.0),
+                                child: Image.file(
+                                  fit: BoxFit.fill,
+                                  File(selectedFloraImages[Index]!.path),
                                 ),
-                                Container(
-                                    width: 170,
-                                    height: 20,
-                                    decoration: const BoxDecoration(
-                                        color: Colors.white,),
-                                    child: TextFormField(
-                                      autofocus: false,
-                                      controller:
-                                      floraDescriptions[Index],
-                                      style: TextStyle(fontSize: 12),
-                                      decoration: const InputDecoration(
-                                        border:OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                        ),
-                                        focusedBorder:OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                        ),
-                                      ),
-                                    )),
-                              ],
+                              ),
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedFloraImages.removeAt(Index);
+                                      floraDescriptions.removeAt(Index);
+                                      _steps = _generateSteps();
+                                    });
+                                  },
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            width: 170,
+                            height: 20,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
                             ),
-                          );
-                        })
-                )
-            ),
-          RichText(
-            text:  TextSpan(
-              text: "Fauna",
-              style: TextStyle(
-                  fontSize: 14.0,
-                  fontFamily: 'Montserrat',
-                  color: Resources.colors.appTheme.darkBlue
+                            child: TextFormField(
+                              autofocus: false,
+                              controller: floraDescriptions[Index],
+                              style: TextStyle(fontSize: 12),
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
+
+          Row(
+            children: [
+              SvgPicture.asset(
+                "assets/images/Fauna-1.svg",
+                width: 20,
+                height: 20,
+              ),
+              SizedBox(width: 8), // Add some spacing between the image and the text
+              RichText(
+                text: TextSpan(
+                  text: "Fauna",
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    color: Resources.colors.appTheme.darkBlue,
+                    fontSize: 16,
+                      fontWeight: FontWeight.w600
+                  ),
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 16.0),
-          ElevatedButton(
-            onPressed: () async {
-              var camOrGallery = await showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return PictureOptions();
-                  });
+          Column(
+            children: [
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Record fish, amphibians, reptiles, birds, insects and mammals that you see around you', // Add your desired text here
+                  style: TextStyle(
+                    color: Colors.grey, // Set the color to gray
+                  ),
+                ),
+              ),
+              SizedBox(height: 8.0), // Add some spacing between the text and the button
+              Container(
+                width: double.infinity, // Set the button width to full width
+                child: ElevatedButton(
+                  onPressed: () async {
+                    var camOrGallery = await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return PictureOptions();
+                      },
+                    );
 
-              if (camOrGallery.toString() == "Gallery") {
-                var img = pickImages('fauna','Gallery');
-              } else if (camOrGallery.toString() == "Camera") {
-                var img = pickImages('fauna','Camera');
-              }
-            },
-            child: Text('Upload Images'),
+                    if (camOrGallery.toString() == "Gallery") {
+                      var img = pickImages('fauna', 'Gallery');
+                    } else if (camOrGallery.toString() == "Camera") {
+                      var img = pickImages('fauna', 'Camera');
+                    }
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                        side: BorderSide(
+                          color: Resources.colors.appTheme.darkBlue,
+                        ),
+                      ),
+                    ),
+                  ),
+                  child: const Text(
+                    'Upload Fauna Pictures',
+                    style: TextStyle(
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 16.0),
           if (selectedFaunaImages.isNotEmpty)
             Container(
-                margin:
-                EdgeInsets.symmetric(vertical: 20),
-                child: Container(
-                    height: 225,
-                    child: ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: selectedFaunaImages.length,
-                        itemBuilder: (BuildContext ctxt, int Index) {
-                          return Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Stack(
-                                  alignment: Alignment.topRight,
-                                  children: [
-                                    Container(
-                                        height: (MediaQuery.of(context).size.width - 30) / 2,
-                                        width: (MediaQuery.of(context).size.width - 30) / 2,
-                                        padding:EdgeInsets.all(8.0),
-                                        child: Image.file(
-                                            fit: BoxFit.fill,
-                                            File(selectedFaunaImages[Index]!.path)
-                                        )
-                                    ),
-                                    Align(
-                                        alignment: Alignment.topRight,
-                                        child: IconButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                selectedFaunaImages.removeAt(Index);
-                                                faunaDescriptions.removeAt(Index);
-                                                _steps = _generateSteps();
-                                              });
-                                            },
-                                            icon: const Icon(
-                                              Icons.delete,
-                                              color: Colors.red,
-                                            ))),
-                                  ],
+              margin: EdgeInsets.symmetric(vertical: 20),
+              child: Container(
+                height: 225,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: selectedFaunaImages.length,
+                  itemBuilder: (BuildContext ctxt, int Index) {
+                    return Container(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Stack(
+                            alignment: Alignment.topRight,
+                            children: [
+                              Container(
+                                height: (MediaQuery.of(context).size.width - 30) / 2,
+                                width: (MediaQuery.of(context).size.width - 30) / 2,
+                                padding: EdgeInsets.all(8.0),
+                                child: Image.file(
+                                  fit: BoxFit.fill,
+                                  File(selectedFaunaImages[Index]!.path),
                                 ),
-                                Container(
-                                    width: 170,
-                                    height: 20,
-                                    decoration: const BoxDecoration(
-                                        color: Colors.white,
-                                        ),
-                                    child: TextFormField(
-                                      autofocus: false,
-                                      controller:
-                                      faunaDescriptions[Index],
-                                      style: TextStyle(fontSize: 12),
-                                      decoration: const InputDecoration(
-                                        border:OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                        ),
-                                        focusedBorder:OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                        ),
-                                      ),
-                                    )),
-                              ],
+                              ),
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedFaunaImages.removeAt(Index);
+                                      faunaDescriptions.removeAt(Index);
+                                      _steps = _generateSteps();
+                                    });
+                                  },
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            width: 170,
+                            height: 20,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
                             ),
-                          );
-                        })
-                )
+                            child: TextFormField(
+                              autofocus: false,
+                              controller: faunaDescriptions[Index],
+                              style: TextStyle(fontSize: 12),
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
+
+
+
+
         ],
       ),
     );
@@ -1470,299 +1569,369 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Water Level & Weather",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16,fontWeight: FontWeight.w600),),
+          Text("Pictures (Optional)",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16,fontWeight: FontWeight.w600),),
           const SizedBox(height: 10,),
           _error==true?const Text("Please fill all details",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
           RichText(
-            text:  TextSpan(
+            text: TextSpan(
               text: "Group pictures",
               style: TextStyle(
-                  fontSize: 14.0,
-                  fontFamily: 'Montserrat',
-                  color: Resources.colors.appTheme.darkBlue
+                fontSize: 14.0,
+                fontFamily: 'Montserrat',
+                color: Resources.colors.appTheme.darkBlue,
               ),
             ),
           ),
           SizedBox(height: 16.0),
-          ElevatedButton(
-            onPressed: () async {
-              var camOrGallery = await showDialog(
+          Container(
+            width: double.infinity, // Set the button width to full width
+            child: ElevatedButton(
+              onPressed: () async {
+                var camOrGallery = await showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     return PictureOptions();
-                  });
+                  },
+                );
 
-              if (camOrGallery.toString() == "Gallery") {
-                var img = pickImages('group','Gallery');
-              } else if (camOrGallery.toString() == "Camera") {
-                var img = pickImages('group','Camera');
-              }
-            },
-            child: Text('Upload Images'),
+                if (camOrGallery.toString() == "Gallery") {
+                  var img = pickImages('group', 'Gallery');
+                } else if (camOrGallery.toString() == "Camera") {
+                  var img = pickImages('group', 'Camera');
+                }
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    side: BorderSide(
+                      color: Resources.colors.appTheme.darkBlue,
+                    ),
+                  ),
+                ),
+              ),
+              child: const Text(
+                'Upload a Group Pictures',
+                style: TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
+            ),
           ),
           SizedBox(height: 16.0),
           if (selectedGroupImages.isNotEmpty)
             Container(
-                margin:
-                EdgeInsets.symmetric(vertical: 20),
-                child: Container(
-                    height: 225,
-                    child: ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: selectedGroupImages.length,
-                        itemBuilder: (BuildContext ctxt, int Index) {
-                          return Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Stack(
-                                  alignment:Alignment.topRight,
-                                  children: [
-                                    Container(
-                                        height: (MediaQuery.of(context).size.width - 30) / 2,
-                                        width: (MediaQuery.of(context).size.width - 30) / 2,
-                                        padding:EdgeInsets.all(8.0),
-                                        child: Image.file(
-                                            fit: BoxFit.fill,
-                                            File(selectedGroupImages[Index]!.path)
-                                        )
-                                    ),
-                                    Align(
-                                        alignment: Alignment.topRight,
-                                        child: IconButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                selectedGroupImages.removeAt(Index);
-                                                groupImageDescriptions.removeAt(Index);
-                                                _steps = _generateSteps();
-                                              });
-                                            },
-                                            icon: const Icon(
-                                              Icons.delete,
-                                              color: Colors.red,
-                                            ))),
-                                  ],
+              margin: EdgeInsets.symmetric(vertical: 20),
+              child: Container(
+                height: 225,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: selectedGroupImages.length,
+                  itemBuilder: (BuildContext ctxt, int Index) {
+                    return Container(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Stack(
+                            alignment: Alignment.topRight,
+                            children: [
+                              Container(
+                                height: (MediaQuery.of(context).size.width - 30) / 2,
+                                width: (MediaQuery.of(context).size.width - 30) / 2,
+                                padding: EdgeInsets.all(8.0),
+                                child: Image.file(
+                                  fit: BoxFit.fill,
+                                  File(selectedGroupImages[Index]!.path),
                                 ),
-                                Container(    width: 170,
-                                    height: 20,
-                                    decoration: const BoxDecoration(
-                                        color: Colors.white,
-                                       ),
-                                    child: TextFormField(
-                                      autofocus: false,
-                                      controller:
-                                      groupImageDescriptions[Index],
-                                      style: const TextStyle(fontSize: 12),
-                                      decoration: const InputDecoration(
-                                        border:OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                        ),
-                                        focusedBorder:OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                        ),
-                                      ),
-                                    )),
-                              ],
+                              ),
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedGroupImages.removeAt(Index);
+                                      groupImageDescriptions.removeAt(Index);
+                                      _steps = _generateSteps();
+                                    });
+                                  },
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            width: 170,
+                            height: 20,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
                             ),
-                          );
-                        })
-                )
+                            child: TextFormField(
+                              autofocus: false,
+                              controller: groupImageDescriptions[Index],
+                              style: const TextStyle(fontSize: 12),
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
           RichText(
-            text:  TextSpan(
+            text: TextSpan(
               text: "Activity pictures",
               style: TextStyle(
-                  fontSize: 14.0,
-                  fontFamily: 'Montserrat',
-                  color: Resources.colors.appTheme.darkBlue
+                fontSize: 14.0,
+                fontFamily: 'Montserrat',
+                color: Resources.colors.appTheme.darkBlue,
               ),
             ),
           ),
           SizedBox(height: 16.0),
-          ElevatedButton(
-            onPressed: () async {
-              var camOrGallery = await showDialog(
+          Container(
+            width: double.infinity, // Set the button width to full width
+            child: ElevatedButton(
+              onPressed: () async {
+                var camOrGallery = await showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     return PictureOptions();
-                  });
+                  },
+                );
 
-              if (camOrGallery.toString() == "Gallery") {
-                var img = pickImages('activity','Gallery');
-              } else if (camOrGallery.toString() == "Camera") {
-                var img = pickImages('activity','Camera');
-              }
-            },
-            child: Text('Upload Images'),
+                if (camOrGallery.toString() == "Gallery") {
+                  var img = pickImages('activity', 'Gallery');
+                } else if (camOrGallery.toString() == "Camera") {
+                  var img = pickImages('activity', 'Camera');
+                }
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    side: BorderSide(
+                      color: Resources.colors.appTheme.darkBlue,
+                    ),
+                  ),
+                ),
+              ),
+              child: const Text(
+                'Upload Activity pictures',
+                style: TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
+            ),
           ),
           SizedBox(height: 16.0),
           if (selectedActivityImages.isNotEmpty)
             Container(
-                margin:
-                EdgeInsets.symmetric(vertical: 20),
-                child: Container(
-                    height: 225,
-                    child: ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: selectedActivityImages.length,
-                        itemBuilder: (BuildContext ctxt, int Index) {
-                          return Container(
-                            alignment: Alignment.bottomLeft,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Stack(
-                                  alignment: Alignment.topRight,
-                                  children: [
-                                    Container(
-                                        height: (MediaQuery.of(context).size.width - 30) / 2,
-                                        width: (MediaQuery.of(context).size.width - 30) / 2,
-                                        padding:EdgeInsets.all(8.0),
-                                        child: Image.file(
-                                            fit: BoxFit.fill,
-                                            File(selectedActivityImages[Index]!.path)
-                                        )
-                                    ),
-                                    Align(
-                                        alignment: Alignment.topRight,
-                                        child: IconButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                selectedActivityImages.removeAt(Index);
-                                                activityImageDescriptions.removeAt(Index);
-                                                _steps = _generateSteps();
-                                              });
-                                            },
-                                            icon: const Icon(
-                                              Icons.delete,
-                                              color: Colors.red,
-                                            ))),
-                                  ],
+              margin: EdgeInsets.symmetric(vertical: 20),
+              child: Container(
+                height: 225,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: selectedActivityImages.length,
+                  itemBuilder: (BuildContext ctxt, int Index) {
+                    return Container(
+                      alignment: Alignment.bottomLeft,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Stack(
+                            alignment: Alignment.topRight,
+                            children: [
+                              Container(
+                                height: (MediaQuery.of(context).size.width - 30) / 2,
+                                width: (MediaQuery.of(context).size.width - 30) / 2,
+                                padding: EdgeInsets.all(8.0),
+                                child: Image.file(
+                                  fit: BoxFit.fill,
+                                  File(selectedActivityImages[Index]!.path),
                                 ),
-                                Container(    width: 170,
-                                    height: 20,
-                                    decoration: const BoxDecoration(
-                                        color: Colors.white,
-                                    ),
-                                    child: TextFormField(
-                                      autofocus: false,
-                                      controller:
-                                      activityImageDescriptions[Index],
-                                      style: const TextStyle(fontSize: 12),
-                                      decoration: const InputDecoration(
-                                        border:OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                        ),
-                                        focusedBorder:OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                        ),
-                                      ),
-                                    )),
-                              ],
+                              ),
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedActivityImages.removeAt(Index);
+                                      activityImageDescriptions.removeAt(Index);
+                                      _steps = _generateSteps();
+                                    });
+                                  },
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            width: 170,
+                            height: 20,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
                             ),
-                          );
-                        })
-                )
+                            child: TextFormField(
+                              autofocus: false,
+                              controller: activityImageDescriptions[Index],
+                              style: const TextStyle(fontSize: 12),
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
+
           RichText(
-            text:  TextSpan(
+            text: TextSpan(
               text: "Artworks",
               style: TextStyle(
-                  fontSize: 14.0,
-                  fontFamily: 'Montserrat',
-                  color: Resources.colors.appTheme.darkBlue
+                fontSize: 14.0,
+                fontFamily: 'Montserrat',
+                color: Resources.colors.appTheme.darkBlue,
               ),
             ),
           ),
           SizedBox(height: 16.0),
-          ElevatedButton(
-            onPressed: () async {
-              var camOrGallery = await showDialog(
+          Container(
+            width: double.infinity, // Set the button width to full width
+            child: ElevatedButton(
+              onPressed: () async {
+                var camOrGallery = await showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     return PictureOptions();
-                  });
+                  },
+                );
 
-              if (camOrGallery.toString() == "Gallery") {
-                var img = pickImages('artwork','Gallery');
-              } else if (camOrGallery.toString() == "Camera") {
-                var img = pickImages('artwork','Camera');
-              }
-            },
-            child: Text('Upload Images'),
+                if (camOrGallery.toString() == "Gallery") {
+                  var img = pickImages('artwork', 'Gallery');
+                } else if (camOrGallery.toString() == "Camera") {
+                  var img = pickImages('artwork', 'Camera');
+                }
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    side: BorderSide(
+                      color: Resources.colors.appTheme.darkBlue,
+                    ),
+                  ),
+                ),
+              ),
+              child: const Text(
+                'Upload ArtWork',
+                style: TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
+            ),
           ),
           SizedBox(height: 16.0),
           if (selectedArtworkImages.isNotEmpty)
             Container(
-                margin:
-                EdgeInsets.symmetric(vertical: 20),
-                child: Container(
-                    height: 225,
-                    child: ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: selectedArtworkImages.length,
-                        itemBuilder: (BuildContext ctxt, int Index) {
-                          return Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Stack(
-                                  alignment: Alignment.topRight,
-                                  children: [
-                                    Container(
-                                        height: (MediaQuery.of(context).size.width - 30) / 2,
-                                        width: (MediaQuery.of(context).size.width - 30) / 2,
-                                        padding:EdgeInsets.all(8.0),
-                                        child: Image.file(
-                                            fit: BoxFit.fill,
-                                            File(selectedArtworkImages[Index]!.path)
-                                        )
-                                    ),
-                                    Align(
-                                        alignment: Alignment.topRight,
-                                        child: IconButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                selectedArtworkImages.removeAt(Index);
-                                                artworkDescriptions.removeAt(Index);
-                                                _steps = _generateSteps();
-                                              });
-                                            },
-                                            icon: const Icon(
-                                              Icons.delete,
-                                              color: Colors.red,
-                                            ))),
-                                  ],
+              margin: EdgeInsets.symmetric(vertical: 20),
+              child: Container(
+                height: 225,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: selectedArtworkImages.length,
+                  itemBuilder: (BuildContext ctxt, int Index) {
+                    return Container(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Stack(
+                            alignment: Alignment.topRight,
+                            children: [
+                              Container(
+                                height: (MediaQuery.of(context).size.width - 30) / 2,
+                                width: (MediaQuery.of(context).size.width - 30) / 2,
+                                padding: EdgeInsets.all(8.0),
+                                child: Image.file(
+                                  fit: BoxFit.fill,
+                                  File(selectedArtworkImages[Index]!.path),
                                 ),
-                                Container(    width: 170,
-                                    height: 20,
-                                    decoration: const BoxDecoration(
-                                        color: Colors.white,
-                                       ),
-
-                                    child: TextFormField(
-                                      autofocus: false,
-                                      controller:
-                                      artworkDescriptions[Index],
-                                      style: TextStyle(fontSize: 12),
-                                      decoration: const InputDecoration(
-                                        border:OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                        ),
-                                        focusedBorder:OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                        ),
-                                      ),
-                                    )),
-                              ],
+                              ),
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedArtworkImages.removeAt(Index);
+                                      artworkDescriptions.removeAt(Index);
+                                      _steps = _generateSteps();
+                                    });
+                                  },
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            width: 170,
+                            height: 20,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
                             ),
-                          );
-                        })
-                )
+                            child: TextFormField(
+                              autofocus: false,
+                              controller: artworkDescriptions[Index],
+                              style: TextStyle(fontSize: 12),
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
+
         ],
       ),
     );
