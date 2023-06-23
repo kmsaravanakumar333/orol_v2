@@ -814,7 +814,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                   ),
                                 ),
                                 SizedBox(height: 5,),
-                                Text(WATERANDWEATHER.waterLevelLabels[Index],style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),)
+                                Text(WATERANDWEATHER.waterLevelLabels[Index],style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12, fontWeight:   selectedWaterLevel == WATERANDWEATHER.waterLevelLabels[Index]? FontWeight.w500: FontWeight.w400),)
                               ],
                             ),
                           );
@@ -869,7 +869,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                   ),
                                 ),
                                 SizedBox(height: 5,),
-                                Text(WATERANDWEATHER.weatherLabels[Index],style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),)
+                                Text(WATERANDWEATHER.weatherLabels[Index],style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12, fontWeight: selectedWeather == WATERANDWEATHER.weatherLabels[Index]? FontWeight.w500: FontWeight.w400),)
                               ],
                             ),
                           );
@@ -910,7 +910,25 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 var img = pickImages('riverPicture','Camera');
               }
             },
-            child: const Text('Upload Images'),
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                  side: BorderSide(
+                    color: Resources.colors.appTheme.darkBlue,
+                  ),
+                ),
+              ),
+              minimumSize: MaterialStateProperty.all<Size>(Size(double.infinity, 20.0)),
+              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.all(12.0)),
+            ),
+            child: const Text(
+              'Upload Images',
+              style: TextStyle(
+                color: Colors.grey,
+              ),
+            ),
           ),
           const SizedBox(height: 10.0),
           if (selectedRiverImages.isNotEmpty)
@@ -927,35 +945,38 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Stack(
-                                  alignment: Alignment.topRight,
-                                  children:[
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Container(
-                                        height: (MediaQuery.of(context).size.width - 30) / 2,
-                                        width: (MediaQuery.of(context).size.width - 30) / 2,
-                                          child: Image.file(
-                                              fit: BoxFit.fill,
-                                              File(selectedRiverImages[Index]!.path)
-                                          )
+                                Container(
+                                  decoration: BoxDecoration(color: Colors.white),
+                                  child: Stack(
+                                    alignment: Alignment.topRight,
+                                    children:[
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Container(
+                                          height: (MediaQuery.of(context).size.width - 100) /1.5,
+                                          // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                            child: Image.file(
+                                                fit: BoxFit.fill,
+                                                File(selectedRiverImages[Index]!.path)
+                                            )
+                                        ),
                                       ),
-                                    ),
-                                    Align(
-                                        alignment: Alignment.topRight,
-                                        child: IconButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                selectedRiverImages.removeAt(Index);
-                                                riverDescriptions.removeAt(Index);
-                                                _steps = _generateSteps();
-                                              });
-                                            },
-                                            icon: const Icon(
-                                              Icons.delete,
-                                              color: Colors.red,
-                                            ))),
-                                  ]
+                                      Align(
+                                          alignment: Alignment.topRight,
+                                          child: IconButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  selectedRiverImages.removeAt(Index);
+                                                  riverDescriptions.removeAt(Index);
+                                                  _steps = _generateSteps();
+                                                });
+                                              },
+                                              icon: const Icon(
+                                                Icons.delete,
+                                                color: Colors.red,
+                                              ))),
+                                    ]
+                                  ),
                                 ),
                                 Container(
                                     width: 170,
@@ -1092,7 +1113,25 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
               var img = pickImages('surroundingImages','Camera');
             }
           },
-          child: Text('Upload Images'),
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+                side: BorderSide(
+                  color: Resources.colors.appTheme.darkBlue,
+                ),
+              ),
+            ),
+            minimumSize: MaterialStateProperty.all<Size>(Size(double.infinity, 20.0)),
+            padding: MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.all(12.0)),
+          ),
+          child: const Text(
+            'Upload Images',
+            style: TextStyle(
+              color: Colors.grey,
+            ),
+          ),
         ),
         SizedBox(height: 16.0),
         if (selectedSurroundingImages.isNotEmpty)
@@ -1116,8 +1155,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Container(
-                                       height: (MediaQuery.of(context).size.width - 30) / 2,
-                                       width: (MediaQuery.of(context).size.width - 30) / 2,
+                                        height: (MediaQuery.of(context).size.width - 100) /1.5,
+                                       // width: (MediaQuery.of(context).size.width - 30) / 2,
                                         child: Image.file(
                                             fit: BoxFit.fill,
                                             File(selectedSurroundingImages[Index]!.path)
@@ -1355,8 +1394,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             alignment: Alignment.topRight,
                             children: [
                               Container(
-                                height: (MediaQuery.of(context).size.width - 30) / 2,
-                                width: (MediaQuery.of(context).size.width - 30) / 2,
+                                height: (MediaQuery.of(context).size.width - 100) /1.5,
+                                // width: (MediaQuery.of(context).size.width - 30) / 2,
                                 padding: EdgeInsets.all(8.0),
                                 child: Image.file(
                                   fit: BoxFit.fill,
@@ -1500,8 +1539,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             alignment: Alignment.topRight,
                             children: [
                               Container(
-                                height: (MediaQuery.of(context).size.width - 30) / 2,
-                                width: (MediaQuery.of(context).size.width - 30) / 2,
+                                height: (MediaQuery.of(context).size.width - 100) /1.5,
+                                // width: (MediaQuery.of(context).size.width - 30) / 2,
                                 padding: EdgeInsets.all(8.0),
                                 child: Image.file(
                                   fit: BoxFit.fill,
@@ -1638,8 +1677,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             alignment: Alignment.topRight,
                             children: [
                               Container(
-                                height: (MediaQuery.of(context).size.width - 30) / 2,
-                                width: (MediaQuery.of(context).size.width - 30) / 2,
+                                height: (MediaQuery.of(context).size.width - 100) /1.5,
+                                // width: (MediaQuery.of(context).size.width - 30) / 2,
                                 padding: EdgeInsets.all(8.0),
                                 child: Image.file(
                                   fit: BoxFit.fill,
@@ -1758,8 +1797,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             alignment: Alignment.topRight,
                             children: [
                               Container(
-                                height: (MediaQuery.of(context).size.width - 30) / 2,
-                                width: (MediaQuery.of(context).size.width - 30) / 2,
+                                height: (MediaQuery.of(context).size.width - 100) /1.5,
+                                // width: (MediaQuery.of(context).size.width - 30) / 2,
                                 padding: EdgeInsets.all(8.0),
                                 child: Image.file(
                                   fit: BoxFit.fill,
@@ -1878,8 +1917,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             alignment: Alignment.topRight,
                             children: [
                               Container(
-                                height: (MediaQuery.of(context).size.width - 30) / 2,
-                                width: (MediaQuery.of(context).size.width - 30) / 2,
+                                height: (MediaQuery.of(context).size.width - 100) /1.5,
+                                // width: (MediaQuery.of(context).size.width - 30) / 2,
                                 padding: EdgeInsets.all(8.0),
                                 child: Image.file(
                                   fit: BoxFit.fill,
@@ -3648,6 +3687,11 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0), // Adjust the radius as needed
+                      ),
+                    ),
                   ),
                   onPressed: (){
 
