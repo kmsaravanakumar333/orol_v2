@@ -31,6 +31,9 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   List<Step> _steps=[];
   bool _error=false;
   bool _isSubmitted=false;
+  bool isOthersSelected = false;
+  List<String> updatedSurroundings = [];
+  TextEditingController additionalDetailsController = TextEditingController();
   DateTime now = DateTime.now();
   final String GOOGLE_MAP_API='AIzaSyD9VmkK8P-ONafIM_49q6v5vtu3apjbdFg';
   final TextEditingController activityDateController = TextEditingController();
@@ -1075,6 +1078,113 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   );
                 }).toList(),
               ),
+              Wrap(
+                children: updatedSurroundings.map((item) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 4.0,left: 4.0),
+                    child: ChoiceChip(
+                      label: Text(
+                        item,
+                        style: TextStyle(
+                          color: Resources.colors.appTheme.darkBlue,
+                        ),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0), // Set the border radius
+                        side: const BorderSide(
+                          color:  Colors.grey,
+                          width: 0.5, // Set the border width
+                        ),
+                      ),
+                      selected: selectedSurroundings.contains(item),
+                      selectedColor: Resources.colors.appTheme.lightTeal,
+                      backgroundColor: Colors.white,
+                      onSelected: (isSelected) {
+                        selectedSurrounding(item);
+                        setState(() {
+                          _steps = _generateSteps();
+                        });
+                        form.control('surroundings').value=selectedSurroundings;
+                      },
+                    ),
+                  );
+                }).toList(),
+              ),
+              Transform.translate(
+                offset:const Offset(-15.0,0.0),
+                child: CheckboxListTile(
+                  title: Transform.translate(
+                    offset:const Offset(-15.0,0.0),
+                    child: const Text(
+                      'Other...',
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        fontFamily: 'Montserrat',
+                      ),
+                    ),
+                  ),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  value: isOthersSelected,
+                  onChanged: (isChecked) {
+                    setState(() {
+                      isOthersSelected = isChecked ?? false;
+                    });
+                    _steps = _generateSteps();
+                  },
+                  activeColor: Resources.colors.appTheme.darkBlue, // Set the desired dark blue color
+                  checkColor: Colors.white, // Set the check color to white
+                ),
+              ),
+              if (isOthersSelected) ...[
+                SizedBox(height: 16.0),
+                Text(
+                  'Additional Details',
+                  style: TextStyle(
+                    fontSize: 14.0,
+                    fontFamily: 'Montserrat',
+                    color: Resources.colors.appTheme.darkBlue,
+                  ),
+                ),
+                TextFormField(
+                  controller: additionalDetailsController,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter additional details',
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: () {
+                    final String additionalDetails = additionalDetailsController.text;
+                    if (additionalDetails.isNotEmpty) {
+                      setState(() {
+                        updatedSurroundings.add(additionalDetails);
+                        isOthersSelected = false;
+                        additionalDetailsController.clear();
+                        selectedSurrounding(additionalDetails);
+                        form.control('surroundings').value=[additionalDetails];
+                        _steps = _generateSteps();
+                      });
+                      // updatedSurroundings.addAll(List.from(updatedSurroundings)); // Create a copy of otherSurroundings and add it to updatedSurroundings
+                    }
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                    ),
+                    minimumSize: MaterialStateProperty.all<Size>(Size(double.infinity, 40.0)),
+                  ),
+                  child: const Text(
+                    'ADD',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+
               SizedBox(height: 16.0),
               RichText(
                 text:  TextSpan(
@@ -2863,8 +2973,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                     child: Column(
                                       children: [
                                         Container(
-                                            width:120,
-                                            height:80,
+                                            // width:180,
+                                            height:90,
                                             child: Image.file(
                                                 fit: BoxFit.fill,
                                                 File(selectedRiverImages[Index]!.path)
@@ -2934,6 +3044,31 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                   color: Color(0xFF1C3764), size: 20)),
                         ],
                       )),
+                  if (selectedSurroundings.length > 0)
+                    Container(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 0, vertical: 5),
+                        child: Container(
+                            height: 100,
+                            child: ListView.builder(
+                                itemCount: selectedSurroundings.length,
+                                itemBuilder:
+                                    (BuildContext ctxt, int Index) {
+                                  return Container(
+                                    margin: EdgeInsets.only(right: 10),
+                                    padding: const EdgeInsets.only(
+                                        bottom: 10, left: 5),
+                                    alignment: Alignment.bottomLeft,
+                                    child: Column(
+                                      children: [
+                                       Container
+                                         (
+                                           padding: EdgeInsets.only(left:10),
+                                           child: Text(selectedSurroundings[Index]))
+                                      ],
+                                    ),
+                                  );
+                                }))),
                   if (selectedSurroundingImages.length > 0)
                     Container(
                         margin: const EdgeInsets.symmetric(
@@ -2963,8 +3098,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                     child: Column(
                                       children: [
                                         Container(
-                                            width:100,
-                                            height:80,
+                                            // width:180,
+                                            height:90,
                                             child: Image.file(
                                                 fit: BoxFit.fill,
                                                 File(selectedSurroundingImages[Index]!.path)
@@ -3098,8 +3233,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                     child: Column(
                                       children: [
                                         Container(
-                                            width:100,
-                                            height:80,
+                                            // width:100,
+                                            height:90,
                                             child: Image.file(
                                                 fit: BoxFit.fill,
                                                 File(selectedFloraImages[Index]!.path)
@@ -3188,8 +3323,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                     child: Column(
                                       children: [
                                         Container(
-                                            width:100,
-                                            height:80,
+                                            // width:100,
+                                            height:90,
                                             child: Image.file(
                                                 fit: BoxFit.fill,
                                                 File(selectedFaunaImages[Index]!.path)
@@ -3312,8 +3447,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                     child: Column(
                                       children: [
                                         Container(
-                                            width:100,
-                                            height:80,
+                                            // width:100,
+                                            height:90,
                                             child: Image.file(
                                                 fit: BoxFit.fill,
                                                 File(selectedGroupImages[Index]!.path)
@@ -3393,8 +3528,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                     child: Column(
                                       children: [
                                         Container(
-                                            width:100,
-                                            height:80,
+                                            // width:100,
+                                            height:90,
                                             child: Image.file(
                                                 fit: BoxFit.fill,
                                                 File(selectedActivityImages[Index]!.path)
@@ -3474,8 +3609,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                     child: Column(
                                       children: [
                                         Container(
-                                            width:100,
-                                            height:80,
+                                            // width:100,
+                                            height:90,
                                             child: Image.file(
                                                 fit: BoxFit.fill,
                                                 File(selectedArtworkImages[Index]!.path)
@@ -3694,7 +3829,6 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     ),
                   ),
                   onPressed: (){
-
                     if (this._formKey.currentState!.validate()&&steps[_index]!='flora'&&steps[_index]!='waterLevelAndWeather'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType==FormGroup&&form.control(steps[_index]).valid) {
                       setState(() {
                         _index++;
