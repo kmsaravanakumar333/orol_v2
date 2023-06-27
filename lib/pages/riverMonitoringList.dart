@@ -6,6 +6,7 @@ import 'package:flutter_orol_v2/utils/resources.dart';
 import 'package:flutter_pagewise/flutter_pagewise.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../services/models/riverMonitoring.dart';
 class RiverMonitoringPage extends StatefulWidget {
   const RiverMonitoringPage({Key? key}) : super(key: key);
@@ -104,14 +105,28 @@ class _RiverMonitoringPageState extends State<RiverMonitoringPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Flexible(
-                child: Text(
-                  "${item.generalInformation['testerName']}",
-                  style: TextStyle(
-                    fontFamily: "Montserrat",
-                    fontWeight: FontWeight.w600,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Text(
+                      "${item.generalInformation['testerName']}",
+                      style: TextStyle(
+                        fontFamily: "Montserrat",
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
+                  SizedBox(width: 10,),
+                  item.certificateURL!=null?GestureDetector(
+                      onTap: (){
+                        if(item.certificateURL!='undefined'){
+                          launch(item.certificateURL);
+                        }
+                      },
+                      child: Icon(Icons.download)):Text(" ")
+                ],
               ),
               const SizedBox(height: 10,),
               Text(
@@ -140,6 +155,7 @@ class _RiverMonitoringPageState extends State<RiverMonitoringPage> {
   Future<List<dynamic>> fetchData(int pageIndex) async {
     final waterTestDetails = await _waterTestDetails.getWaterTestDetails(pageIndex);
     final List<dynamic> items = waterTestDetails.details;
+    print(items);
     return items ;
   }
 }

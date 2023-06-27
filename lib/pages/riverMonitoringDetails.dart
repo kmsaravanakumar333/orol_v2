@@ -629,9 +629,9 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                 child:snapshot.data.waterTesting['pH']!=null?
                                                 Text("${snapshot.data.waterTesting['pH']}" + " ph",
                                                     style:  TextStyle(
-                                                        color: snapshot.data.waterTesting['waterTemperature']>=6.5&&snapshot.data.waterTesting['waterTemperature']<=8.5
+                                                        color: snapshot.data.waterTesting['waterTemperature']!=null&&snapshot.data.waterTesting['waterTemperature']>=6.5&&snapshot.data.waterTesting['waterTemperature']!=null&&snapshot.data.waterTesting['waterTemperature']<=8.5
                                                             ?Colors.green
-                                                            :snapshot.data.waterTesting['waterTemperature']<6.5||snapshot.data.waterTesting['waterTemperature']>8.5?Colors.red
+                                                            :snapshot.data.waterTesting['waterTemperature']!=null&&snapshot.data.waterTesting['waterTemperature']<6.5||snapshot.data.waterTesting['waterTemperature']!=null&&snapshot.data.waterTesting['waterTemperature']>8.5?Colors.red
                                                             :Colors.black,
                                                         fontFamily: "Montserrat",
                                                         fontWeight: FontWeight.w600))
@@ -669,9 +669,9 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                 child: snapshot.data.waterTesting['alkalinity']!=null?
                                                 Text("${snapshot.data.waterTesting['alkalinity']}" + " mg/L",
                                                     style: TextStyle(
-                                                        color: snapshot.data.waterTesting['alkalinity']>=20&&snapshot.data.waterTesting['alkalinity']<=250
+                                                        color: snapshot.data.waterTesting['alkalinity']!=null&&snapshot.data.waterTesting['alkalinity']>=20&&snapshot.data.waterTesting['alkalinity']!=null&&snapshot.data.waterTesting['alkalinity']<=250
                                                             ?Colors.green
-                                                            :snapshot.data.waterTesting['alkalinity']<20||snapshot.data.waterTesting['alkalinity']>250?Colors.red
+                                                            :snapshot.data.waterTesting['alkalinity']!=null&&snapshot.data.waterTesting['alkalinity']<20||snapshot.data.waterTesting['alkalinity']!=null&&snapshot.data.waterTesting['alkalinity']>250?Colors.red
                                                             :Colors.black,
                                                         fontFamily: "Montserrat",
                                                         fontWeight:
@@ -710,9 +710,9 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                 child: snapshot.data.waterTesting['nitrate']!=null?
                                                 Text("${snapshot.data.waterTesting['nitrate']}" + " mg/L",
                                                     style: TextStyle(
-                                                        color: snapshot.data.waterTesting['nitrate']<=1
+                                                        color: snapshot.data.waterTesting['nitrate']!=null&&snapshot.data.waterTesting['nitrate']<=1
                                                             ?Colors.green
-                                                            :snapshot.data.waterTesting['nitrate']>1
+                                                            :snapshot.data.waterTesting['nitrate']!=null&&snapshot.data.waterTesting['nitrate']>1
                                                             ?Colors.red
                                                             :Colors.black,
                                                         fontFamily: "Montserrat",
@@ -751,9 +751,9 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                 child: snapshot.data.waterTesting['nitrite']!=null?
                                                 Text("${snapshot.data.waterTesting['nitrite']}" + " mg/L",
                                                     style: TextStyle(
-                                                        color: snapshot.data.waterTesting['nitrite']<=1
+                                                        color: snapshot.data.waterTesting['nitrite']!=null&&snapshot.data.waterTesting['nitrite']<=1
                                                             ?Colors.green
-                                                            :snapshot.data.waterTesting['nitrite']>1
+                                                            :snapshot.data.waterTesting['nitrite']!=null&&snapshot.data.waterTesting['nitrite']>1
                                                             ?Colors.red
                                                             :Colors.black,
                                                         fontFamily: "Montserrat",
@@ -829,9 +829,9 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                 child:snapshot.data.waterTesting['chlorine']!=null?
                                                 Text("${snapshot.data.waterTesting['chlorine']}"+ " mg/L",
                                                     style: TextStyle(
-                                                        color: snapshot.data.waterTesting['chlorine']<=1.0
+                                                        color: snapshot.data.waterTesting['chlorine']!=null&&snapshot.data.waterTesting['chlorine']<=1.0
                                                             ?Colors.green
-                                                            :snapshot.data.waterTesting['chlorine']>1.0
+                                                            :snapshot.data.waterTesting['chlorine']!=null&&snapshot.data.waterTesting['chlorine']>1.0
                                                             ?Colors.red
                                                             :Colors.black,
                                                         fontFamily: "Montserrat",
@@ -870,9 +870,9 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                 child: snapshot.data.waterTesting['iron']!=null?
                                                 Text("${snapshot.data.waterTesting['iron']}"+ " mg/L",
                                                     style: TextStyle(
-                                                        color: snapshot.data.waterTesting['iron']>=4.0&&snapshot.data.waterTesting['iron']<=20.0
+                                                        color:  snapshot.data.waterTesting['iron']!=null&&snapshot.data.waterTesting['iron']>=4.0&&snapshot.data.waterTesting['iron']!=null&&snapshot.data.waterTesting['iron']<=20.0
                                                             ?Colors.green
-                                                            :snapshot.data.waterTesting['iron']<4.0||snapshot.data.waterTesting['iron']>20.0
+                                                            :snapshot.data.waterTesting['iron']!=null&&snapshot.data.waterTesting['iron']<4.0||snapshot.data.waterTesting['iron']!=null&&snapshot.data.waterTesting['iron']>20.0
                                                             ?Colors.red
                                                             :Colors.black,
                                                         fontFamily: "Montserrat",
@@ -911,9 +911,9 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                 child: snapshot.data.waterTesting['dissolvedOxygen']!=null?
                                                 Text("${snapshot.data.waterTesting['dissolvedOxygen']}" + " mg/L",
                                                     style: TextStyle(
-                                                        color: snapshot.data.waterTesting['dissolvedOxygen']>=4.0&&snapshot.data.waterTesting['dissolvedOxygen']<=20.0
+                                                        color: snapshot.data.waterTesting['dissolvedOxygen']!=null&&snapshot.data.waterTesting['dissolvedOxygen']>=4.0&&snapshot.data.waterTesting['dissolvedOxygen']!=null&&snapshot.data.waterTesting['dissolvedOxygen']<=20.0
                                                             ?Colors.green
-                                                            :snapshot.data.waterTesting['dissolvedOxygen']<4.0||snapshot.data.waterTesting['dissolvedOxygen']>20.0
+                                                            :snapshot.data.waterTesting['dissolvedOxygen']!=null&&snapshot.data.waterTesting['dissolvedOxygen']<4.0||snapshot.data.waterTesting['dissolvedOxygen']!=null&&snapshot.data.waterTesting['dissolvedOxygen']>20.0
                                                             ?Colors.red
                                                             :Colors.black,
                                                         fontFamily: "Montserrat",
@@ -954,9 +954,9 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                 child: snapshot.data.waterTesting['bacteria']!=""?
                                                 Text("${snapshot.data.waterTesting['bacteria']}",
                                                     style: TextStyle(
-                                                        color: snapshot.data.waterTesting['bacteria']=="Absent"
+                                                        color: snapshot.data.waterTesting['bacteria']!=""&&snapshot.data.waterTesting['bacteria']=="Absent"
                                                             ?Colors.green
-                                                            :snapshot.data.waterTesting['bacteria']=="Present"
+                                                            :snapshot.data.waterTesting['bacteria']!=""&&snapshot.data.waterTesting['bacteria']=="Present"
                                                             ?Colors.red
                                                             :Colors.black,
                                                         fontWeight: FontWeight.bold))
@@ -1809,7 +1809,7 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     backgroundColor:Resources.colors.appTheme.darkBlue, // Set the background color
                                                   ),
                                                   onPressed: (){
-                                                    // _waterTestDetail.generateCertificate(snapshot.data.id,context);
+                                                    _waterTestDetail.generateCertificate(snapshot.data.id,context);
                                                   },
                                                   child: Text('Generate certificate', style: TextStyle(
                                                     color: Colors.white, // Set the font color

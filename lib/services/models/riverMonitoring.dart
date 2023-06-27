@@ -215,23 +215,27 @@ class WaterTestDetails {
     }
     else {
       if (response.statusCode == 401) {
-        ScaffoldMessenger.of(context!).showSnackBar(const SnackBar(
-            backgroundColor: Colors.green, content: Text("Unauthorized")));
-        throw Exception('Unauthorized.');
+        await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return ShowAlert("Unauthorized","waterTestSubmit");
+            });;
+        return WaterTestDetails.fromJson(jsonDecode(responseBody));
       }
       else if (response.statusCode == 400) {
-        ScaffoldMessenger.of(context!).showSnackBar(const SnackBar(
-            backgroundColor: Colors.green, content: Text("Bad Request")));
-        throw Exception('Bad request.');
+        await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return ShowAlert("Bad request","waterTestSubmit");
+            });
+        return WaterTestDetails.fromJson(jsonDecode(responseBody));
       }
-      else if (response.statusCode == 409) {
-        ScaffoldMessenger.of(context!)
-            .showSnackBar(const SnackBar(content: Text("User already registered")));
-        throw Exception('Already registered.');
-      }
-      ScaffoldMessenger.of(context!)
-          .showSnackBar(const SnackBar(content: Text("Failed to create user")));
-      throw Exception('Failed to create user.');
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return ShowAlert("Failed to create water test details","waterTestSubmit");
+          });
+      return WaterTestDetails.fromJson(jsonDecode(responseBody));
     }
   }
 
@@ -379,7 +383,7 @@ class WaterTestDetails {
       if (updateResponse.statusCode == 401) {
         ScaffoldMessenger.of(context!).showSnackBar(const SnackBar(
             backgroundColor: Colors.green, content: Text("Unauthorized")));
-        throw Exception('Unauthorized.');
+        throw Exception('UnAuthorized.');
       } else if (updateResponse.statusCode == 400) {
         ScaffoldMessenger.of(context!).showSnackBar(const SnackBar(
             backgroundColor: Colors.green, content: Text("Bad Request")));
@@ -466,7 +470,7 @@ class WaterTestDetails {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var accessToken = prefs.getString('access_token') ;
     var _user = (await AppSharedPreference().getUserInfo())as Users;
-    final response = await http.delete(
+    final response = await http.post(
       Uri.parse(URL.apiURL+'/pdf/generateReport'),
       headers: <String, String>{
         "Authorization": 'Bearer '+ accessToken!
@@ -476,6 +480,7 @@ class WaterTestDetails {
       }
     );
     if (response.statusCode == 200) {
+      print(response.body);
       Navigator.of(context).pop();
       Navigator.push(
           context,
