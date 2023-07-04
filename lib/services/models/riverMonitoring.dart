@@ -206,6 +206,7 @@ class WaterTestDetails {
     http.StreamedResponse response = await request.send();
     var responseBody = await response.stream.bytesToString();
     if (response.statusCode == 201) {
+      generateCertificate(jsonDecode(responseBody),context,'create');
       await showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -372,6 +373,7 @@ class WaterTestDetails {
     http.StreamedResponse updateResponse = await request.send();
     var responseBody =await updateResponse.stream.bytesToString();
     if (updateResponse.statusCode == 200) {
+      generateCertificate(responseBody,context,'update');
       await showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -466,28 +468,31 @@ class WaterTestDetails {
     }
   }
 
-  Future<WaterTestDetails> generateCertificate(waterDetails,context) async {
+  Future<WaterTestDetails> generateCertificate(waterDetails,context,mode) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var accessToken = prefs.getString('access_token') ;
     var _user = (await AppSharedPreference().getUserInfo())as Users;
-    print(waterDetails.id);
+    var waterDetailsId;
+    if(mode=="create"){
+      waterDetailsId=waterDetails['id'].toString();
+    }else if(mode=="generate"){
+      waterDetailsId=waterDetails.id.toString();
+    }
     final response = await http.post(
       Uri.parse(URL.apiURL+'/pdf/generateReport'),
       headers: <String, String>{
         "Authorization": 'Bearer '+ accessToken!
       },
       body: {
-        "id":'${waterDetails.id}'
+        "id":'${waterDetailsId}'
       },
     );
-    print(response.statusCode);
     if (response.statusCode == 200) {
-      print(response.body);
-      // Navigator.of(context).pop();
-      // Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //         builder: (context) => RiverMonitoringPage()));
+      Navigator.of(context).pop();
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => RiverMonitoringPage()));
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor:Colors.green,content: Text("Certificate generated successfully")));
       return WaterTestDetails.fromJson(jsonDecode(response.body));
     } else {

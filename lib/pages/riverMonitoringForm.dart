@@ -956,7 +956,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Container(
-                                          height: (MediaQuery.of(context).size.width - 100) /1.5,
+                                          height: (MediaQuery.of(context).size.width - 100) /1.6,
                                           // width: (MediaQuery.of(context).size.width - 30) / 2,
                                             child: Image.file(
                                                 fit: BoxFit.fill,
@@ -1265,7 +1265,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Container(
-                                        height: (MediaQuery.of(context).size.width - 100) /1.5,
+                                        height: (MediaQuery.of(context).size.width - 100) /1.6,
                                        // width: (MediaQuery.of(context).size.width - 30) / 2,
                                         child: Image.file(
                                             fit: BoxFit.fill,
@@ -1504,7 +1504,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             alignment: Alignment.topRight,
                             children: [
                               Container(
-                                height: (MediaQuery.of(context).size.width - 100) /1.5,
+                                height: (MediaQuery.of(context).size.width - 100) /1.6,
                                 // width: (MediaQuery.of(context).size.width - 30) / 2,
                                 padding: EdgeInsets.all(8.0),
                                 child: Image.file(
@@ -1649,7 +1649,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             alignment: Alignment.topRight,
                             children: [
                               Container(
-                                height: (MediaQuery.of(context).size.width - 100) /1.5,
+                                height: (MediaQuery.of(context).size.width - 100) /1.6,
                                 // width: (MediaQuery.of(context).size.width - 30) / 2,
                                 padding: EdgeInsets.all(8.0),
                                 child: Image.file(
@@ -1787,7 +1787,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             alignment: Alignment.topRight,
                             children: [
                               Container(
-                                height: (MediaQuery.of(context).size.width - 100) /1.5,
+                                height: (MediaQuery.of(context).size.width - 100) /1.6,
                                 // width: (MediaQuery.of(context).size.width - 30) / 2,
                                 padding: EdgeInsets.all(8.0),
                                 child: Image.file(
@@ -1907,7 +1907,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             alignment: Alignment.topRight,
                             children: [
                               Container(
-                                height: (MediaQuery.of(context).size.width - 100) /1.5,
+                                height: (MediaQuery.of(context).size.width - 100) /1.6,
                                 // width: (MediaQuery.of(context).size.width - 30) / 2,
                                 padding: EdgeInsets.all(8.0),
                                 child: Image.file(
@@ -2027,7 +2027,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             alignment: Alignment.topRight,
                             children: [
                               Container(
-                                height: (MediaQuery.of(context).size.width - 100) /1.5,
+                                height: (MediaQuery.of(context).size.width - 100) /1.6,
                                 // width: (MediaQuery.of(context).size.width - 30) / 2,
                                 padding: EdgeInsets.all(8.0),
                                 child: Image.file(

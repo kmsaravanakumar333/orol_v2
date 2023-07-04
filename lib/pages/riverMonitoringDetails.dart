@@ -22,6 +22,7 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
   var waterDetailsUserId;
   var waterDetailsId;
   var userId;
+  bool isLoading=false;
 
   @override
   void initState() {
@@ -151,7 +152,7 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
               return Scaffold(body: Center(child: Text('Error: ${snapshot.error}')));
             } else {
               return Scaffold(
-                  body: SingleChildScrollView(
+                  body: isLoading?Center(child:CircularProgressIndicator()):SingleChildScrollView(
                     child: Column(
                       children: [
                         Container(
@@ -1809,7 +1810,10 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     backgroundColor:Resources.colors.appTheme.darkBlue, // Set the background color
                                                   ),
                                                   onPressed: (){
-                                                    _waterTestDetail.generateCertificate(snapshot.data,context);
+                                                    setState(() {
+                                                      isLoading=true;
+                                                    });
+                                                    _waterTestDetail.generateCertificate(snapshot.data,context,'generate');
                                                   },
                                                   child: Text('Generate certificate', style: TextStyle(
                                                     color: Colors.white, // Set the font color
