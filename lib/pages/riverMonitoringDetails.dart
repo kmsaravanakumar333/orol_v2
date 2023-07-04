@@ -1809,7 +1809,7 @@ class _RiverMonitoringDetailsPageState extends State<RiverMonitoringDetailsPage>
                                                     backgroundColor:Resources.colors.appTheme.darkBlue, // Set the background color
                                                   ),
                                                   onPressed: (){
-                                                    _waterTestDetail.generateCertificate(snapshot.data.id,context);
+                                                    _waterTestDetail.generateCertificate(snapshot.data,context);
                                                   },
                                                   child: Text('Generate certificate', style: TextStyle(
                                                     color: Colors.white, // Set the font color

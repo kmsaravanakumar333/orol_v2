@@ -466,30 +466,32 @@ class WaterTestDetails {
     }
   }
 
-  Future<WaterTestDetails> generateCertificate(waterDetailsId,context) async {
+  Future<WaterTestDetails> generateCertificate(waterDetails,context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var accessToken = prefs.getString('access_token') ;
     var _user = (await AppSharedPreference().getUserInfo())as Users;
+    print(waterDetails.id);
     final response = await http.post(
       Uri.parse(URL.apiURL+'/pdf/generateReport'),
       headers: <String, String>{
         "Authorization": 'Bearer '+ accessToken!
       },
-      body:{
-        "id":waterDetailsId.toString()
-      }
+      body: {
+        "id":'${waterDetails.id}'
+      },
     );
+    print(response.statusCode);
     if (response.statusCode == 200) {
       print(response.body);
-      Navigator.of(context).pop();
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => RiverMonitoringPage()));
+      // Navigator.of(context).pop();
+      // Navigator.push(
+      //     context,
+      //     MaterialPageRoute(
+      //         builder: (context) => RiverMonitoringPage()));
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor:Colors.green,content: Text("Certificate generated successfully")));
       return WaterTestDetails.fromJson(jsonDecode(response.body));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor:Colors.green,content: Text("Failed to delete water test details")));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor:Colors.green,content: Text("Failed to generate certificate")));
       throw Exception('Failed to generate certificate');
     }
   }
