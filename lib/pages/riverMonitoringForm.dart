@@ -17,6 +17,8 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import '../widgets/features/pictureOptions.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 class RiverMonitoringForm extends StatefulWidget {
   String mode;
@@ -80,6 +82,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   @override
   void initState() {
     super.initState();
+    _getCurrentLocation();
     setState(() {
       form.control('generalInformation.activityDate').value=DateFormat('yyyy-MM-dd').format(now);
       form.control('generalInformation.activityTime').value= DateFormat('h:mm a').format(now);
@@ -99,6 +102,33 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
 
   Future<WaterTestDetails?> getRiverMonitoringDetail() async {
     _waterTestDetail = (await AppSharedPreference().getRiverMonitoringInfo())! ;
+  }
+  _getCurrentLocation()async{
+    try {
+      // Get the current position (latitude and longitude)
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
+      // Reverse geocoding to get the address from the coordinates
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+          position.latitude, position.longitude);
+      double latitude = position.latitude;
+      double longitude = position.longitude;
+
+      // Extract the location name from the first placemark
+      Placemark placemark = placemarks.first;
+      String? locationName = "${placemark.name!}, ${placemark.street}, ${placemark.postalCode}, ${placemark.country}";
+      setState(() {
+        _searchController.text= locationName.toString();
+        form.control('generalInformation.location').value= locationName.toString();
+        form.control('generalInformation.latitude').value=position.latitude.toString();
+        form.control('generalInformation.longitude').value=position.longitude.toString();
+      });
+      return locationName;
+    } catch (e) {
+      print('Error: $e');
+      return null;
+    }
   }
 
   Future<void> pickImages(name,mode) async {
@@ -570,7 +600,6 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       },
                       textFieldConfiguration:  TextFieldConfiguration(
                         controller:_searchController,
-                        autofocus: true,
                         decoration:  InputDecoration(
                           border: UnderlineInputBorder(),
                           suffixIcon: IconButton(
@@ -1761,7 +1790,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 ),
               ),
               child: const Text(
-                'Upload a Group Pictures',
+                'Upload Group Pictures',
                 style: TextStyle(
                   color: Colors.grey,
                 ),
@@ -1880,7 +1909,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 ),
               ),
               child: const Text(
-                'Upload Activity pictures',
+                'Upload Activity Pictures',
                 style: TextStyle(
                   color: Colors.grey,
                 ),
@@ -2001,7 +2030,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 ),
               ),
               child: const Text(
-                'Upload ArtWork',
+                'Upload Artwork',
                 style: TextStyle(
                   color: Colors.grey,
                 ),

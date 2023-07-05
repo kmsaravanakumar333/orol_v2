@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
-
+import 'package:permission_handler/permission_handler.dart';
 import '../services/models/user.dart';
 import '../services/providers/AppSharedPreferences.dart';
 import '../utils/resources.dart';
@@ -48,7 +48,26 @@ class _OtpPageState extends State<OtpPage> {
         //send a request to create user
         _user.registerUser(_user, context,'mobileOTP');
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor:Colors.green,content: Text("OTP Verified")));
+        bool hasLocationPermission = await checkAndRequestLocationPermission();
       }});
+  }
+
+  Future<bool> checkAndRequestLocationPermission() async {
+    // Check if location permission is already granted
+    PermissionStatus permissionStatus = await Permission.location.status;
+
+    if (permissionStatus == PermissionStatus.granted) {
+      return true;
+    } else if (permissionStatus == PermissionStatus.denied) {
+      // Request location permission if denied
+      permissionStatus = await Permission.location.request();
+      if (permissionStatus == PermissionStatus.granted) {
+        return true;
+      }
+    }
+
+    // Permission not granted
+    return false;
   }
   @override
   Widget build(BuildContext context) {

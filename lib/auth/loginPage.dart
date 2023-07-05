@@ -4,7 +4,7 @@ import 'package:flutter_orol_v2/auth/forgotPasswordPage.dart';
 import 'package:flutter_orol_v2/auth/registerPage.dart';
 import 'package:flutter_orol_v2/utils/resources.dart';
 import 'package:reactive_forms/reactive_forms.dart';
-
+import 'package:permission_handler/permission_handler.dart';
 import '../services/models/user.dart';
 
 class LoginPage extends StatefulWidget {
@@ -59,6 +59,24 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+  }
+
+  Future<bool> checkAndRequestLocationPermission() async {
+    // Check if location permission is already granted
+    PermissionStatus permissionStatus = await Permission.location.status;
+
+    if (permissionStatus == PermissionStatus.granted) {
+      return true;
+    } else if (permissionStatus == PermissionStatus.denied) {
+      // Request location permission if denied
+      permissionStatus = await Permission.location.request();
+      if (permissionStatus == PermissionStatus.granted) {
+        return true;
+      }
+    }
+
+    // Permission not granted
+    return false;
   }
 
   @override
@@ -159,11 +177,13 @@ class _LoginPageState extends State<LoginPage> {
                               });
                               if (phoneRegex.hasMatch(form.value['email'].toString())) {
                                var response = await _user.loginByPhone(form.value,context,"UserLogin");
+                               bool hasLocationPermission = await checkAndRequestLocationPermission();
                                setState(() {
                                  _isLoggedIn=false;
                                });
                               }else{
                                 var response = await _user.loginByEmail(form.value, context, "UserLogin");
+                                bool hasLocationPermission = await checkAndRequestLocationPermission();
                                 setState(() {
                                   _isLoggedIn=false;
                                 });
