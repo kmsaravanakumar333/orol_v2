@@ -52,7 +52,6 @@ android {
     lintOptions {
         checkReleaseBuilds false
     }
-
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.our_river_our_life.app"
