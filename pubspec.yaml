@@ -60,6 +60,7 @@ dependencies:
   geocoding: ^2.1.0
   location: ^4.4.0
   geolocator: ^9.0.2
+  flutter_image_compress: ^2.0.4
 #  multi_image_picker: ^4.8.01
 
 dev_dependencies:

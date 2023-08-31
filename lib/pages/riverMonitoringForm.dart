@@ -19,6 +19,10 @@ import '../widgets/features/pictureOptions.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+
+
 
 class RiverMonitoringForm extends StatefulWidget {
   String mode;
@@ -143,9 +147,20 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
       // Handle any exceptions
     }
     if (image == null) return;
+
+    final tempDir = await getTemporaryDirectory();
+    final compressedImageFile = await FlutterImageCompress.compressAndGetFile(
+      image.path,
+      '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg',
+      minWidth: 230,
+      minHeight: 150,
+      quality: 75,
+    );
+
+    if (compressedImageFile == null) return;
     setState(() {
       // Image.file(File(image!.path));
-      File file = File(image!.path);
+      File file = File(compressedImageFile.path);
       if(name=='riverPicture'){
         selectedRiverImages.add(file);
         riverDescriptions.add(TextEditingController());
