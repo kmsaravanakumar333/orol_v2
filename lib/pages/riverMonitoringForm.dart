@@ -206,10 +206,10 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
     // selectedArtworkImages = ['groupPictures'];
     // selectedActivityImages = ['activityPictures'];
     // selectedGroupImages = ['artworkPictures'];
-    for (var i=0;i<riverPictures.length;i++){
-      riverImg.add(riverPictures[i]['imageURL']);
-      selectedRiverImages.add(riverPictures[i]['imageURL']);
-    }
+    // for (var i=0;i<riverPictures.length;i++){
+    //   riverImg.add(riverPictures[i]['imageURL']);
+    //   selectedRiverImages.add(riverPictures[i]['imageURL']);
+    // }
     form.control('waterTesting.alkalinity').value=waterTesting['alkalinity'];
     form.control('waterTesting.ammonia').value=waterTesting['ammonia'];
     form.control('waterTesting.bacteria').value=waterTesting['bacteria'];
@@ -1113,21 +1113,25 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           ),
           const SizedBox(height: 10.0),
           _error==true?const Text("This image is required",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
-          // if(riverPictures != null)
-          //   Container(child:Image.network(
-          //     riverPictures[0]['imageURL'],
-          //     loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-          //       if (loadingProgress == null) {
-          //         return child;
-          //       } else {
-          //         return CircularProgressIndicator(
-          //           value: loadingProgress.expectedTotalBytes != null
-          //               ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-          //               : null,
-          //         );
-          //       }
-          //     },
-          //   ),),
+          if (riverPictures != null && riverPictures.isNotEmpty)
+            Container(
+              child: Image.network(
+                riverPictures[0]['imageURL'],
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  } else {
+                    return CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                          : null,
+                    );
+                  }
+                },
+              ),
+            ),
           if (selectedRiverImages.isNotEmpty)
             Container(
                 margin: EdgeInsets.symmetric( vertical: 20),
@@ -3314,21 +3318,43 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           color: Resources.colors.appTheme.lable,
                                           fontFamily: "WorkSans"))),
                               Container(
-                                  alignment: Alignment.centerLeft,
-                                  child:form.control('waterTesting.nitrite').value!=null?
-                                  Text('${form.control('waterTesting.nitrite').value}' + " mg/L",
+                                alignment: Alignment.centerLeft,
+                                child: form.control('waterTesting.nitrite').value != null
+                                    ? Builder(
+                                  builder: (BuildContext context) {
+                                    final nitriteValue = form.control('waterTesting.nitrite').value;
+                                    double? parsedValue;
+                                    Color textColor;
+
+                                    try {
+                                      parsedValue = double.tryParse(nitriteValue);
+                                      textColor = parsedValue != null && parsedValue <= 1
+                                          ? Colors.green
+                                          : Colors.red;
+                                    } catch (e) {
+                                      parsedValue = null;
+                                      textColor = Colors.black;
+                                    }
+
+                                    return Text(
+                                      parsedValue != null ? '${parsedValue} mg/L' : "--",
                                       style: TextStyle(
-                                          color: double.parse(form.control('waterTesting.nitrite').value)<=1
-                                              ?Colors.green
-                                              :double.parse(form.control('waterTesting.nitrite').value)>1
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "WorkSans",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
+                                        color: textColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    );
+                                  },
+                                )
+                                    : const Text(
+                                  "--",
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                    fontFamily: "WorkSans",
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              )
                             ],
                           ),
                         ),
@@ -3370,21 +3396,51 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           color: Resources.colors.appTheme.lable,
                                           fontFamily: "WorkSans"))),
                               Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: form.control('waterTesting.chlorine').value!=null?
-                                  Text('${form.control('waterTesting.chlorine').value}' + " mg/L",
+                                alignment: Alignment.centerLeft,
+                                child: form.control('waterTesting.chlorine').value != null
+                                    ? Builder(
+                                  builder: (BuildContext context) {
+                                    final chlorineValue = form.control('waterTesting.chlorine').value;
+                                    double? parsedValue;
+                                    Color textColor;
+
+                                    try {
+                                      parsedValue = double.tryParse(chlorineValue);
+                                      if (parsedValue != null) {
+                                        if (parsedValue >= 0.2 && parsedValue <= 1.0) {
+                                          textColor = Colors.green;
+                                        } else {
+                                          textColor = Colors.red;
+                                        }
+                                      } else {
+                                        // Handle cases where parsing failed
+                                        textColor = Colors.red; // You can choose another color if needed
+                                      }
+                                    } catch (e) {
+                                      parsedValue = null;
+                                      textColor = Colors.black;
+                                    }
+
+                                    return Text(
+                                      parsedValue != null ? '${parsedValue} mg/L' : "--",
                                       style: TextStyle(
-                                          color: double.parse(form.control('waterTesting.chlorine').value)>=0.2&&double.parse(form.control('waterTesting.chlorine').value)<=1.0
-                                              ?Colors.green
-                                              :double.parse(form.control('waterTesting.chlorine').value)<0.2||double.parse(form.control('waterTesting.chlorine').value)>1.0
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "WorkSans",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
+                                        color: textColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    );
+                                  },
+                                )
+                                    : const Text(
+                                  "--",
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                    fontFamily: "WorkSans",
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              )
+
                             ],
                           ),
                         ),
@@ -3430,22 +3486,51 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           color: Resources.colors.appTheme.lable,
                                           fontFamily: "WorkSans"))),
                               Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: form.control('waterTesting.dissolvedOxygen').value!=null?
-                                  Text(
-                                      '${form.control('waterTesting.dissolvedOxygen').value ?? ''}' + " mg/L",
+                                alignment: Alignment.centerLeft,
+                                child: form.control('waterTesting.dissolvedOxygen').value != null
+                                    ? Builder(
+                                  builder: (BuildContext context) {
+                                    final dissolvedOxygenValue = form.control('waterTesting.dissolvedOxygen').value;
+                                    double? parsedValue;
+                                    Color textColor;
+
+                                    try {
+                                      parsedValue = double.tryParse(dissolvedOxygenValue);
+                                      if (parsedValue != null) {
+                                        if (parsedValue >= 4.0 && parsedValue <= 20.0) {
+                                          textColor = Colors.green;
+                                        } else {
+                                          textColor = Colors.red;
+                                        }
+                                      } else {
+                                        // Handle cases where parsing failed
+                                        textColor = Colors.red; // You can choose another color if needed
+                                      }
+                                    } catch (e) {
+                                      parsedValue = null;
+                                      textColor = Colors.black;
+                                    }
+
+                                    return Text(
+                                      parsedValue != null ? '${parsedValue} mg/L' : "--",
                                       style: TextStyle(
-                                          color: double.parse(form.control('waterTesting.dissolvedOxygen').value)>=4.0&&double.parse(form.control('waterTesting.dissolvedOxygen').value)<=20.0
-                                              ?Colors.green
-                                              :double.parse(form.control('waterTesting.dissolvedOxygen').value)<4.0||double.parse(form.control('waterTesting.dissolvedOxygen').value)>20.0
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "WorkSans",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
+                                        color: textColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    );
+                                  },
+                                )
+                                    : const Text(
+                                  "--",
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                    fontFamily: "WorkSans",
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              )
+
                             ],
                           ),
                         ),
@@ -3535,21 +3620,47 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           color: Resources.colors.appTheme.lable,
                                           fontFamily: "WorkSans"))),
                               Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: form.control('waterTesting.phosphate').value!=null?
-                                  Text('${form.control('waterTesting.phosphate').value }' + " mg/L",
+                                alignment: Alignment.centerLeft,
+                                child: form.control('waterTesting.phosphate').value != null
+                                    ? Builder(
+                                  builder: (BuildContext context) {
+                                    final phosphateValue = form.control('waterTesting.phosphate').value;
+                                    double? parsedValue;
+                                    Color textColor;
+
+                                    try {
+                                      parsedValue = double.tryParse(phosphateValue);
+                                      if (parsedValue != null) {
+                                        textColor = parsedValue <= 0.1 ? Colors.green : Colors.red;
+                                      } else {
+                                        // Handle cases where parsing failed
+                                        textColor = Colors.red; // You can choose another color if needed
+                                      }
+                                    } catch (e) {
+                                      parsedValue = null;
+                                      textColor = Colors.black;
+                                    }
+
+                                    return Text(
+                                      parsedValue != null ? '${parsedValue} mg/L' : "--",
                                       style: TextStyle(
-                                          color: double.parse(form.control('waterTesting.phosphate').value)<=0.1
-                                              ?Colors.green
-                                              :double.parse(form.control('waterTesting.phosphate').value)>0.1
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "WorkSans",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
+                                        color: textColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    );
+                                  },
+                                )
+                                    : const Text(
+                                  "--",
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                    fontFamily: "WorkSans",
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              )
+
                             ],
                           ),
                         ),
@@ -3602,21 +3713,47 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           color: Resources.colors.appTheme.lable,
                                           fontFamily: "WorkSans"))),
                               Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: form.control('waterTesting.lead').value!=null?
-                                  Text('${form.control('waterTesting.lead').value}' + " mg/L",
+                                alignment: Alignment.centerLeft,
+                                child: form.control('waterTesting.lead').value != null
+                                    ? Builder(
+                                  builder: (BuildContext context) {
+                                    final leadValue = form.control('waterTesting.lead').value;
+                                    double? parsedValue;
+                                    Color textColor;
+
+                                    try {
+                                      parsedValue = double.tryParse(leadValue);
+                                      if (parsedValue != null) {
+                                        textColor = parsedValue == 0 ? Colors.green : Colors.red;
+                                      } else {
+                                        // Handle cases where parsing failed
+                                        textColor = Colors.red; // You can choose another color if needed
+                                      }
+                                    } catch (e) {
+                                      parsedValue = null;
+                                      textColor = Colors.black;
+                                    }
+
+                                    return Text(
+                                      parsedValue != null ? '${parsedValue} mg/L' : "--",
                                       style: TextStyle(
-                                          color: double.parse(form.control('waterTesting.lead').value)==0
-                                              ?Colors.green
-                                              :double.parse(form.control('waterTesting.lead').value)>0
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "WorkSans",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
+                                        color: textColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    );
+                                  },
+                                )
+                                    : const Text(
+                                  "--",
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                    fontFamily: "WorkSans",
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              )
+
                             ],
                           ),
                         ),
