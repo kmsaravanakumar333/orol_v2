@@ -57,7 +57,7 @@ class _RiverMonitoringPageState extends State<RiverMonitoringPage> {
       }
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Resources.colors.appTheme.darkBlue,
+        backgroundColor: Resources.colors.appTheme.blue,
         foregroundColor: Resources.colors.appTheme.white,
         onPressed: () {
           // add your onPressed event handler here
@@ -101,6 +101,7 @@ class _RiverMonitoringPageState extends State<RiverMonitoringPage> {
         ),
         child: Padding(
           padding: const EdgeInsets.all(15.0),
+          child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,7 +114,8 @@ class _RiverMonitoringPageState extends State<RiverMonitoringPage> {
                     child: Text(
                       "${item.generalInformation['testerName']}",
                       style: TextStyle(
-                        fontFamily: "Montserrat",
+                        fontFamily: "WorkSans",
+                        color: Resources.colors.appTheme.veryDarkGray,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -133,7 +135,7 @@ class _RiverMonitoringPageState extends State<RiverMonitoringPage> {
                 '${DateFormat.yMMMd().format(DateTime.parse(item.createdAt).toLocal())} ${item.generalInformation['activityTime'] != null ? "${item.generalInformation['activityTime']}" : ""}',
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontFamily: "Montserrat",
+                  fontFamily: "WorkSans",
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -141,12 +143,13 @@ class _RiverMonitoringPageState extends State<RiverMonitoringPage> {
               Text(
                 "${item.generalInformation['location']}",
                 style: TextStyle(
-                  fontFamily: "Montserrat",
+                  fontFamily: "WorkSans",
                   fontWeight: FontWeight.w400,
                 ),
               ),
             ],
           ),
+        ),
         ),
       ),
     );

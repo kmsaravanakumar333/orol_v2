@@ -46,9 +46,10 @@ class _MyAppState extends State<MyApp> {
           colorScheme: ColorScheme.light().copyWith(
             primary: Resources.colors.appTheme.darkBlue, // Set your custom active color here
           ),
+        scaffoldBackgroundColor:Colors.white,
           appBarTheme:  AppBarTheme(
             // Customize the app bar theme here
-            color: Resources.colors.appTheme.darkBlue, // Set the background color of the app bar
+            color: Resources.colors.appTheme.blue,  // Set the background color of the app bar
             elevation: 2.0, // Set the elevation (shadow) of the app bar
             iconTheme: IconThemeData(color: Resources.colors.appTheme.lightTeal),
             toolbarTextStyle: TextTheme(
@@ -56,7 +57,7 @@ class _MyAppState extends State<MyApp> {
                 color: Resources.colors.appTheme.lightTeal,// Set the color of the title text in the app bar
                 fontSize: 20.0, // Set the font size of the title text in the app bar
                 fontWeight: FontWeight.bold,
-                fontFamily: 'Montserrat'// Set the font weight of the title text in the app bar
+                fontFamily: 'WorkSans'// Set the font weight of the title text in the app bar
               ),
             ).bodyMedium,
             titleTextStyle: TextTheme(
@@ -64,11 +65,19 @@ class _MyAppState extends State<MyApp> {
                 color: Resources.colors.appTheme.lightTeal, // Set the color of the title text in the app bar
                 fontSize: 20.0, // Set the font size of the title text in the app bar
                 fontWeight: FontWeight.bold,
-                fontFamily: 'Montserrat'// Set the font weight of the title text in the app bar
+                fontFamily: 'WorkSans'// Set the font weight of the title text in the app bar
               ),
             ).titleLarge,
           ),
-          fontFamily: 'Montserrat',
+          fontFamily: 'WorkSans',
+        textTheme: TextTheme(
+          // Use 'titleMedium' for secondary text
+          titleMedium: TextStyle(
+            fontSize: 14.0,
+            fontFamily: 'OpenSans', // Set your secondary text fontFamily
+            color: Resources.colors.appTheme.lable, // Set your secondary text color
+          ),
+        ),
         ),
       home: AnimatedSplashScreen(
           duration: 1000,

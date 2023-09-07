@@ -24,6 +24,10 @@ class _AppTheme {
   Color darkBlue = Color(0xFF34495E); //buttons background
   Color gray = Color(0xFFEFF1F1);  //primary colour
   Color white = Color(0xFFFFFFFF); //section color
-  Color darkGray = Color(0xFF757575);//labels
-  Color veryDarkGray = Color(0xFF212121); //input colour
+  Color darkGray = Color(0xFF757575);//labels//input colour
+  Color green = Color(0xFF7ABE32);
+  Color blue = Color(0xFF116BB5);
+  Color red = Color(0xFF7C0A02);
+  Color lable = Color(0xFF67717B);
+  Color veryDarkGray = Color(0xFF212121);
 }

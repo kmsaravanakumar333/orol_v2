@@ -21,6 +21,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
 
 
 
@@ -38,6 +40,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   bool _error=false;
   bool _isSubmitted=false;
   bool isOthersSelected = false;
+  bool isLoading = false;
   List<String> updatedSurroundings = [];
   TextEditingController additionalDetailsController = TextEditingController();
   DateTime now = DateTime.now();
@@ -83,6 +86,20 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   var groupImgObj=[];
   var activityImgObj=[];
   var artwrokImgObj=[];
+  var generalInformation;
+  var waterLevelAndWeather;
+  var surroundings;
+  var waterTesting;
+  var riverPictures;
+  var surroundingPictures;
+  var floraPictures;
+  var faunaPictures;
+  var groupPictures;
+  var artworkPictures;
+  var activityPictures;
+
+  var riverImg=[];
+
   @override
   void initState() {
     super.initState();
@@ -105,7 +122,112 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
 
 
   Future<WaterTestDetails?> getRiverMonitoringDetail() async {
+    setState(() {
+      isLoading=true;
+    });
     _waterTestDetail = (await AppSharedPreference().getRiverMonitoringInfo())! ;
+    generalInformation=_waterTestDetail.generalInformation;
+    waterLevelAndWeather=_waterTestDetail.waterLevelAndWeather;
+    riverPictures=_waterTestDetail.riverPictures;
+    surroundingPictures=_waterTestDetail.surroundingPictures;
+    floraPictures=_waterTestDetail.floraPictures;
+    faunaPictures=_waterTestDetail.faunaPictures;
+    groupPictures=_waterTestDetail.groupPictures;
+    artworkPictures=_waterTestDetail.artworkPictures;
+    activityPictures=_waterTestDetail.activityPictures;
+    surroundings=_waterTestDetail.surroundings;
+    waterTesting=_waterTestDetail.waterTesting;
+    setForm();
+    setState(() {
+      isLoading=false;
+    });
+  }
+  final FormGroup form = fb.group({
+    'generalInformation': fb.group({
+      'activityDate': FormControl<String>(value:'',validators: [Validators.required]),
+      'activityTime': FormControl<String>(validators: [Validators.required]),
+      'latitude': FormControl<String>(validators: [Validators.required]),
+      'longitude': FormControl<String>(validators: [Validators.required]),
+      'location': FormControl<String>(validators: [Validators.required]),
+      'testerName': FormControl<String>(validators: [Validators.required]),
+    }),
+    'waterLevelAndWeather': fb.group({
+      'airTemperature': FormControl<String>(value:'',validators: [Validators.required,Validators.number]),
+      'waterLevel': FormControl<String>(value:'',validators: [Validators.required]),
+      'weather': FormControl<String>(validators: [Validators.required]),
+    }),
+    'surroundings':  FormControl<List<String>>(value:[],validators: [Validators.required]),
+    'waterTesting': fb.group({
+      'alkalinity': FormControl<String>( ),
+      'ammonia': FormControl<String>(),
+      'bacteria': FormControl<String>(),
+      'chlorine': FormControl<String>(),
+      'dissolvedOxygen': FormControl<String>(),
+      'hardness': FormControl<String>(),
+      'iron': FormControl<String>(),
+      'lead': FormControl<String>(),
+      'nitrate': FormControl<String>(),
+      'nitrite': FormControl<String>(),
+      'pH': FormControl<String>(),
+      'phosphate': FormControl<String>(),
+      'turbidity': FormControl<String>(),
+      'waterTemperature': FormControl<String>(),
+      'totalDissolvedSolids': FormControl<String>(),
+      'conductivity': FormControl<String>(),
+    }),
+    'riverPictures':FormControl<List>(value:[]),
+    'surroundingPictures':FormControl<List>(value:[]),
+    'floraPictures':FormControl<List>(value:[]),
+    'faunaPictures':FormControl<List>(value:[]),
+    'groupPictures':FormControl<List>(value:[]),
+    'artworkPictures':FormControl<List>(value:[]),
+    'activityPictures':FormControl<List>(value:[]),
+  });
+
+  setForm(){
+    form.control('generalInformation.activityDate').value=generalInformation['activityDate'];
+    form.control('generalInformation.activityTime').value=generalInformation['activityTime'];
+    form.control('generalInformation.latitude').value=generalInformation['latitude'];
+    form.control('generalInformation.longitude').value=generalInformation['longitude'];
+    form.control('generalInformation.location').value=generalInformation['location'];
+    form.control('generalInformation.testerName').value=generalInformation['testerName'];
+    form.control('waterLevelAndWeather.airTemperature').value=waterLevelAndWeather['airTemperature'];
+    form.control('waterLevelAndWeather.waterLevel').value=waterLevelAndWeather['waterLevel'];
+    selectedWaterLevel = waterLevelAndWeather['waterLevel'];
+    form.control('waterLevelAndWeather.weather').value=waterLevelAndWeather['weather'];
+    selectedWeather = waterLevelAndWeather['weather'];
+    // form.control('riverPictures').value= riverPictures[0]['imageURL'];
+    // form.control('surroundings').value=['surroundings'];
+    // selectedSurroundings = ['surroundings'];
+    // selectedRiverImages = riverPictures[0]['imageURL'];
+    // selectedSurroundingImages = ['surroundingPictures'];
+    // selectedFaunaImages = ['floraPictures'];
+    // selectedFloraImages = ['faunaPictures'];
+    // selectedArtworkImages = ['groupPictures'];
+    // selectedActivityImages = ['activityPictures'];
+    // selectedGroupImages = ['artworkPictures'];
+    for (var i=0;i<riverPictures.length;i++){
+      riverImg.add(riverPictures[i]['imageURL']);
+      selectedRiverImages.add(riverPictures[i]['imageURL']);
+    }
+    form.control('waterTesting.alkalinity').value=waterTesting['alkalinity'];
+    form.control('waterTesting.ammonia').value=waterTesting['ammonia'];
+    form.control('waterTesting.bacteria').value=waterTesting['bacteria'];
+    form.control('waterTesting.chlorine').value=waterTesting['alkalinity'];
+    form.control('waterTesting.dissolvedOxygen').value=waterTesting['dissolvedOxygen'];
+    form.control('waterTesting.hardness').value=waterTesting['hardness'];
+    form.control('waterTesting.iron').value=waterTesting['iron'];
+    form.control('waterTesting.lead').value=waterTesting['lead'];
+    form.control('waterTesting.nitrate').value=waterTesting['nitrate'];
+    form.control('waterTesting.nitrite').value=waterTesting['nitrite'];
+    form.control('waterTesting.pH').value=waterTesting['pH'];
+    form.control('waterTesting.phosphate').value=waterTesting['phosphate'];
+    form.control('waterTesting.turbidity').value=waterTesting['turbidity'];
+    form.control('waterTesting.waterTemperature').value=waterTesting['waterTemperature'];
+    form.control('waterTesting.totalDissolvedSolids').value=waterTesting['totalDissolvedSolids'];
+    form.control('waterTesting.conductivity').value=waterTesting['conductivity'];
+
+
   }
   _getCurrentLocation()async{
     try {
@@ -162,88 +284,50 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
       // Image.file(File(image!.path));
       File file = File(compressedImageFile.path);
       if(name=='riverPicture'){
-        selectedRiverImages.add(file);
+        selectedRiverImages.add(compressedImageFile);
         riverDescriptions.add(TextEditingController());
         _steps = _generateSteps();
       }
       else if(name=='surroundingImages'){
-        selectedSurroundingImages.add(file);
+        selectedSurroundingImages.add(compressedImageFile);
         surroundingDescriptions.add(TextEditingController());
         _steps = _generateSteps();
       }
       else if(name=='flora'){
-        selectedFloraImages.add(file);
+        selectedFloraImages.add(compressedImageFile);
         floraDescriptions.add(TextEditingController());
         _steps = _generateSteps();
       }
       else if(name=='fauna'){
-        selectedFaunaImages.add(file);
+        selectedFaunaImages.add(compressedImageFile);
         faunaDescriptions.add(TextEditingController());
         _steps = _generateSteps();
       }
       else if(name=='group'){
-        selectedGroupImages.add(file);
+        selectedGroupImages.add(compressedImageFile);
         groupImageDescriptions.add(TextEditingController());
         _steps = _generateSteps();
       }
       else if(name=='activity'){
-        selectedActivityImages.add(file);
+        selectedActivityImages.add(compressedImageFile);
         activityImageDescriptions.add(TextEditingController());
         _steps = _generateSteps();
       }
       else if(name=='artwork'){
-        selectedArtworkImages.add(file);
+        selectedArtworkImages.add(compressedImageFile);
         artworkDescriptions.add(TextEditingController());
         _steps = _generateSteps();
       }
     });
   }
   //FORM
+
   final steps = ['generalInformation', 'waterLevelAndWeather','surroundings','waterTesting','flora','preview'];
-  final FormGroup form = fb.group({
-    'generalInformation': fb.group({
-      'activityDate': FormControl<String>(value:'',validators: [Validators.required]),
-      'activityTime': FormControl<String>(validators: [Validators.required]),
-      'latitude': FormControl<String>(validators: [Validators.required]),
-      'longitude': FormControl<String>(validators: [Validators.required]),
-      'location': FormControl<String>(validators: [Validators.required]),
-      'testerName': FormControl<String>(validators: [Validators.required]),
-    }),
-    'waterLevelAndWeather': fb.group({
-      'airTemperature': FormControl<String>(value:'',validators: [Validators.required,Validators.number]),
-      'waterLevel': FormControl<String>(validators: [Validators.required]),
-      'weather': FormControl<String>(validators: [Validators.required]),
-    }),
-    'surroundings':  FormControl<List<String>>(value:[],validators: [Validators.required]),
-    'waterTesting': fb.group({
-      'alkalinity': FormControl<String>(),
-      'ammonia': FormControl<String>(),
-      'bacteria': FormControl<String>(),
-      'chlorine': FormControl<String>(),
-      'dissolvedOxygen': FormControl<String>(),
-      'hardness': FormControl<String>(),
-      'iron': FormControl<String>(),
-      'lead': FormControl<String>(),
-      'nitrate': FormControl<String>(),
-      'nitrite': FormControl<String>(),
-      'pH': FormControl<String>(),
-      'phosphate': FormControl<String>(),
-      'turbidity': FormControl<String>(),
-      'waterTemperature': FormControl<String>(),
-      'totalDissolvedSolids': FormControl<String>(),
-      'conductivity': FormControl<String>(),
-    }),
-    'riverPictures':FormControl<List>(value:[]),
-    'surroundingPictures':FormControl<List>(value:[]),
-    'floraPictures':FormControl<List>(value:[]),
-    'faunaPictures':FormControl<List>(value:[]),
-    'groupPictures':FormControl<List>(value:[]),
-    'artworkPictures':FormControl<List>(value:[]),
-    'activityPictures':FormControl<List>(value:[]),
-  });
+
+
 
   final List<Map<String, String>> fieldConfigs = [
-    {'fieldName': 'waterTesting.waterTemperature', 'label': 'Water Temperature'},
+    {'fieldName': 'waterTesting.waterTemperature', 'label': 'Water Temperatures'},
     {'fieldName': 'waterTesting.pH', 'label': 'pH'},
     {'fieldName': 'waterTesting.alkalinity', 'label': 'Alkalinity'},
     {'fieldName': 'waterTesting.nitrate', 'label': 'Nitrate'},
@@ -274,8 +358,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 text: label,
                 style: TextStyle(
                     fontSize: 14.0,
-                    fontFamily: 'Montserrat',
-                    color: Resources.colors.appTheme.darkBlue
+                    fontFamily: 'WorkSans',
+                    color: Resources.colors.appTheme.lable
                 ),
               ),
             ),
@@ -291,8 +375,9 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 suffix: fieldName=="waterTesting.waterTemperature"?Text("°C")
                     :fieldName=="waterTesting.turbidity"?Text("NTU")
                     :fieldName=="waterTesting.conductivity"?Text("µs")
-                    :fieldName=="waterTesting.pH"?Text("ph")
+                    :fieldName=="waterTesting.pH"?Text("°C")
                     :fieldName=="waterTesting.totalDissolvedSolids"?Text("ppm")
+                    :fieldName=="waterTesting.alkalinity"?Text("°C")
                     :Text("mg/L"),
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
@@ -303,6 +388,11 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 helperText: '',
                 helperStyle: TextStyle(height: 0.7),
                 errorStyle: TextStyle(height: 0.7),
+              ),
+              style: TextStyle(
+                fontSize: 14.0,
+                fontFamily: 'WorkSans',
+                color: Resources.colors.appTheme.veryDarkGray,
               ),
             ),
           ],
@@ -425,8 +515,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       text: 'Activity Date',
                       style: TextStyle(
                         fontSize: 14.0,
-                        fontFamily: 'Montserrat',
-                        color:  Resources.colors.appTheme.darkBlue
+                        fontFamily: 'WorkSans',
+                        color:  Resources.colors.appTheme.lable
                       ),
                       children: const [
                         TextSpan(
@@ -448,7 +538,10 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
                       suffixIcon: IconButton(
-                        icon: Icon(Icons.calendar_today),
+                        icon: Icon(
+                          Icons.calendar_today,
+                          color: Resources.colors.appTheme.blue,// Set the color you want here
+                        ),
                         onPressed: () async {
                           final selectedDate = await showDatePicker(
                             context: context,
@@ -466,13 +559,18 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 12),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                          color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
+                          color:Resources.colors.appTheme.lable,  // Replace with your desired focus border color
                           width: 1.0,         // Replace with your desired focus border width
                         ),
                       ),
                       helperText: '',
                       helperStyle: TextStyle(height: 0.7),
                       errorStyle: TextStyle(height: 1),
+                    ),
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      fontFamily: 'WorkSans',
+                      color: Resources.colors.appTheme.veryDarkGray,
                     ),
                   ),
                 ],
@@ -486,8 +584,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       text: 'Activity Time',
                       style: TextStyle(
                           fontSize: 14.0,
-                          fontFamily: 'Montserrat',
-                          color: Resources.colors.appTheme.darkBlue
+                          fontFamily: 'WorkSans',
+                          color: Resources.colors.appTheme.lable
                       ),
                       children: const [
                         TextSpan(
@@ -509,7 +607,10 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
                       suffixIcon: IconButton(
-                        icon: Icon(Icons.schedule),
+                        icon: Icon(
+                          Icons.schedule,
+                          color: Resources.colors.appTheme.blue,// Set the color you want here
+                        ),
                         onPressed: () async {
                           final selectedTime = await showTimePicker(
                             context: context,
@@ -532,6 +633,11 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       helperStyle: TextStyle(height: 0.7),
                       errorStyle: TextStyle(height: 1),
                     ),
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      fontFamily: 'WorkSans',
+                      color: Resources.colors.appTheme.veryDarkGray,
+                    ),
                   ),
                 ],
               ),
@@ -544,8 +650,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       text: 'Tester Name',
                       style: TextStyle(
                           fontSize: 14.0,
-                          fontFamily: 'Montserrat',
-                          color: Resources.colors.appTheme.darkBlue
+                          fontFamily: 'WorkSans',
+                          color: Resources.colors.appTheme.lable
                       ),
                       children: const [
                         TextSpan(
@@ -575,6 +681,11 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       // helperStyle: TextStyle(height: 0.7),
                       errorStyle: TextStyle(height: 1),
                     ),
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      fontFamily: 'WorkSans',
+                      color: Resources.colors.appTheme.veryDarkGray,
+                    ),
                   ),
                 ],
               ),
@@ -587,8 +698,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       text: 'Location',
                       style: TextStyle(
                           fontSize: 14.0,
-                          fontFamily: 'Montserrat',
-                          color: Resources.colors.appTheme.darkBlue
+                          fontFamily: 'WorkSans',
+                          color: Resources.colors.appTheme.lable
                       ),
                       children: const [
                         TextSpan(
@@ -618,7 +729,10 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         decoration:  InputDecoration(
                           border: UnderlineInputBorder(),
                           suffixIcon: IconButton(
-                            icon: const Icon(Icons.gps_fixed),
+                            icon: Icon(
+                              Icons.gps_fixed,
+                              color: Resources.colors.appTheme.blue,// Set the color you want here
+                            ),
                             onPressed: () async {
                               _navigateToMap();
                             },
@@ -629,6 +743,11 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               width: 1.0,         // Replace with your desired focus border width
                             ),
                           ),
+                        ),
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          fontFamily: 'WorkSans',
+                          color: Resources.colors.appTheme.veryDarkGray,
                         ),
                       ),
                       suggestionsCallback: (pattern) async {
@@ -665,8 +784,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       text: 'Latitude',
                       style: TextStyle(
                           fontSize: 14.0,
-                          fontFamily: 'Montserrat',
-                          color: Resources.colors.appTheme.darkBlue
+                          fontFamily: 'WorkSans',
+                          color: Resources.colors.appTheme.lable
                       ),
                       children: const [
                         TextSpan(
@@ -697,6 +816,11 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       helperStyle: TextStyle(height: 0.7),
                       errorStyle: TextStyle(height: 1),
                     ),
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      fontFamily: 'WorkSans',
+                      color: Resources.colors.appTheme.veryDarkGray,
+                    ),
                   ),
                 ],
               ),
@@ -709,8 +833,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       text: 'Longitude',
                       style: TextStyle(
                           fontSize: 14.0,
-                          fontFamily: 'Montserrat',
-                          color: Resources.colors.appTheme.darkBlue
+                          fontFamily: 'WorkSans',
+                          color: Resources.colors.appTheme.lable
                       ),
                       children: const [
                         TextSpan(
@@ -741,6 +865,11 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       helperStyle: TextStyle(height: 0.7),
                       errorStyle: TextStyle(height: 1),
                     ),
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      fontFamily: 'WorkSans',
+                      color: Resources.colors.appTheme.veryDarkGray,
+                    ),
                   ),
                 ],
               ),
@@ -755,13 +884,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   //STEP 2 : WATER LEVEL & WEATHER
   _waterAndWeatherInformation(){
     return SingleChildScrollView(
-      child: Column(
+      child: isLoading?CircularProgressIndicator():Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text("Water Level & Weather",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16,fontWeight: FontWeight.w600),),
           const SizedBox(height: 10,),
-          _error==true?const Text("Please fill all details",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
           ReactiveForm(
             formGroup: form,
             child: Column(
@@ -775,8 +903,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         text: 'Measure the air temperature',
                         style: TextStyle(
                             fontSize: 14.0,
-                            fontFamily: 'Montserrat',
-                            color: Resources.colors.appTheme.darkBlue
+                            fontFamily: 'WorkSans',
+                            color: Resources.colors.appTheme.lable
                         ),
                         children: const [
                           TextSpan(
@@ -808,16 +936,22 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         helperStyle: TextStyle(height: 0.7),
                         errorStyle: TextStyle(height: 1),
                       ),
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        fontFamily: 'WorkSans',
+                        color: Resources.colors.appTheme.veryDarkGray,
+                      ),
                     ),
                   ],
                 ),
+                _error==true?const Text("This field is required",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
                 RichText(
                   text:  TextSpan(
                     text: 'Observe the Water Level',
                     style: TextStyle(
                         fontSize: 14.0,
-                        fontFamily: 'Montserrat',
-                        color: Resources.colors.appTheme.darkBlue
+                        fontFamily: 'WorkSans',
+                        color: Resources.colors.appTheme.lable
                     ),
                     children: const [
                       TextSpan(
@@ -871,8 +1005,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     text: 'Weather Condtions',
                     style: TextStyle(
                         fontSize: 14.0,
-                        fontFamily: 'Montserrat',
-                        color: Resources.colors.appTheme.darkBlue
+                        fontFamily: 'WorkSans',
+                        color: Resources.colors.appTheme.lable
                     ),
                     children: const [
                       TextSpan(
@@ -926,8 +1060,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     text: 'River Pictures',
                     style: TextStyle(
                         fontSize: 14.0,
-                        fontFamily: 'Montserrat',
-                        color: Resources.colors.appTheme.darkBlue
+                        fontFamily: 'WorkSans',
+                        color: Resources.colors.appTheme.lable
                     ),
                     children: const [
                       TextSpan(
@@ -978,75 +1112,114 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
             ),
           ),
           const SizedBox(height: 10.0),
+          _error==true?const Text("This image is required",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
+          // if(riverPictures != null)
+          //   Container(child:Image.network(
+          //     riverPictures[0]['imageURL'],
+          //     loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+          //       if (loadingProgress == null) {
+          //         return child;
+          //       } else {
+          //         return CircularProgressIndicator(
+          //           value: loadingProgress.expectedTotalBytes != null
+          //               ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+          //               : null,
+          //         );
+          //       }
+          //     },
+          //   ),),
           if (selectedRiverImages.isNotEmpty)
             Container(
                 margin: EdgeInsets.symmetric( vertical: 20),
                 child: Container(
-                    height: 225,
+                    height: 255,
                     child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemCount: selectedRiverImages.length,
                         itemBuilder: (BuildContext ctxt, int Index) {
-                          return Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(color: Colors.white),
-                                  child: Stack(
-                                    alignment: Alignment.topRight,
-                                    children:[
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Container(
-                                          height: (MediaQuery.of(context).size.width - 100) /1.6,
-                                          // width: (MediaQuery.of(context).size.width - 30) / 2,
-                                            child: Image.file(
-                                                fit: BoxFit.fill,
-                                                File(selectedRiverImages[Index]!.path)
-                                            )
+                          return SingleChildScrollView(
+                            child: Container(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(color: Colors.white),
+                                    child: Stack(
+                                      alignment: Alignment.topRight,
+                                      children:[
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Container(
+                                            height: (MediaQuery.of(context).size.width - 100) /1.6,
+                                            // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                              child: Image.file(
+                                                  fit: BoxFit.fill,
+                                                  File(selectedRiverImages[Index]!.path)
+                                              )
+                                          ),
                                         ),
-                                      ),
-                                      Align(
-                                          alignment: Alignment.topRight,
-                                          child: IconButton(
-                                              onPressed: () {
-                                                setState(() {
-                                                  selectedRiverImages.removeAt(Index);
-                                                  riverDescriptions.removeAt(Index);
-                                                  _steps = _generateSteps();
-                                                });
-                                              },
-                                              icon: const Icon(
-                                                Icons.delete,
-                                                color: Colors.red,
-                                              ))),
-                                    ]
+                                        Align(
+                                            alignment: Alignment.topRight,
+                                            child: IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    selectedRiverImages.removeAt(Index);
+                                                    riverDescriptions.removeAt(Index);
+                                                    _steps = _generateSteps();
+                                                  });
+                                                },
+                                                icon: const Icon(
+                                                  Icons.delete,
+                                                  color: Colors.red,
+                                                ))),
+                                      ]
+                                    ),
                                   ),
+                                  RichText(
+                              text:  TextSpan(
+                                text: 'Description',
+                                style: TextStyle(
+                                    fontSize: 14.0,
+                                    fontFamily: 'WorkSans',
+                                    color: Resources.colors.appTheme.lable
                                 ),
-                                Container(
-                                    width: 170,
-                                    height: 20,
-                                    decoration: const BoxDecoration(
-                                        color: Colors.white,
-                                       ),
-                                    // padding: EdgeInsets.symmetric(horizontal: 5),
-                                    child: TextFormField(
-                                      autofocus: false,
-                                      controller:
-                                      riverDescriptions[Index],
-                                      style: TextStyle(fontSize: 12),
-                                      decoration: const InputDecoration(
-                                        border:OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                // children: const [
+                                //   TextSpan(
+                                //     text: ' *',
+                                //     style: TextStyle(
+                                //       fontSize: 16.0,
+                                //       color: Colors.red,
+                                //     ),
+                                //   ),
+                                // ],
+                              ),
+                          ),
+                                  SizedBox(height: 5,),
+                                  Container(
+                                      width: 170,
+                                      height: 50,
+                                      decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                         ),
+                                      // padding: EdgeInsets.symmetric(horizontal: 5),
+                                      child: TextFormField(
+                                        autofocus: false,
+                                        controller:
+                                        riverDescriptions[Index],
+                                        style: TextStyle(fontSize: 12),
+                                        decoration: const InputDecoration(
+                                          border:OutlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                          ),
+                                          focusedBorder:OutlineInputBorder(
+                                            borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                          ),
                                         ),
-                                        focusedBorder:OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.black, width: 1.0),
-                                        ),
-                                      ),
-                                    )),
-                              ],
+                                      )),
+                                ],
+                              ),
                             ),
                           );
                         })
@@ -1059,13 +1232,14 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
 
   //STEP 3 : OBSERVE YOUR SURROUNDINGS
   _surrounding(){
-    return Column(
+    return SingleChildScrollView(
+      child: isLoading?CircularProgressIndicator():Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("Observe your Surroundings",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16,fontWeight: FontWeight.w600),),
         const SizedBox(height: 10,),
-        _error==true?const Text("Please fill all details",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
+        _error==true?const Text("Please select at least 1 surrounding",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
         ReactiveForm(
           formGroup: form,
           child: Column(
@@ -1076,8 +1250,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   text: 'Surroundings',
                   style: TextStyle(
                       fontSize: 14.0,
-                      fontFamily: 'Montserrat',
-                      color: Resources.colors.appTheme.darkBlue
+                      fontFamily: 'WorkSans',
+                      color: Resources.colors.appTheme.lable
                   ),
                   children: const [
                     TextSpan(
@@ -1108,6 +1282,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                           width: 0.5, // Set the border width
                         ),
                       ),
+
                       selected: selectedSurroundings.contains(item),
                       selectedColor: Resources.colors.appTheme.lightTeal,
                       backgroundColor: Colors.white,
@@ -1163,7 +1338,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       'Other...',
                       style: TextStyle(
                         fontSize: 14.0,
-                        fontFamily: 'Montserrat',
+                        fontFamily: 'WorkSans',
                       ),
                     ),
                   ),
@@ -1175,7 +1350,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     });
                     _steps = _generateSteps();
                   },
-                  activeColor: Resources.colors.appTheme.darkBlue, // Set the desired dark blue color
+                  activeColor: Resources.colors.appTheme.lable, // Set the desired dark blue color
                   checkColor: Colors.white, // Set the check color to white
                 ),
               ),
@@ -1185,8 +1360,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   'Additional Details',
                   style: TextStyle(
                     fontSize: 14.0,
-                    fontFamily: 'Montserrat',
-                    color: Resources.colors.appTheme.darkBlue,
+                    fontFamily: 'WorkSans',
+                    color: Resources.colors.appTheme.lable,
                   ),
                 ),
                 TextFormField(
@@ -1235,8 +1410,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   text: 'Surrounding Pictures',
                   style: TextStyle(
                       fontSize: 14.0,
-                      fontFamily: 'Montserrat',
-                      color: Resources.colors.appTheme.darkBlue
+                      fontFamily: 'WorkSans',
+                      color: Resources.colors.appTheme.lable
                   ),
                   children: const [
                     TextSpan(
@@ -1288,83 +1463,129 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           ),
         ),
         SizedBox(height: 16.0),
+        _error==true?const Text("This image is required",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
+        if(surroundingPictures != null)
+          Container(child:Image.network(
+            surroundingPictures[0]['imageURL'],
+            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+              if (loadingProgress == null) {
+                return child;
+              } else {
+                return CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                      : null,
+                );
+              }
+            },
+          ),),
         if (selectedSurroundingImages.isNotEmpty)
           Container(
               margin:
               EdgeInsets.symmetric(vertical: 20),
               child: Container(
-                  height: 225,
+                  height: 255,
                   child: ListView.builder(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
                       itemCount: selectedSurroundingImages.length,
                       itemBuilder: (BuildContext ctxt, int Index) {
-                        return Container(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Stack(
-                                alignment: Alignment.topRight,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Container(
-                                        height: (MediaQuery.of(context).size.width - 100) /1.6,
-                                       // width: (MediaQuery.of(context).size.width - 30) / 2,
-                                        child: Image.file(
-                                            fit: BoxFit.fill,
-                                            File(selectedSurroundingImages[Index]!.path)
-                                        )
-                                    ),
-                                  ),
-                                  Align(
+                        return SingleChildScrollView(
+                          child: Container(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(color: Colors.white),
+                                  child: Stack(
                                       alignment: Alignment.topRight,
-                                      child: IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              selectedSurroundingImages.removeAt(Index);
-                                              surroundingDescriptions.removeAt(Index);
-                                              _steps = _generateSteps();
-                                            });
-                                          },
-                                          icon: const Icon(
-                                            Icons.delete,
-                                            color: Colors.red,
-                                          ))),
-                                ],
-                              ),
-                              Container(  width: 170,
-                                  height: 20,
-                                  decoration: const BoxDecoration(
-                                      color: Colors.white,
+                                      children:[
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Container(
+                                              height: (MediaQuery.of(context).size.width - 100) /1.6,
+                                              // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                              child: Image.file(
+                                                  fit: BoxFit.fill,
+                                                  File(selectedSurroundingImages[Index]!.path)
+                                              )
+                                          ),
+                                        ),
+                                        Align(
+                                            alignment: Alignment.topRight,
+                                            child: IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    selectedSurroundingImages.removeAt(Index);
+                                                    surroundingDescriptions.removeAt(Index);
+                                                    _steps = _generateSteps();
+                                                  });
+                                                },
+                                                icon: const Icon(
+                                                  Icons.delete,
+                                                  color: Colors.red,
+                                                ))),
+                                      ]
                                   ),
-                                  child: TextFormField(
-                                    autofocus: false,
-                                    controller:
-                                    surroundingDescriptions[Index],
-                                    style: const TextStyle(fontSize: 12),
-                                    decoration: const InputDecoration(
-                                      border:OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                      ),
-                                      focusedBorder:OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                      ),
+                                ),
+                                RichText(
+                                  text:  TextSpan(
+                                    text: 'Description',
+                                    style: TextStyle(
+                                        fontSize: 14.0,
+                                        fontFamily: 'WorkSans',
+                                        color: Resources.colors.appTheme.lable
                                     ),
-                                  )),
-                            ],
+                                    // children: const [
+                                    //   TextSpan(
+                                    //     text: ' *',
+                                    //     style: TextStyle(
+                                    //       fontSize: 16.0,
+                                    //       color: Colors.red,
+                                    //     ),
+                                    //   ),
+                                    // ],
+                                  ),
+                                ),
+                                SizedBox(height: 5,),
+                                Container(
+                                    width: 170,
+                                    height: 50,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                    ),
+                                    // padding: EdgeInsets.symmetric(horizontal: 5),
+                                    child: TextFormField(
+                                      autofocus: false,
+                                      controller:
+                                      surroundingDescriptions[Index],
+                                      style: TextStyle(fontSize: 12),
+                                      decoration: const InputDecoration(
+                                        border:OutlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                        ),
+                                        focusedBorder:OutlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                        ),
+                                      ),
+                                    )),
+                              ],
+                            ),
                           ),
                         );
                       })
               )
           ),
       ],
+    ),
     );
   }
 
   //STEP 4 : WATER QUALITY TESTING
   _waterQuality(){
-    return Column(
+    return SingleChildScrollView(
+      child: isLoading?CircularProgressIndicator():Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1383,8 +1604,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   text: "E-Coli/Coliform Bacteria",
                   style: TextStyle(
                       fontSize: 14.0,
-                      fontFamily: 'Montserrat',
-                      color: Resources.colors.appTheme.darkBlue
+                      fontFamily: 'WorkSans',
+                      color: Resources.colors.appTheme.lable
                   ),
                 ),
               ),
@@ -1445,13 +1666,14 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           ),
         ),
       ],
+    ),
     );
   }
 
   //STEP 5 : FLORA AND FAUNA
   _floraAndFauna(){
     return SingleChildScrollView(
-      child: Column(
+      child: isLoading?CircularProgressIndicator():Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1469,9 +1691,9 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 text: TextSpan(
                   text: "Flora",
                   style: TextStyle(
-                    fontFamily: 'Montserrat',
-                    color: Resources.colors.appTheme.darkBlue,
-                      fontSize: 16,
+                      fontFamily: 'WorkSans',
+                      color: Resources.colors.appTheme.lable,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600
                   ),
                 ),
@@ -1520,7 +1742,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     ),
                   ),
                   child: const Text(
-                    'Upload Flora Pictures',
+                    'UPLOAD FLORA PICTURES',
                     style: TextStyle(
                       color: Colors.grey,
                     ),
@@ -1530,71 +1752,117 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
             ],
           ),
           SizedBox(height: 16.0),
+          if (floraPictures != null && floraPictures.isNotEmpty)
+            Container(
+              child: Image.network(
+                floraPictures[0]['imageURL'],
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  } else {
+                    return CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                          : null,
+                    );
+                  }
+                },
+              ),
+            ),
           if (selectedFloraImages.isNotEmpty)
             Container(
               margin: EdgeInsets.symmetric(vertical: 20),
               child: Container(
-                height: 225,
+                height: 255,
                 child: ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
                   itemCount: selectedFloraImages.length,
                   itemBuilder: (BuildContext ctxt, int Index) {
-                    return Container(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Stack(
-                            alignment: Alignment.topRight,
-                            children: [
-                              Container(
-                                height: (MediaQuery.of(context).size.width - 100) /1.6,
-                                // width: (MediaQuery.of(context).size.width - 30) / 2,
-                                padding: EdgeInsets.all(8.0),
-                                child: Image.file(
-                                  fit: BoxFit.fill,
-                                  File(selectedFloraImages[Index]!.path),
-                                ),
+                    return SingleChildScrollView(
+                      child: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(color: Colors.white),
+                              child: Stack(
+                                  alignment: Alignment.topRight,
+                                  children:[
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                          height: (MediaQuery.of(context).size.width - 100) /1.6,
+                                          // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                          child: Image.file(
+                                              fit: BoxFit.fill,
+                                              File(selectedFloraImages[Index]!.path)
+                                          )
+                                      ),
+                                    ),
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                selectedFloraImages.removeAt(Index);
+                                                floraDescriptions.removeAt(Index);
+                                                _steps = _generateSteps();
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ))),
+                                  ]
                               ),
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      selectedFloraImages.removeAt(Index);
-                                      floraDescriptions.removeAt(Index);
-                                      _steps = _generateSteps();
-                                    });
-                                  },
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
+                            ),
+                            RichText(
+                              text:  TextSpan(
+                                text: 'Description',
+                                style: TextStyle(
+                                    fontSize: 14.0,
+                                  fontFamily: 'WorkSans',
+                                  color: Resources.colors.appTheme.lable,
+                                ),
+                                // children: const [
+                                //   TextSpan(
+                                //     text: ' *',
+                                //     style: TextStyle(
+                                //       fontSize: 16.0,
+                                //       color: Colors.red,
+                                //     ),
+                                //   ),
+                                // ],
+                              ),
+                            ),
+                            SizedBox(height: 5,),
+                            Container(
+                                width: 170,
+                                height: 50,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                ),
+                                // padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: TextFormField(
+                                  autofocus: false,
+                                  controller:
+                                  floraDescriptions[Index],
+                                  style: TextStyle(fontSize: 12),
+                                  decoration: const InputDecoration(
+                                    border:OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                    ),
+                                    focusedBorder:OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            width: 170,
-                            height: 20,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                            ),
-                            child: TextFormField(
-                              autofocus: false,
-                              controller: floraDescriptions[Index],
-                              style: TextStyle(fontSize: 12),
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                                )),
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -1609,14 +1877,14 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 width: 20,
                 height: 20,
               ),
-              SizedBox(width: 8), // Add some spacing between the image and the text
+              SizedBox(width: 8),
               RichText(
                 text: TextSpan(
                   text: "Fauna",
                   style: TextStyle(
-                    fontFamily: 'Montserrat',
-                    color: Resources.colors.appTheme.darkBlue,
-                    fontSize: 16,
+                      fontFamily: 'WorkSans',
+                      color: Resources.colors.appTheme.lable,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600
                   ),
                 ),
@@ -1665,7 +1933,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     ),
                   ),
                   child: const Text(
-                    'Upload Fauna Pictures',
+                    'UPLOAD FAUNA PICTURES',
                     style: TextStyle(
                       color: Colors.grey,
                     ),
@@ -1675,109 +1943,164 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
             ],
           ),
           SizedBox(height: 16.0),
+          if (faunaPictures != null && faunaPictures.isNotEmpty)
+            Container(
+              child: Image.network(
+                faunaPictures[0]['imageURL'],
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  } else {
+                    return CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                          : null,
+                    );
+                  }
+                },
+              ),
+            ),
           if (selectedFaunaImages.isNotEmpty)
             Container(
               margin: EdgeInsets.symmetric(vertical: 20),
               child: Container(
-                height: 225,
+                height: 255,
                 child: ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
                   itemCount: selectedFaunaImages.length,
                   itemBuilder: (BuildContext ctxt, int Index) {
-                    return Container(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Stack(
-                            alignment: Alignment.topRight,
-                            children: [
-                              Container(
-                                height: (MediaQuery.of(context).size.width - 100) /1.6,
-                                // width: (MediaQuery.of(context).size.width - 30) / 2,
-                                padding: EdgeInsets.all(8.0),
-                                child: Image.file(
-                                  fit: BoxFit.fill,
-                                  File(selectedFaunaImages[Index]!.path),
-                                ),
+                    return SingleChildScrollView(
+                      child: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(color: Colors.white),
+                              child: Stack(
+                                  alignment: Alignment.topRight,
+                                  children:[
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                          height: (MediaQuery.of(context).size.width - 100) /1.6,
+                                          // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                          child: Image.file(
+                                              fit: BoxFit.fill,
+                                              File(selectedFaunaImages[Index]!.path)
+                                          )
+                                      ),
+                                    ),
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                selectedFaunaImages.removeAt(Index);
+                                                faunaDescriptions.removeAt(Index);
+                                                _steps = _generateSteps();
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ))),
+                                  ]
                               ),
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      selectedFaunaImages.removeAt(Index);
-                                      faunaDescriptions.removeAt(Index);
-                                      _steps = _generateSteps();
-                                    });
-                                  },
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
+                            ),
+                            RichText(
+                              text:  TextSpan(
+                                text: 'Description',
+                                style: TextStyle(
+                                    fontSize: 14.0,
+                                  fontFamily: 'WorkSans',
+                                  color: Resources.colors.appTheme.lable,
+                                ),
+                                // children: const [
+                                //   TextSpan(
+                                //     text: ' *',
+                                //     style: TextStyle(
+                                //       fontSize: 16.0,
+                                //       color: Colors.red,
+                                //     ),
+                                //   ),
+                                // ],
+                              ),
+                            ),
+                            SizedBox(height: 5,),
+                            Container(
+                                width: 170,
+                                height: 50,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                ),
+                                // padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: TextFormField(
+                                  autofocus: false,
+                                  controller:
+                                  faunaDescriptions[Index],
+                                  style: TextStyle(fontSize: 12),
+                                  decoration: const InputDecoration(
+                                    border:OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                    ),
+                                    focusedBorder:OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            width: 170,
-                            height: 20,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                            ),
-                            child: TextFormField(
-                              autofocus: false,
-                              controller: faunaDescriptions[Index],
-                              style: TextStyle(fontSize: 12),
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                                )),
+                          ],
+                        ),
                       ),
                     );
                   },
                 ),
               ),
             ),
-
-
-
-
         ],
       ),
     );
   }
 
   //STEP 6 : FLORA AND FAUNA
-  _otherPictures(){
+  _otherPictures() {
     return SingleChildScrollView(
-      child: Column(
+      child: isLoading
+          ? CircularProgressIndicator()
+          : Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Pictures (Optional)",style: TextStyle(color: Resources.colors.appTheme.darkBlue,fontSize: 16,fontWeight: FontWeight.w600),),
+          Text(
+            "Pictures (Optional)",
+            style: TextStyle(
+                color: Resources.colors.appTheme.darkBlue,
+                fontSize: 16,
+                fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 10,),
-          _error==true?const Text("Please fill all details",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
+          _error == true
+              ? const Text(
+            "Please fill all details",
+            style: TextStyle(color: Colors.red, fontSize: 10),
+          )
+              : SizedBox(),
           RichText(
             text: TextSpan(
               text: "Group pictures",
               style: TextStyle(
                 fontSize: 14.0,
-                fontFamily: 'Montserrat',
-                color: Resources.colors.appTheme.darkBlue,
+                fontFamily: 'WorkSans',
+                color: Resources.colors.appTheme.lable,
               ),
             ),
           ),
           SizedBox(height: 16.0),
           Container(
-            width: double.infinity, // Set the button width to full width
+            width: double.infinity,
             child: ElevatedButton(
               onPressed: () async {
                 var camOrGallery = await showDialog(
@@ -1794,7 +2117,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 }
               },
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                backgroundColor:
+                MaterialStateProperty.all<Color>(Colors.white),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20.0),
@@ -1805,7 +2129,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 ),
               ),
               child: const Text(
-                'Upload Group Pictures',
+                'UPLOAD GROUP PICTURES',
                 style: TextStyle(
                   color: Colors.grey,
                 ),
@@ -1813,90 +2137,137 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
             ),
           ),
           SizedBox(height: 16.0),
+          if (groupPictures != null && groupPictures.isNotEmpty)
+            Container(
+              child: Image.network(
+                groupPictures[0]['imageURL'],
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  } else {
+                    return CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                          : null,
+                    );
+                  }
+                },
+              ),
+            ),
           if (selectedGroupImages.isNotEmpty)
             Container(
               margin: EdgeInsets.symmetric(vertical: 20),
               child: Container(
-                height: 225,
+                height: 255,
                 child: ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
                   itemCount: selectedGroupImages.length,
                   itemBuilder: (BuildContext ctxt, int Index) {
-                    return Container(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Stack(
-                            alignment: Alignment.topRight,
-                            children: [
-                              Container(
-                                height: (MediaQuery.of(context).size.width - 100) /1.6,
-                                // width: (MediaQuery.of(context).size.width - 30) / 2,
-                                padding: EdgeInsets.all(8.0),
-                                child: Image.file(
-                                  fit: BoxFit.fill,
-                                  File(selectedGroupImages[Index]!.path),
-                                ),
+                    return SingleChildScrollView(
+                      child: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(color: Colors.white),
+                              child: Stack(
+                                  alignment: Alignment.topRight,
+                                  children:[
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                          height: (MediaQuery.of(context).size.width - 100) /1.6,
+                                          // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                          child: Image.file(
+                                              fit: BoxFit.fill,
+                                              File(selectedGroupImages[Index]!.path)
+                                          )
+                                      ),
+                                    ),
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                selectedGroupImages.removeAt(Index);
+                                                groupImageDescriptions.removeAt(Index);
+                                                _steps = _generateSteps();
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ))),
+                                  ]
                               ),
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      selectedGroupImages.removeAt(Index);
-                                      groupImageDescriptions.removeAt(Index);
-                                      _steps = _generateSteps();
-                                    });
-                                  },
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
+                            ),
+                            RichText(
+                              text:  TextSpan(
+                                text: 'Description',
+                                style: TextStyle(
+                                    fontSize: 14.0,
+                                  fontFamily: 'WorkSans',
+                                  color: Resources.colors.appTheme.lable,
+                                ),
+                                // children: const [
+                                //   TextSpan(
+                                //     text: ' *',
+                                //     style: TextStyle(
+                                //       fontSize: 16.0,
+                                //       color: Colors.red,
+                                //     ),
+                                //   ),
+                                // ],
+                              ),
+                            ),
+                            SizedBox(height: 5,),
+                            Container(
+                                width: 170,
+                                height: 50,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                ),
+                                // padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: TextFormField(
+                                  autofocus: false,
+                                  controller:
+                                  groupImageDescriptions[Index],
+                                  style: TextStyle(fontSize: 12),
+                                  decoration: const InputDecoration(
+                                    border:OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                    ),
+                                    focusedBorder:OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            width: 170,
-                            height: 20,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                            ),
-                            child: TextFormField(
-                              autofocus: false,
-                              controller: groupImageDescriptions[Index],
-                              style: const TextStyle(fontSize: 12),
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                                )),
+                          ],
+                        ),
                       ),
                     );
                   },
                 ),
               ),
             ),
+
           RichText(
             text: TextSpan(
               text: "Activity pictures",
               style: TextStyle(
                 fontSize: 14.0,
-                fontFamily: 'Montserrat',
-                color: Resources.colors.appTheme.darkBlue,
+                fontFamily: 'WorkSans',
+                color: Resources.colors.appTheme.lable,
               ),
             ),
           ),
           SizedBox(height: 16.0),
           Container(
-            width: double.infinity, // Set the button width to full width
+            width: double.infinity,
             child: ElevatedButton(
               onPressed: () async {
                 var camOrGallery = await showDialog(
@@ -1913,7 +2284,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 }
               },
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                backgroundColor:
+                MaterialStateProperty.all<Color>(Colors.white),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20.0),
@@ -1924,7 +2296,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 ),
               ),
               child: const Text(
-                'Upload Activity Pictures',
+                'UPLOAD ACTIVITY PICTURES',
                 style: TextStyle(
                   color: Colors.grey,
                 ),
@@ -1932,72 +2304,117 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
             ),
           ),
           SizedBox(height: 16.0),
+          if (activityPictures != null && activityPictures.isNotEmpty)
+            Container(
+              child: Image.network(
+                activityPictures[0]['imageURL'],
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  } else {
+                    return CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                          : null,
+                    );
+                  }
+                },
+              ),
+            ),
           if (selectedActivityImages.isNotEmpty)
             Container(
               margin: EdgeInsets.symmetric(vertical: 20),
               child: Container(
-                height: 225,
+                height: 255,
                 child: ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
                   itemCount: selectedActivityImages.length,
                   itemBuilder: (BuildContext ctxt, int Index) {
-                    return Container(
-                      alignment: Alignment.bottomLeft,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Stack(
-                            alignment: Alignment.topRight,
-                            children: [
-                              Container(
-                                height: (MediaQuery.of(context).size.width - 100) /1.6,
-                                // width: (MediaQuery.of(context).size.width - 30) / 2,
-                                padding: EdgeInsets.all(8.0),
-                                child: Image.file(
-                                  fit: BoxFit.fill,
-                                  File(selectedActivityImages[Index]!.path),
-                                ),
+                    return SingleChildScrollView(
+                      child: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(color: Colors.white),
+                              child: Stack(
+                                  alignment: Alignment.topRight,
+                                  children:[
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                          height: (MediaQuery.of(context).size.width - 100) /1.6,
+                                          // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                          child: Image.file(
+                                              fit: BoxFit.fill,
+                                              File(selectedActivityImages[Index]!.path)
+                                          )
+                                      ),
+                                    ),
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                selectedActivityImages.removeAt(Index);
+                                                activityImageDescriptions.removeAt(Index);
+                                                _steps = _generateSteps();
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ))),
+                                  ]
                               ),
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      selectedActivityImages.removeAt(Index);
-                                      activityImageDescriptions.removeAt(Index);
-                                      _steps = _generateSteps();
-                                    });
-                                  },
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
+                            ),
+                            RichText(
+                              text:  TextSpan(
+                                text: 'Description',
+                                style: TextStyle(
+                                    fontSize: 14.0,
+                                  fontFamily: 'WorkSans',
+                                  color: Resources.colors.appTheme.lable,
+                                ),
+                                // children: const [
+                                //   TextSpan(
+                                //     text: ' *',
+                                //     style: TextStyle(
+                                //       fontSize: 16.0,
+                                //       color: Colors.red,
+                                //     ),
+                                //   ),
+                                // ],
+                              ),
+                            ),
+                            SizedBox(height: 5,),
+                            Container(
+                                width: 170,
+                                height: 50,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                ),
+                                // padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: TextFormField(
+                                  autofocus: false,
+                                  controller:
+                                  activityImageDescriptions[Index],
+                                  style: TextStyle(fontSize: 12),
+                                  decoration: const InputDecoration(
+                                    border:OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                    ),
+                                    focusedBorder:OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            width: 170,
-                            height: 20,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                            ),
-                            child: TextFormField(
-                              autofocus: false,
-                              controller: activityImageDescriptions[Index],
-                              style: const TextStyle(fontSize: 12),
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                                )),
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -2010,14 +2427,14 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
               text: "Artworks",
               style: TextStyle(
                 fontSize: 14.0,
-                fontFamily: 'Montserrat',
-                color: Resources.colors.appTheme.darkBlue,
+                fontFamily: 'WorkSans',
+                color: Resources.colors.appTheme.lable,
               ),
             ),
           ),
           SizedBox(height: 16.0),
           Container(
-            width: double.infinity, // Set the button width to full width
+            width: double.infinity,
             child: ElevatedButton(
               onPressed: () async {
                 var camOrGallery = await showDialog(
@@ -2034,7 +2451,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 }
               },
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                backgroundColor:
+                MaterialStateProperty.all<Color>(Colors.white),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20.0),
@@ -2045,7 +2463,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                 ),
               ),
               child: const Text(
-                'Upload Artwork',
+                'UPLOAD ARTWORK',
                 style: TextStyle(
                   color: Colors.grey,
                 ),
@@ -2053,78 +2471,123 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
             ),
           ),
           SizedBox(height: 16.0),
+          if (artworkPictures != null && artworkPictures.isNotEmpty)
+            Container(
+              child: Image.network(
+                artworkPictures[0]['imageURL'],
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  } else {
+                    return CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                          : null,
+                    );
+                  }
+                },
+              ),
+            ),
           if (selectedArtworkImages.isNotEmpty)
             Container(
               margin: EdgeInsets.symmetric(vertical: 20),
               child: Container(
-                height: 225,
+                height: 255,
                 child: ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
                   itemCount: selectedArtworkImages.length,
                   itemBuilder: (BuildContext ctxt, int Index) {
-                    return Container(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Stack(
-                            alignment: Alignment.topRight,
-                            children: [
-                              Container(
-                                height: (MediaQuery.of(context).size.width - 100) /1.6,
-                                // width: (MediaQuery.of(context).size.width - 30) / 2,
-                                padding: EdgeInsets.all(8.0),
-                                child: Image.file(
-                                  fit: BoxFit.fill,
-                                  File(selectedArtworkImages[Index]!.path),
-                                ),
+                    return SingleChildScrollView(
+                      child: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(color: Colors.white),
+                              child: Stack(
+                                  alignment: Alignment.topRight,
+                                  children:[
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                          height: (MediaQuery.of(context).size.width - 100) /1.6,
+                                          // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                          child: Image.file(
+                                              fit: BoxFit.fill,
+                                              File(selectedArtworkImages[Index]!.path)
+                                          )
+                                      ),
+                                    ),
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                selectedArtworkImages.removeAt(Index);
+                                                artworkDescriptions.removeAt(Index);
+                                                _steps = _generateSteps();
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ))),
+                                  ]
                               ),
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      selectedArtworkImages.removeAt(Index);
-                                      artworkDescriptions.removeAt(Index);
-                                      _steps = _generateSteps();
-                                    });
-                                  },
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
+                            ),
+                            RichText(
+                              text:  TextSpan(
+                                text: 'Description',
+                                style: TextStyle(
+                                    fontSize: 14.0,
+                                  fontFamily: 'WorkSans',
+                                  color: Resources.colors.appTheme.lable,
+                                ),
+                                // children: const [
+                                //   TextSpan(
+                                //     text: ' *',
+                                //     style: TextStyle(
+                                //       fontSize: 16.0,
+                                //       color: Colors.red,
+                                //     ),
+                                //   ),
+                                // ],
+                              ),
+                            ),
+                            SizedBox(height: 5,),
+                            Container(
+                                width: 170,
+                                height: 50,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                ),
+                                // padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: TextFormField(
+                                  autofocus: false,
+                                  controller:
+                                  artworkDescriptions[Index],
+                                  style: TextStyle(fontSize: 12),
+                                  decoration: const InputDecoration(
+                                    border:OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                    ),
+                                    focusedBorder:OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            width: 170,
-                            height: 20,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                            ),
-                            child: TextFormField(
-                              autofocus: false,
-                              controller: artworkDescriptions[Index],
-                              style: TextStyle(fontSize: 12),
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                                )),
+                          ],
+                        ),
                       ),
                     );
                   },
                 ),
               ),
             ),
-
         ],
       ),
     );
@@ -2198,14 +2661,16 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               Container(
                                   child: Text("Activity Date",
                                       style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text('${form.control('generalInformation.activityDate').value ?? ''}',
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold)))
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
+                              Flexible(
+                                child: Container(
+                                    alignment: Alignment.centerRight,
+                                    child: Text('${form.control('generalInformation.activityDate').value ?? ''}',
+                                        style: TextStyle(
+                                            color: Resources.colors.appTheme.veryDarkGray,
+                                            fontWeight: FontWeight.bold))),
+                              )
                             ],
                           ),
                         ),
@@ -2218,13 +2683,13 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               Container(
                                   child: Text("Activity Time",
                                       style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
                               Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text("${form.control('generalInformation.activityTime').value ?? ''}",
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: Resources.colors.appTheme.veryDarkGray,
                                           fontWeight: FontWeight.bold)))
                             ],
                           ),
@@ -2237,19 +2702,16 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               Container(
                                   child: Text("Location",
                                       style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
                               Flexible(
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(' ${form.control('generalInformation.location').value ?? ''}',
-                                      textAlign: TextAlign.left,
-                                      style: const TextStyle(
-                                          color: Colors.black,
-                                          fontWeight:
-                                          FontWeight.bold)),
-                                ),
-                              ),
+                                child: Container(
+                                    alignment: Alignment.centerRight,
+                                    child: Text('${form.control('generalInformation.location').value ?? ''}',
+                                        style: TextStyle(
+                                            color: Resources.colors.appTheme.veryDarkGray,
+                                            fontWeight: FontWeight.bold))),
+                              )
                             ],
                           ),
                         ),
@@ -2262,13 +2724,13 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               Container(
                                   child: Text("Name",
                                       style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
                               Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text(' ${form.control('generalInformation.testerName').value ?? ''}',
-                                      style: const TextStyle(
-                                          color: Colors.black,
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.veryDarkGray,
                                           fontWeight: FontWeight.bold)))
                             ],
                           ),
@@ -2282,13 +2744,13 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               Container(
                                   child: Text("Latitude",
                                       style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
                               Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text( '${form.control('generalInformation.latitude').value ?? ''}',
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: Resources.colors.appTheme.veryDarkGray,
                                           fontWeight: FontWeight.bold)))
                             ],
                           ),
@@ -2302,13 +2764,13 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               Container(
                                   child: Text("Longitude",
                                       style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
                               Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text(' ${form.control('generalInformation.longitude').value ?? ''}',
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: Resources.colors.appTheme.veryDarkGray,
                                           fontWeight: FontWeight.bold)))
                             ],
                           ),
@@ -2372,13 +2834,13 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               Container(
                                   child: Text("Weather",
                                       style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
                               Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterLevelAndWeather.weather').value ?? ''}',
-                                      style: const TextStyle(
-                                          color: Colors.black,
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.veryDarkGray,
                                           fontWeight: FontWeight.bold)))
                             ],
                           ),
@@ -2392,14 +2854,14 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               Container(
                                   child: Text("Air Temperatue",
                                       style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
                               Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
                                       '${form.control('waterLevelAndWeather.airTemperature').value ?? ''}' + " °C",
-                                      style: const TextStyle(
-                                          color: Colors.black,
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.veryDarkGray,
                                           fontWeight: FontWeight.bold)))
                             ],
                           ),
@@ -2413,541 +2875,15 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               Container(
                                   child: Text("Water Level",
                                       style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
                               Container(
                                   alignment: Alignment.centerLeft,
                                   child: Text('${form.control('waterLevelAndWeather.waterLevel').value ?? ''}',
-                                      style: const TextStyle(
-                                          color: Colors.black,
+                                      style:  TextStyle(
+                                          color: Resources.colors.appTheme.veryDarkGray,
                                           fontWeight:
                                           FontWeight.bold))),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              )),
-          Container(
-              margin:
-              const EdgeInsets.symmetric( vertical: 20),
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Color(0xFF1C3764),
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                      padding: const EdgeInsets.only(bottom: 5),
-                      margin: const EdgeInsets.only(bottom: 20),
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          const Text(
-                            "Water Quality Testing",
-                            style: TextStyle(
-                                color: Color(
-                                  0xFF1C3764,
-                                )),
-                          ),
-                          InkWell(
-                              onTap: () {
-                                // _controller.jumpToPage(4);
-                              },
-                              child: Icon(Icons.mode_edit,
-                                  color: Color(0xFF1C3764), size: 20)),
-                        ],
-                      )),
-                  Container(
-                    margin: EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                  child: Text("Water Temperature",
-                                      style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: form.control('waterTesting.waterTemperature').value!=null?
-                                    Text('${form.control('waterTesting.waterTemperature').value }' + " °C",
-                                      style: const TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "Montserrat",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                  child: Text("pH",
-                                      style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: form.control('waterTesting.pH').value!=null?
-                                      Text(' ${form.control('waterTesting.pH').value}' + " ph",
-                                      style: TextStyle(
-                                          color: double.parse(form.control('waterTesting.pH').value)>=6.5&&double.parse(form.control('waterTesting.pH').value)<=8.5
-                                              ?Colors.green
-                                              :double.parse(form.control('waterTesting.pH').value)<6.5||double.parse(form.control('waterTesting.pH').value)>8.5
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "Montserrat",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                  child: Text("Alkalinity",
-                                      style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: form.control('waterTesting.alkalinity').value!=null?
-                                  Text('${form.control('waterTesting.alkalinity').value}' + " mg/L",
-                                      style: TextStyle(
-                                          color: double.parse(form.control('waterTesting.alkalinity').value)>=20&&double.parse(form.control('waterTesting.alkalinity').value)<=250
-                                              ?Colors.green
-                                              :double.parse(form.control('waterTesting.alkalinity').value)<20||double.parse(form.control('waterTesting.alkalinity').value)>250
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight:
-                                          FontWeight.bold))
-                                      :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "Montserrat",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600))),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                  child: Text("Nitrate",
-                                      style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: form.control('waterTesting.nitrate').value!=null?
-                                  Text('${form.control('waterTesting.nitrate').value}' + " mg/L",
-                                      style:  TextStyle(
-                                          color: int.parse(form.control('waterTesting.nitrate').value)<=1
-                                              ?Colors.green
-                                              :int.parse(form.control('waterTesting.nitrate').value)>1
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "Montserrat",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                  child: Text("Nitrite",
-                                      style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  child:form.control('waterTesting.nitrite').value!=null?
-                                  Text('${form.control('waterTesting.nitrite').value}' + " mg/L",
-                                      style: TextStyle(
-                                          color: double.parse(form.control('waterTesting.nitrite').value)<=1
-                                              ?Colors.green
-                                              :double.parse(form.control('waterTesting.nitrite').value)>1
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "Montserrat",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                  child: Text("Hardness",
-                                      style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: form.control('waterTesting.hardness').value!=null?
-                                  Text('${form.control('waterTesting.hardness').value }' + " mg/L",
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "Montserrat",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                  child: Text("Chlorine",
-                                      style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: form.control('waterTesting.chlorine').value!=null?
-                                  Text('${form.control('waterTesting.chlorine').value}' + " mg/L",
-                                      style: TextStyle(
-                                          color: double.parse(form.control('waterTesting.chlorine').value)>=0.2&&double.parse(form.control('waterTesting.chlorine').value)<=1.0
-                                              ?Colors.green
-                                              :double.parse(form.control('waterTesting.chlorine').value)<0.2||double.parse(form.control('waterTesting.chlorine').value)>1.0
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "Montserrat",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                  child: Text("Iron",
-                                      style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: form.control('waterTesting.iron').value!=null?
-                                  Text('${form.control('waterTesting.iron').value }' + " mg/L",
-                                      style: TextStyle(
-                                          color: double.parse(form.control('waterTesting.iron').value)>=0.2&&double.parse(form.control('waterTesting.iron').value)<=2.0
-                                              ?Colors.green
-                                              :double.parse(form.control('waterTesting.iron').value)<0.2||double.parse(form.control('waterTesting.iron').value)>2.0
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "Montserrat",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                  child: Text("Dissolved oxygen",
-                                      style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: form.control('waterTesting.dissolvedOxygen').value!=null?
-                                  Text(
-                                      '${form.control('waterTesting.dissolvedOxygen').value ?? ''}' + " mg/L",
-                                      style: TextStyle(
-                                          color: double.parse(form.control('waterTesting.dissolvedOxygen').value)>=4.0&&double.parse(form.control('waterTesting.dissolvedOxygen').value)<=20.0
-                                              ?Colors.green
-                                              :double.parse(form.control('waterTesting.dissolvedOxygen').value)<4.0||double.parse(form.control('waterTesting.dissolvedOxygen').value)>20.0
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "Montserrat",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                  child: Text(
-                                      "E Coli/Coliform Bacteria",
-                                      style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: form.control('waterTesting.bacteria').value!=null?
-                                  Text(
-                                      '${form.control('waterTesting.bacteria').value}' + " ",
-                                      style: TextStyle(
-                                          color: form.control('waterTesting.bacteria').value=="Absent"
-                                              ?Colors.green
-                                              :form.control('waterTesting.bacteria').value=="Present"
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "Montserrat",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                  child: Text("Turbidity",
-                                      style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: form.control('waterTesting.turbidity').value!=null?
-                                  Text('${form.control('waterTesting.turbidity').value}' + " NTU",
-                                      style: TextStyle(
-                                          color: int.parse(form.control('waterTesting.turbidity').value)<=15000
-                                              ?Colors.green
-                                              :int.parse(form.control('waterTesting.turbidity').value)>15000
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "Montserrat",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                  child: Text("Phosphate",
-                                      style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: form.control('waterTesting.phosphate').value!=null?
-                                  Text('${form.control('waterTesting.phosphate').value }' + " mg/L",
-                                      style: TextStyle(
-                                          color: double.parse(form.control('waterTesting.phosphate').value)<=0.1
-                                              ?Colors.green
-                                              :double.parse(form.control('waterTesting.phosphate').value)>0.1
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "Montserrat",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                  child: Text("Ammonia",
-                                      style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  child:form.control('waterTesting.ammonia').value!=null?
-                                  Text('${form.control('waterTesting.ammonia').value }' + " mg/L",
-                                      style: TextStyle(
-                                          color: double.parse(form.control('waterTesting.ammonia').value)>=0.2&&double.parse(form.control('waterTesting.ammonia').value)<=1.2
-                                              ?Colors.green
-                                              :double.parse(form.control('waterTesting.ammonia').value)<0.2||double.parse(form.control('waterTesting.ammonia').value)>1.2
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "Montserrat",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                  child: Text("Lead",
-                                      style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: form.control('waterTesting.lead').value!=null?
-                                  Text('${form.control('waterTesting.lead').value}' + " mg/L",
-                                      style: TextStyle(
-                                          color: double.parse(form.control('waterTesting.lead').value)==0
-                                              ?Colors.green
-                                              :double.parse(form.control('waterTesting.lead').value)>0
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "Montserrat",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                  child: Text("Total Dissolved Solids",
-                                      style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: form.control('waterTesting.totalDissolvedSolids').value!=null?
-                                  Text('${form.control('waterTesting.totalDissolvedSolids').value}' + " ppm",
-                                      style: TextStyle(
-                                          color: double.parse(form.control('waterTesting.totalDissolvedSolids').value)<900
-                                              ?Colors.green
-                                              :double.parse(form.control('waterTesting.totalDissolvedSolids').value)>=900
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "Montserrat",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                  child: Text("Conductivity",
-                                      style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontFamily: "Montserrat"))),
-                              Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: form.control('waterTesting.conductivity').value!=null?
-                                  Text('${form.control('waterTesting.conductivity').value }' + " µs",
-                                      style: TextStyle(
-                                          color: double.parse(form.control('waterTesting.conductivity').value)<1000&&double.parse(form.control('waterTesting.conductivity').value)>10000
-                                              ?Colors.green
-                                              :double.parse(form.control('waterTesting.conductivity').value)>=1000||double.parse(form.control('waterTesting.conductivity').value)<=10000
-                                              ?Colors.red
-                                              :Colors.black,
-                                          fontWeight: FontWeight.bold))
-                              :const Text("--",style: TextStyle(
-                                      color: Colors.green,
-                                      fontFamily: "Montserrat",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)))
                             ],
                           ),
                         ),
@@ -2982,7 +2918,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           const Text(
-                            "Rivers",
+                            "River Pictures",
                             style: TextStyle(
                                 color: Color(
                                   0xFF1C3764,
@@ -3017,7 +2953,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                     child: Column(
                                       children: [
                                         Container(
-                                            // width:180,
+                                          // width:180,
                                             height:90,
                                             child: Image.file(
                                                 fit: BoxFit.fill,
@@ -3028,21 +2964,19 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                         Container(
                                           height: 30,
                                           child: TextFormField(
-                                            controller:
-                                            riverDescriptions[Index],
-                                            style:
-                                            const TextStyle(fontSize: 12),
-                                            readOnly:true,
+                                            controller: riverDescriptions[Index],
+                                            style: const TextStyle(fontSize: 12),
+                                            readOnly: true,
                                             decoration: const InputDecoration(
-                                              border:OutlineInputBorder(
+                                              border: OutlineInputBorder(
                                                 borderSide: BorderSide(color: Colors.white, width: 1.0),
                                               ),
-                                              focusedBorder:OutlineInputBorder(
+                                              focusedBorder: OutlineInputBorder(
                                                 borderSide: BorderSide(color: Colors.white, width: 1.0),
                                               ),
                                             ),
                                           ),
-                                        ),
+                                        )
                                       ],
                                     ),
                                   );
@@ -3051,7 +2985,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
               )),
           Container(
               margin: const EdgeInsets.symmetric( vertical: 20),
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.all(30),
               decoration: BoxDecoration(
                 border: Border.all(
                   color: Color(0xFF1C3764),
@@ -3090,35 +3024,46 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       )),
                   if (selectedSurroundings.length > 0)
                     Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 0, vertical: 5),
-                        child: Container(
-                            height: 100,
-                            child: ListView.builder(
-                                itemCount: selectedSurroundings.length,
-                                itemBuilder:
-                                    (BuildContext ctxt, int Index) {
-                                  return Container(
-                                    margin: EdgeInsets.only(right: 10),
-                                    padding: const EdgeInsets.only(
-                                        bottom: 10, left: 5),
-                                    alignment: Alignment.bottomLeft,
-                                    child: Column(
-                                      children: [
-                                       Container
-                                         (
-                                           padding: EdgeInsets.only(left:10),
-                                           child: Text(selectedSurroundings[Index]))
-                                      ],
-                                    ),
-                                  );
-                                }))),
+                      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 3),
+                      child: Container(
+                        height: 200,
+                        child: Wrap(
+                          spacing: 5, // Horizontal spacing between buttons
+                          runSpacing: 5, // Vertical spacing between rows of buttons
+                          children: List.generate(selectedSurroundings.length, (index) {
+                            return ElevatedButton(
+                              onPressed: () {
+                                // Handle button click here
+                              },
+                              style: ElevatedButton.styleFrom(
+                                primary: const Color(0xFFD9EAE8), // Background color
+                                onPrimary: const Color(0xFF000000), // Text color
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), // Padding
+                                minimumSize: const Size(0, 0), // Minimum size
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5.0), // Border radius
+                                  side: const BorderSide(
+                                    color: const Color(0xFFA8CFCA), // Border color
+                                    width: 1.0, // Border width
+                                  ),
+                                ),
+                              ),
+                              child: Text(
+                                selectedSurroundings[index],
+                                style: TextStyle(fontSize: 12),
+                              ),
+                            );
+                          }),
+                        ),
+                      ),
+                    ),
+                  SizedBox(height: 10,),
                   if (selectedSurroundingImages.length > 0)
                     Container(
                         margin: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 5),
                         child: Container(
-                            height: 150,
+                            height: 170,
                             child: ListView.builder(
                                 shrinkWrap: true,
                                 scrollDirection: Axis.horizontal,
@@ -3140,16 +3085,25 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                         bottom: 10, left: 5),
                                     alignment: Alignment.bottomLeft,
                                     child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
+                                        Text(
+                                          "Surrounding Pictures", // Replace with the actual label text
+                                      style: TextStyle(
+                                          color: Color(
+                                            0xFF1C3764,
+                                          )),
+                                    ),
+                                        SizedBox(height: 10,),
                                         Container(
-                                            // width:180,
+                                          // width:180,
                                             height:90,
                                             child: Image.file(
                                                 fit: BoxFit.fill,
                                                 File(selectedSurroundingImages[Index]!.path)
                                             )
                                         ),
-                                        SizedBox(height: 20,),
+                                        SizedBox(height: 10,),
                                         Container(
                                           height:30,
                                           child: TextFormField(
@@ -3173,6 +3127,588 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                     ),
                                   );
                                 }))),
+                ],
+              )),
+          Container(
+              margin:
+              const EdgeInsets.symmetric( vertical: 20),
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Color(0xFF1C3764),
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                      padding: const EdgeInsets.only(bottom: 5),
+                      margin: const EdgeInsets.only(bottom: 20),
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          const Text(
+                            "Water Testing",
+                            style: TextStyle(
+                                color: Color(
+                                  0xFF1C3764,
+                                )),
+                          ),
+                          InkWell(
+                              onTap: () {
+                                // _controller.jumpToPage(4);
+                              },
+                              child: Icon(Icons.mode_edit,
+                                  color: Color(0xFF1C3764), size: 20)),
+                        ],
+                      )),
+                  Container(
+                    margin: EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                  child: Text("Water Temperature",
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: form.control('waterTesting.waterTemperature').value!=null?
+                                    Text('${form.control('waterTesting.waterTemperature').value }' + " °C",
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.veryDarkGray,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "WorkSans",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                  child: Text("pH",
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: form.control('waterTesting.pH').value!=null?
+                                      Text(' ${form.control('waterTesting.pH').value}' + " ph",
+                                      style: TextStyle(
+                                          color: double.parse(form.control('waterTesting.pH').value)>=6.5&&double.parse(form.control('waterTesting.pH').value)<=8.5
+                                              ?Colors.green
+                                              :double.parse(form.control('waterTesting.pH').value)<6.5||double.parse(form.control('waterTesting.pH').value)>8.5
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "WorkSans",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                  child: Text("Alkalinity",
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: form.control('waterTesting.alkalinity').value!=null?
+                                  Text(
+                                    '${form.control('waterTesting.alkalinity').value}' + " mg/L",
+                                    style: TextStyle(
+                                      color: () {
+                                        try {
+                                          final doubleValue = double.parse(form.control('waterTesting.alkalinity').value ?? '');
+                                          if (doubleValue >= 20 && doubleValue <= 250) {
+                                            return Colors.green;
+                                          } else {
+                                            return Colors.red;
+                                          }
+                                        } catch (e) {
+                                          // Handle the error, e.g., return a default color
+                                          return Colors.black;
+                                        }
+                                      }(),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+
+                                      :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "WorkSans",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600))),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                  child: Text("Nitrate",
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: form.control('waterTesting.nitrate').value!=null?
+                                  Text('${form.control('waterTesting.nitrate').value}' + " mg/L",
+                                      style:  TextStyle(
+                                          color: int.parse(form.control('waterTesting.nitrate').value)<=1
+                                              ?Colors.green
+                                              :int.parse(form.control('waterTesting.nitrate').value)>1
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "WorkSans",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                  child: Text("Nitrite",
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  child:form.control('waterTesting.nitrite').value!=null?
+                                  Text('${form.control('waterTesting.nitrite').value}' + " mg/L",
+                                      style: TextStyle(
+                                          color: double.parse(form.control('waterTesting.nitrite').value)<=1
+                                              ?Colors.green
+                                              :double.parse(form.control('waterTesting.nitrite').value)>1
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "WorkSans",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                  child: Text("Hardness",
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: form.control('waterTesting.hardness').value!=null?
+                                  Text('${form.control('waterTesting.hardness').value }' + " mg/L",
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.veryDarkGray,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "WorkSans",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                  child: Text("Chlorine",
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: form.control('waterTesting.chlorine').value!=null?
+                                  Text('${form.control('waterTesting.chlorine').value}' + " mg/L",
+                                      style: TextStyle(
+                                          color: double.parse(form.control('waterTesting.chlorine').value)>=0.2&&double.parse(form.control('waterTesting.chlorine').value)<=1.0
+                                              ?Colors.green
+                                              :double.parse(form.control('waterTesting.chlorine').value)<0.2||double.parse(form.control('waterTesting.chlorine').value)>1.0
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "WorkSans",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                  child: Text("Iron",
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: form.control('waterTesting.iron').value!=null?
+                                  Text('${form.control('waterTesting.iron').value }' + " mg/L",
+                                      style: TextStyle(
+                                          color: double.parse(form.control('waterTesting.iron').value)>=0.2&&double.parse(form.control('waterTesting.iron').value)<=2.0
+                                              ?Colors.green
+                                              :double.parse(form.control('waterTesting.iron').value)<0.2||double.parse(form.control('waterTesting.iron').value)>2.0
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "WorkSans",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                  child: Text("Dissolved oxygen",
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: form.control('waterTesting.dissolvedOxygen').value!=null?
+                                  Text(
+                                      '${form.control('waterTesting.dissolvedOxygen').value ?? ''}' + " mg/L",
+                                      style: TextStyle(
+                                          color: double.parse(form.control('waterTesting.dissolvedOxygen').value)>=4.0&&double.parse(form.control('waterTesting.dissolvedOxygen').value)<=20.0
+                                              ?Colors.green
+                                              :double.parse(form.control('waterTesting.dissolvedOxygen').value)<4.0||double.parse(form.control('waterTesting.dissolvedOxygen').value)>20.0
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "WorkSans",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                  child: Text(
+                                      "E Coli/Coliform Bacteria",
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: form.control('waterTesting.bacteria').value!=null?
+                                  Text(
+                                      '${form.control('waterTesting.bacteria').value}' + " ",
+                                      style: TextStyle(
+                                          color: form.control('waterTesting.bacteria').value=="Absent"
+                                              ?Colors.green
+                                              :form.control('waterTesting.bacteria').value=="Present"
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "WorkSans",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                  child: Text("Turbidity",
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: form.control('waterTesting.turbidity').value!=null?
+                                  Text(
+                                    '${form.control('waterTesting.turbidity').value}' + " NTU",
+                                    style: TextStyle(
+                                      color: () {
+                                        try {
+                                          final int intValue = int.parse(form.control('waterTesting.turbidity').value ?? '');
+                                          if (intValue <= 15000) {
+                                            return Colors.green;
+                                          } else {
+                                            return Colors.red;
+                                          }
+                                        } catch (e) {
+                                          // Handle the error, e.g., return a default color
+                                          return Colors.black;
+                                        }
+                                      }(),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+
+                                      :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "WorkSans",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                  child: Text("Phosphate",
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: form.control('waterTesting.phosphate').value!=null?
+                                  Text('${form.control('waterTesting.phosphate').value }' + " mg/L",
+                                      style: TextStyle(
+                                          color: double.parse(form.control('waterTesting.phosphate').value)<=0.1
+                                              ?Colors.green
+                                              :double.parse(form.control('waterTesting.phosphate').value)>0.1
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "WorkSans",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                  child: Text("Ammonia",
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  child:form.control('waterTesting.ammonia').value!=null?
+                                  Text(
+                                    '${form.control('waterTesting.ammonia').value}' + " mg/L",
+                                    style: TextStyle(
+                                      color: () {
+                                        final double? doubleValue = double.tryParse(form.control('waterTesting.ammonia').value ?? '');
+                                        if (doubleValue != null && doubleValue >= 0.2 && doubleValue <= 1.2) {
+                                          return Colors.green;
+                                        } else {
+                                          return Colors.red;
+                                        }
+                                      }(),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+
+                                      :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "WorkSans",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                  child: Text("Lead",
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: form.control('waterTesting.lead').value!=null?
+                                  Text('${form.control('waterTesting.lead').value}' + " mg/L",
+                                      style: TextStyle(
+                                          color: double.parse(form.control('waterTesting.lead').value)==0
+                                              ?Colors.green
+                                              :double.parse(form.control('waterTesting.lead').value)>0
+                                              ?Colors.red
+                                              :Colors.black,
+                                          fontWeight: FontWeight.bold))
+                              :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "WorkSans",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                  child: Text("Total Dissolved Solids",
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: form.control('waterTesting.totalDissolvedSolids').value!=null?
+                                  Text(
+                                    '${form.control('waterTesting.totalDissolvedSolids').value}' + " ppm",
+                                    style: TextStyle(
+                                      color: () {
+                                        final String? valueString = form.control('waterTesting.totalDissolvedSolids').value;
+                                        final double? doubleValue = double.tryParse(valueString ?? '');
+
+                                        if (doubleValue != null) {
+                                          if (doubleValue < 900) {
+                                            return Colors.green;
+                                          } else {
+                                            return Colors.red;
+                                          }
+                                        }
+
+                                        return Colors.black; // Default color if parsing fails
+                                      }(),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+
+                                      :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "WorkSans",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                  child: Text("Conductivity",
+                                      style: TextStyle(
+                                          color: Resources.colors.appTheme.lable,
+                                          fontFamily: "WorkSans"))),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: form.control('waterTesting.conductivity').value!=null?
+                                  Text(
+                                    '${form.control('waterTesting.conductivity').value}' + " µs",
+                                    style: TextStyle(
+                                      color: () {
+                                        final String? valueString = form.control('waterTesting.conductivity').value;
+                                        final double? doubleValue = double.tryParse(valueString ?? '');
+
+                                        if (doubleValue != null) {
+                                          if (doubleValue < 1000 || doubleValue > 10000) {
+                                            return Colors.red;
+                                          } else {
+                                            return Colors.green;
+                                          }
+                                        }
+
+                                        return Colors.black; // Default color if parsing fails
+                                      }(),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+
+                                      :const Text("--",style: TextStyle(
+                                      color: Colors.green,
+                                      fontFamily: "WorkSans",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)))
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               )),
           Container(
@@ -3458,7 +3994,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             bottom: 5,
                           ),
                           child: const Text(
-                            "Groups",
+                            "Group Pictures",
                             style: TextStyle(
                                 fontSize: 16,
                                 color: Color(0xFF1C3764),
@@ -3539,7 +4075,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             bottom: 5,
                           ),
                           child: const Text(
-                            "Activities",
+                            "Activity Pictures",
                             style: TextStyle(
                                 fontSize: 16,
                                 color: Color(0xFF1C3764),
@@ -3620,7 +4156,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             bottom: 5,
                           ),
                           child: const Text(
-                            "Artworks",
+                            "Artwork Pictures",
                             style: TextStyle(
                                 fontSize: 16,
                                 color: Color(0xFF1C3764),
@@ -3695,235 +4231,253 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
       appBar: AppBar(
         title: Text("Monitor River"),
       ),
-      body: Stack(
+      body: isLoading?const Center(child: CircularProgressIndicator()):Stack(
         alignment: Alignment.center,
         children:[
-          Stepper(
-          elevation: 0,
-          type:StepperType.horizontal,
-          currentStep: _index,
-          onStepTapped: (int index) {
-            // setState(() {
-            //   _index = index;
-            //   _steps = _generateSteps();
-            // });
-            if (steps[_index]!='flora'&&steps[_index]!='waterLevelAndWeather'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType==FormGroup&&form.control(steps[_index]).valid) {
-              setState(() {
-                _error=false;
-                _index = index;
-                _steps = _generateSteps();
-              });
-            }
-            else if(steps[_index]=="waterLevelAndWeather"){
-              if(form.control(steps[_index]).valid&&selectedRiverImages.length>0){
+          Theme(
+            data:ThemeData(
+              primarySwatch: Colors.green,
+            ),
+            child: Stepper(
+            elevation: 0,
+            type:StepperType.horizontal,
+            currentStep: _index,
+            onStepTapped: (int index) {
+              // setState(() {
+              //   _index = index;
+              //   _steps = _generateSteps();
+              // });
+              if (steps[_index]!='flora'&&steps[_index]!='waterLevelAndWeather'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType==FormGroup&&form.control(steps[_index]).valid) {
+                setState(() {
+                  _error=false;
+                  _index = index;
+                  _steps = _generateSteps();
+                });
+              }
+              else if(steps[_index]=="waterLevelAndWeather"){
+                if(form.control(steps[_index]).valid&&selectedRiverImages.length>0){
+                  setState(() {
+                    _index = index;
+                    _error=false;
+                    _steps = _generateSteps();
+                  });
+                }
+                else{
+                  setState(() {
+                    _error=true;
+                    _steps = _generateSteps();
+                  });
+                }
+              }
+              else if (steps[_index]!='flora'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType!=FormGroup&&((form.value['surroundings'] as List<String>).isNotEmpty&&selectedSurroundingImages.length!=0)) {
                 setState(() {
                   _index = index;
                   _error=false;
                   _steps = _generateSteps();
                 });
               }
-              else{
+              else if (steps[_index]=='flora'||steps[_index]=='preview') {
+                setState(() {
+                  _index = index;
+                  _error=false;
+                  _steps = _generateSteps();
+                });
+              }
+              else {
                 setState(() {
                   _error=true;
                   _steps = _generateSteps();
                 });
+                form.control(steps[_index]).markAllAsTouched();
               }
-            }
-            else if (steps[_index]!='flora'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType!=FormGroup&&((form.value['surroundings'] as List<String>).isNotEmpty&&selectedSurroundingImages.length!=0)) {
-              setState(() {
-                _index = index;
-                _error=false;
-                _steps = _generateSteps();
-              });
-            }
-            else if (steps[_index]=='flora'||steps[_index]=='preview') {
-              setState(() {
-                _index = index;
-                _error=false;
-                _steps = _generateSteps();
-              });
-            }
-            else {
-              setState(() {
-                _error=true;
-                _steps = _generateSteps();
-              });
-              form.control(steps[_index]).markAllAsTouched();
-            }
-          },
-          steps:_steps,
-          controlsBuilder:(onStepContinue,onStepCancel){
-            return _index == _steps.length - 1?
-            Row(
-              children: [
-                ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
-                  ),
-                  onPressed: () async {
-                    for(int i=0;i<selectedRiverImages.length;i++){
-                      riverImgObj.add({
-                        "imageURL":"",
-                        "fileName":path.basename(selectedRiverImages[i].path),
-                        "description":riverDescriptions[i].text
-                      });
-                    }
-                    for(int i=0;i<selectedSurroundingImages.length;i++){
-                      surroundingImgObj.add({
-                        "imageURL":"",
-                        "fileName":path.basename(selectedSurroundingImages[i].path),
-                        "description":surroundingDescriptions[i].text
-                      });
-                    }
-                    for(int i=0;i<selectedFloraImages.length;i++){
-                      floraImgObj.add({
-                        "imageURL":"",
-                        "fileName":path.basename(selectedFloraImages[i].path),
-                        "description":floraDescriptions[i].text
-                      });
-                    }
-                    for(int i=0;i<selectedFaunaImages.length;i++){
-                      faunaDescriptions.add({
-                        "imageURL":"",
-                        "fileName":path.basename(selectedFaunaImages[i].path),
-                        "description":faunaDescriptions[i].text
-                      });
-                    }
-                    for(int i=0;i<selectedGroupImages.length;i++){
-                      groupImgObj.add({
-                        "imageURL":"",
-                        "fileName":path.basename(selectedFaunaImages[i].path),
-                        "description":groupImageDescriptions[i].text
-                      });
-                    }
-                    for(int i=0;i<selectedActivityImages.length;i++){
-                      activityImgObj.add({
-                        "imageURL":"",
-                        "fileName":path.basename(selectedActivityImages[i].path),
-                        "description":activityImageDescriptions[i].text
-                      });
-                    }
-                    for(int i=0;i<selectedArtworkImages.length;i++){
-                      artwrokImgObj.add({
-                        "imageURL":"",
-                        "fileName":path.basename(selectedArtworkImages[i].path),
-                        "description":artworkDescriptions[i].text
-                      });
-                    }
-                    form.control('riverPictures').value=riverImgObj;
-                    form.control('surroundingPictures').value=surroundingImgObj;
-                    form.control('floraPictures').value=floraImgObj;
-                    form.control('faunaPictures').value=faunaImgObj;
-                    form.control('groupPictures').value=groupImgObj;
-                    form.control('activityPictures').value=activityImgObj;
-                    form.control('artworkPictures').value=artwrokImgObj;
-                    // var newMap = new Map(Object.entries(form.value));
+            },
+            steps:_steps,
+            controlsBuilder:(onStepContinue,onStepCancel){
+              return _index == _steps.length - 1?
+              Row(
+                children: [
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
+                    ),
+                    onPressed: () async {
+                      for(int i=0;i<selectedRiverImages.length;i++){
+                        riverImgObj.add({
+                          "imageURL":"",
+                          "fileName":path.basename(selectedRiverImages[i].path),
+                          "description":riverDescriptions[i].text
+                        });
+                      }
+                      for(int i=0;i<selectedSurroundingImages.length;i++){
+                        surroundingImgObj.add({
+                          "imageURL":"",
+                          "fileName":path.basename(selectedSurroundingImages[i].path),
+                          "description":surroundingDescriptions[i].text
+                        });
+                      }
+                      for(int i=0;i<selectedFloraImages.length;i++){
+                        floraImgObj.add({
+                          "imageURL":"",
+                          "fileName":path.basename(selectedFloraImages[i].path),
+                          "description":floraDescriptions[i].text
+                        });
+                      }
+                      for(int i=0;i<selectedFaunaImages.length;i++){
+                        faunaImgObj.add({
+                          "imageURL":"",
+                          "fileName":path.basename(selectedFaunaImages[i].path),
+                          "description":faunaDescriptions[i].text
+                        });
+                      }
+                      for(int i=0;i<selectedGroupImages.length;i++){
+                        groupImgObj.add({
+                          "imageURL":"",
+                          "fileName":path.basename(selectedGroupImages[i].path),
+                          "description":groupImageDescriptions[i].text
+                        });
+                      }
+                      for(int i=0;i<selectedActivityImages.length;i++){
+                        activityImgObj.add({
+                          "imageURL":"",
+                          "fileName":path.basename(selectedActivityImages[i].path),
+                          "description":activityImageDescriptions[i].text
+                        });
+                      }
+                      for(int i=0;i<selectedArtworkImages.length;i++){
+                        artwrokImgObj.add({
+                          "imageURL":"",
+                          "fileName":path.basename(selectedArtworkImages[i].path),
+                          "description":artworkDescriptions[i].text
+                        });
+                      }
+                      form.control('riverPictures').value=riverImgObj;
+                      form.control('surroundingPictures').value=surroundingImgObj;
+                      form.control('floraPictures').value=floraImgObj;
+                      form.control('faunaPictures').value=faunaImgObj;
+                      form.control('groupPictures').value=groupImgObj;
+                      form.control('activityPictures').value=activityImgObj;
+                      form.control('artworkPictures').value=artwrokImgObj;
+                      // var newMap = new Map(Object.entries(form.value));
 
-                    var _isSubmitted1=true;
-                    setState(() {
-                      _isSubmitted=true;
-                    });
-                    _waterTestDetail.createWaterTestDetail(
-                        form.value,
-                        selectedRiverImages,
-                        selectedSurroundingImages,
-                        selectedFaunaImages,
-                        selectedFloraImages,
-                        selectedArtworkImages,
-                        selectedActivityImages,
-                        selectedGroupImages,
-                        context);
-                    setState(() {
-                      _isSubmitted==false;
-                      _steps = _generateSteps();
-                    });
-                  },
-                  child: _isSubmitted?Text('Creating'):Text("Save"),
-                ),
-              ],
-            ):
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _index>0?
-                Row(
-                  children: [
-                    TextButton(
-                      onPressed: (){
-                        if (_index > 0) {
+                      var _isSubmitted1=true;
+                      setState(() {
+                        _isSubmitted=true;
+                      });
+                      _waterTestDetail.createWaterTestDetail(
+                          form.value,
+                          selectedRiverImages,
+                          selectedSurroundingImages,
+                          selectedFaunaImages,
+                          selectedFloraImages,
+                          selectedArtworkImages,
+                          selectedActivityImages,
+                          selectedGroupImages,
+                          context);
+                      setState(() {
+                        _isSubmitted==false;
+                        _steps = _generateSteps();
+                      });
+                    },
+                    child: _isSubmitted?Text('Creating'):Text("Save"),
+                  ),
+                ],
+              ):
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _index>0?
+                  Row(
+                    children: [
+                      TextButton(
+                        onPressed: (){
+                          if (_index > 0) {
+                            setState(() {
+                              _index -= 1;
+                              _steps = _generateSteps();
+                            });
+                          }
+                        },
+                        child: Text('Previous'),
+                      ),
+                      SizedBox(width: 16),
+                    ],
+                  ):
+                  SizedBox(),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.blue),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0), // Adjust the radius as needed
+                        ),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (_index >= 0 && _index < steps.length) {
+                        if (this._formKey.currentState!.validate() &&
+                            steps[_index] != 'flora' &&
+                            steps[_index] != 'waterLevelAndWeather' &&
+                            steps[_index] != 'preview' &&
+                            form.control(steps[_index]).runtimeType == FormGroup &&
+                            form.control(steps[_index]).valid) {
                           setState(() {
-                            _index -= 1;
+                            _index++;
+                            _error = false;
                             _steps = _generateSteps();
                           });
+                        } else if (steps[_index] == "waterLevelAndWeather") {
+                          if (form.control(steps[_index]).valid &&
+                              selectedRiverImages.length > 0) {
+                            setState(() {
+                              _index++;
+                              _error = false;
+                              _steps = _generateSteps();
+                            });
+                          } else {
+                            setState(() {
+                              _error = true;
+                              _steps = _generateSteps();
+                            });
+                          }
+                        } else if (steps[_index] != 'flora' &&
+                            steps[_index] != 'preview' &&
+                            form.control(steps[_index]).runtimeType != FormGroup &&
+                            ((form.value['surroundings'] as List<String>).isNotEmpty &&
+                                selectedSurroundingImages.length != 0)) {
+                          setState(() {
+                            _index++;
+                            _error = false;
+                            _steps = _generateSteps();
+                          });
+                        } else if (steps[_index] == 'flora' || steps[_index] == 'preview') {
+                          setState(() {
+                            _index++;
+                            _error = false;
+                            _steps = _generateSteps();
+                          });
+                        } else {
+                          setState(() {
+                            _error = true;
+                            _autoValidate = true;
+                            _steps = _generateSteps();
+                          });
+                          form.control(steps[_index]).markAllAsTouched();
                         }
-                      },
-                      child: Text('Previous'),
-                    ),
-                    SizedBox(width: 16),
-                  ],
-                ):
-                SizedBox(),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0), // Adjust the radius as needed
+                      }
+                    },
+                    child: Text(
+                      'Next',
+                      style: TextStyle(
+                        fontFamily: 'WorkSans',
                       ),
                     ),
                   ),
-                  onPressed: (){
-                    if (this._formKey.currentState!.validate()&&steps[_index]!='flora'&&steps[_index]!='waterLevelAndWeather'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType==FormGroup&&form.control(steps[_index]).valid) {
-                      setState(() {
-                        _index++;
-                        _error=false;
-                        _steps = _generateSteps();
-                      });
-                    }
-                    else if(steps[_index]=="waterLevelAndWeather"){
-                      if(form.control(steps[_index]).valid&&selectedRiverImages.length>0){
-                        setState(() {
-                          _index++;
-                          _error=false;
-                          _steps = _generateSteps();
-                        });
-                      }
-                      else{
-                        setState(() {
-                          _error=true;
-                          _steps = _generateSteps();
-                        });
-                      }
-                    }
-                    else if (steps[_index]!='flora'&&steps[_index]!='preview'&&form.control(steps[_index]).runtimeType!=FormGroup&&((form.value['surroundings'] as List<String>).isNotEmpty&&selectedSurroundingImages.length!=0)) {
-                      setState(() {
-                        _index++;
-                        _error=false;
-                        _steps = _generateSteps();
-                      });
-                    }
-                    else if (steps[_index]=='flora'||steps[_index]=='preview') {
-                      setState(() {
-                        _index++;
-                        _error=false;
-                        _steps = _generateSteps();
-                      });
-                    }
-                    else {
-                      setState(() {
-                        _error=true;
-                        _autoValidate = true;
-                        _steps = _generateSteps();
-                      });
-                      form.control(steps[_index]).markAllAsTouched();
-                    }
-                  },
-                  child: Text('Next'),
-                ),
-              ],
-            );
-          },
+
+                ],
+              );
+            },
         ),
+          ),
           if(_isSubmitted)
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
