@@ -735,15 +735,15 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         controller:_searchController,
                         decoration:  InputDecoration(
                           border: UnderlineInputBorder(),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              Icons.gps_fixed,
-                              color: Resources.colors.appTheme.blue,// Set the color you want here
-                            ),
-                            onPressed: () async {
-                              _navigateToMap();
-                            },
-                          ),
+                          // suffixIcon: IconButton(
+                          //   icon: Icon(
+                          //     Icons.gps_fixed,
+                          //     color: Resources.colors.appTheme.blue,// Set the color you want here
+                          //   ),
+                          //   onPressed: () async {
+                          //     _navigateToMap();
+                          //   },
+                          // ),
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
                               color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
