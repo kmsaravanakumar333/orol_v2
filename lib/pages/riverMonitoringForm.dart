@@ -28,7 +28,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 class RiverMonitoringForm extends StatefulWidget {
   String mode;
-  RiverMonitoringForm({Key? key, required this.mode}) : super(key: key);
+  String id;
+  RiverMonitoringForm({Key? key, required this.mode, required this.id}) : super(key: key);
 
   @override
   State<RiverMonitoringForm> createState() => _RiverMonitoringFormState();
@@ -41,7 +42,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   bool _isSubmitted=false;
   bool isOthersSelected = false;
   bool isLoading = false;
-  List<String> updatedSurroundings = [];
+  List updatedSurroundings = [];
   TextEditingController additionalDetailsController = TextEditingController();
   DateTime now = DateTime.now();
   final String GOOGLE_MAP_API='AIzaSyD9VmkK8P-ONafIM_49q6v5vtu3apjbdFg';
@@ -54,7 +55,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   var selectedWaterLevel ;
   var selectedWeather;
   var _bacteriaPresent;
-  List<String> selectedSurroundings = [];
+  List selectedSurroundings = [];
   WaterTestDetails _waterTestDetail = new WaterTestDetails();
 
   //River Images
@@ -130,12 +131,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
     waterLevelAndWeather=_waterTestDetail.waterLevelAndWeather;
     riverPictures=_waterTestDetail.riverPictures;
     surroundingPictures=_waterTestDetail.surroundingPictures;
+    surroundings=_waterTestDetail.surroundings;
     floraPictures=_waterTestDetail.floraPictures;
     faunaPictures=_waterTestDetail.faunaPictures;
     groupPictures=_waterTestDetail.groupPictures;
     artworkPictures=_waterTestDetail.artworkPictures;
     activityPictures=_waterTestDetail.activityPictures;
-    surroundings=_waterTestDetail.surroundings;
     waterTesting=_waterTestDetail.waterTesting;
     setForm();
     setState(() {
@@ -156,7 +157,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
       'waterLevel': FormControl<String>(value:'',validators: [Validators.required]),
       'weather': FormControl<String>(validators: [Validators.required]),
     }),
-    'surroundings':  FormControl<List<String>>(value:[],validators: [Validators.required]),
+    'surroundings':  FormControl<List>(value:[],validators: [Validators.required]),
     'waterTesting': fb.group({
       'alkalinity': FormControl<String>( ),
       'ammonia': FormControl<String>(),
@@ -197,7 +198,6 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
     form.control('waterLevelAndWeather.weather').value=waterLevelAndWeather['weather'];
     selectedWeather = waterLevelAndWeather['weather'];
     // form.control('riverPictures').value= riverPictures[0]['imageURL'];
-    // form.control('surroundings').value=['surroundings'];
     // selectedSurroundings = ['surroundings'];
     // selectedRiverImages = riverPictures[0]['imageURL'];
     // selectedSurroundingImages = ['surroundingPictures'];
@@ -206,13 +206,14 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
     // selectedArtworkImages = ['groupPictures'];
     // selectedActivityImages = ['activityPictures'];
     // selectedGroupImages = ['artworkPictures'];
-    // for (var i=0;i<riverPictures.length;i++){
-    //   riverImg.add(riverPictures[i]['imageURL']);
-    //   selectedRiverImages.add(riverPictures[i]['imageURL']);
-    // }
+    for (var i=0;i<riverPictures.length;i++){
+      riverImg.add(riverPictures[i]['imageURL']);
+      selectedRiverImages.add(riverPictures[i]['imageURL']);
+    }
     form.control('waterTesting.alkalinity').value=waterTesting['alkalinity'];
     form.control('waterTesting.ammonia').value=waterTesting['ammonia'];
     form.control('waterTesting.bacteria').value=waterTesting['bacteria'];
+    _bacteriaPresent = waterTesting['bacteria'];
     form.control('waterTesting.chlorine').value=waterTesting['alkalinity'];
     form.control('waterTesting.dissolvedOxygen').value=waterTesting['dissolvedOxygen'];
     form.control('waterTesting.hardness').value=waterTesting['hardness'];
@@ -226,8 +227,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
     form.control('waterTesting.waterTemperature').value=waterTesting['waterTemperature'];
     form.control('waterTesting.totalDissolvedSolids').value=waterTesting['totalDissolvedSolids'];
     form.control('waterTesting.conductivity').value=waterTesting['conductivity'];
-
-
+    form.control('surroundings').value=surroundings;
+    selectedSurroundings=surroundings;
   }
   _getCurrentLocation()async{
     try {
@@ -284,6 +285,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
       // Image.file(File(image!.path));
       File file = File(compressedImageFile.path);
       if(name=='riverPicture'){
+        // if(selectedRiverImages[0].runtimeType == String){
+        //   selectedRiverImages.removeAt(0);
+        // }
+        // selectedRiverImages.add(compressedImageFile);
+        // riverDescriptions.add(TextEditingController());
+        // _steps = _generateSteps();
         selectedRiverImages.add(compressedImageFile);
         riverDescriptions.add(TextEditingController());
         _steps = _generateSteps();
@@ -412,26 +419,26 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   }
 
   //Navigations
-  _navigateToMap() async {
-    final result = await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => CustomGoogleMap()));
-    // Handle the result from the next page if needed
-    if (result != null) {
-      final locationName = result['locationName'];
-      final lat = result['lat'];
-      final lan = result['lan'];
-      setState(() {
-        _searchController.text=locationName;
-        form.control('generalInformation.location').value=locationName;
-        form.control('generalInformation.latitude').value=lat.toString();
-        form.control('generalInformation.longitude').value=lan.toString();
-        _steps = _generateSteps();
-      });
-      // Do something with the name and ID
-    }
-  }
+  // _navigateToMap() async {
+  //   final result = await Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //           builder: (context) => CustomGoogleMap()));
+  //   // Handle the result from the next page if needed
+  //   if (result != null) {
+  //     final locationName = result['locationName'];
+  //     final lat = result['lat'];
+  //     final lan = result['lan'];
+  //     setState(() {
+  //       _searchController.text=locationName;
+  //       form.control('generalInformation.location').value=locationName;
+  //       form.control('generalInformation.latitude').value=lat.toString();
+  //       form.control('generalInformation.longitude').value=lan.toString();
+  //       _steps = _generateSteps();
+  //     });
+  //     // Do something with the name and ID
+  //   }
+  // }
 
   //STEPS COUNT
   List<Step> _generateSteps() {
@@ -2936,7 +2943,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                   color: Color(0xFF1C3764), size: 20)),
                         ],
                       )),
-                  if (selectedRiverImages.length > 0)
+                  if (selectedRiverImages.length > 0 && selectedRiverImages[0].runtimeType != String)
                     Container(
                         margin: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 5),
@@ -2962,6 +2969,55 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                             child: Image.file(
                                                 fit: BoxFit.fill,
                                                 File(selectedRiverImages[Index]!.path)
+                                            )
+                                        ),
+                                        SizedBox(height:20),
+                                        Container(
+                                          height: 30,
+                                          child: TextFormField(
+                                            controller: riverDescriptions[Index],
+                                            style: const TextStyle(fontSize: 12),
+                                            readOnly: true,
+                                            decoration: const InputDecoration(
+                                              border: OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                }))),
+                  if (riverPictures != null && riverPictures.isNotEmpty)
+                    Container(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        child: Container(
+                            height: 150,
+                            child: ListView.builder(
+                                shrinkWrap: true,
+                                scrollDirection: Axis.horizontal,
+                                itemCount: riverPictures.length,
+                                itemBuilder:
+                                    (BuildContext ctxt, int Index) {
+                                  return Container(
+                                    height: (MediaQuery.of(context).size.width - 30) / 2,
+                                    width: (MediaQuery.of(context).size.width - 30) / 2,
+                                    padding: const EdgeInsets.only(
+                                        bottom: 10, left: 5),
+                                    alignment: Alignment.bottomLeft,
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          // width:180,
+                                            height:90,
+                                            child: Image.file(
+                                                fit: BoxFit.fill,
+                                                File(riverPictures[Index]!.path)
                                             )
                                         ),
                                         SizedBox(height:20),
@@ -3041,7 +3097,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: const Color(0xFFD9EAE8), // Background color
-                                onPrimary: const Color(0xFF000000), // Text color
+                                onPrimary: const Color(0xFF212121), // Text color
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), // Padding
                                 minimumSize: const Size(0, 0), // Minimum size
                                 shape: RoundedRectangleBorder(
@@ -4500,16 +4556,31 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       setState(() {
                         _isSubmitted=true;
                       });
-                      _waterTestDetail.createWaterTestDetail(
-                          form.value,
-                          selectedRiverImages,
-                          selectedSurroundingImages,
-                          selectedFaunaImages,
-                          selectedFloraImages,
-                          selectedArtworkImages,
-                          selectedActivityImages,
-                          selectedGroupImages,
-                          context);
+                      if(widget.mode=="add"){
+                        _waterTestDetail.createWaterTestDetail(
+                            form.value,
+                            selectedRiverImages,
+                            selectedSurroundingImages,
+                            selectedFaunaImages,
+                            selectedFloraImages,
+                            selectedArtworkImages,
+                            selectedActivityImages,
+                            selectedGroupImages,
+                            context);
+                      }else{
+                        _waterTestDetail.updateWaterTestDetail(
+                            widget.id,
+                            form.value,
+                            selectedRiverImages,
+                            selectedSurroundingImages,
+                            selectedFaunaImages,
+                            selectedFloraImages,
+                            selectedArtworkImages,
+                            selectedActivityImages,
+                            selectedGroupImages,
+                            context);
+                      }
+
                       setState(() {
                         _isSubmitted==false;
                         _steps = _generateSteps();
@@ -4550,6 +4621,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       ),
                     ),
                     onPressed: () {
+                      // print(selectedRiverImages[0].runtimeType);
                       if (_index >= 0 && _index < steps.length) {
                         if (this._formKey.currentState!.validate() &&
                             steps[_index] != 'flora' &&
@@ -4579,7 +4651,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         } else if (steps[_index] != 'flora' &&
                             steps[_index] != 'preview' &&
                             form.control(steps[_index]).runtimeType != FormGroup &&
-                            ((form.value['surroundings'] as List<String>).isNotEmpty &&
+                            (form.value['surroundings'] != 0  &&
                                 selectedSurroundingImages.length != 0)) {
                           setState(() {
                             _index++;

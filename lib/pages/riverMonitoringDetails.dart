@@ -58,7 +58,7 @@ class _RiverMonitoringDetailsPageState
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => RiverMonitoringForm(mode: "edit")));
+            builder: (context) => RiverMonitoringForm(mode: "edit",id:widget.waterDetailsId)));
   }
 
   Future<WaterTestDetails> deleteWaterTestDetail() async {
@@ -1735,7 +1735,7 @@ class _RiverMonitoringDetailsPageState
                                     child: Row(
                                       mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
-                                      children: const <Widget>[
+                                      children:  const <Widget>[
                                         Text(
                                           "Surroundings",
                                           style: TextStyle(
@@ -1746,6 +1746,41 @@ class _RiverMonitoringDetailsPageState
                                         ),
                                       ],
                                     )),
+                                if (snapshot.data.surroundings.length > 0)
+                                  Container(
+                                    margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 3),
+                                    child: Container(
+                                      height: 200,
+                                      child: Wrap(
+                                        spacing: 5, // Horizontal spacing between buttons
+                                        runSpacing: 5, // Vertical spacing between rows of buttons
+                                        children: List.generate(snapshot.data.surroundings.length, (index) {
+                                          return ElevatedButton(
+                                            onPressed: () {
+                                              // Handle button click here
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              primary: const Color(0xFFD9EAE8), // Background color
+                                              onPrimary: const Color(0xFF212121), // Text color
+                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), // Padding
+                                              minimumSize: const Size(0, 0), // Minimum size
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(5.0), // Border radius
+                                                side: const BorderSide(
+                                                  color: const Color(0xFFA8CFCA), // Border color
+                                                  width: 1.0, // Border width
+                                                ),
+                                              ),
+                                            ),
+                                            child: Text(
+                                              snapshot.data.surroundings[index],
+                                              style: TextStyle(fontSize: 12),
+                                            ),
+                                          );
+                                        }),
+                                      ),
+                                    ),
+                                  ),
                                 if (snapshot.data.surroundingPictures.length >
                                     0)
                                   Container(

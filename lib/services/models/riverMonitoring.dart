@@ -242,6 +242,137 @@ class WaterTestDetails {
 
   Future<WaterTestDetails> updateWaterTestDetail(
       id,
+      waterTestObj,
+      riverPictures,
+      surroundingPictures,
+      faunaPictures,
+      floraPictures,
+      artworkPictures,
+      activityPictures,
+      groupPictures,
+      context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var user = await AppSharedPreference().getUserInfo() as Users;
+    var accessToken = prefs.getString('access_token');
+    // Set the headers
+    ScaffoldMessenger.of(context!).showSnackBar(const SnackBar(
+        backgroundColor: Colors.green, content: Text("Please wait creating record...")));
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $accessToken',
+      'Content-Type': 'application/json',
+    };
+    // Prepare the request body
+    var request = http.MultipartRequest('PUT', Uri.parse(URL.apiURL+'/water-test-details/'+id));
+    // Add the river image files to the request
+    for (int i = 0; i < riverPictures.length; i++) {
+      var multipartFile = await http.MultipartFile.fromPath('riverFiles', riverPictures[i].path);
+      request.files.add(multipartFile);
+    }
+    // Add the surrounding image files to the request
+    for (int i = 0; i < surroundingPictures.length; i++) {
+      var multipartFile = await http.MultipartFile.fromPath('surroundingFiles', surroundingPictures[i].path);
+      request.files.add(multipartFile);
+    }
+    // Add the flora image files to the request
+    for (int i = 0; i < floraPictures.length; i++) {
+      var multipartFile = await http.MultipartFile.fromPath('floraFiles', floraPictures[i].path);
+      request.files.add(multipartFile);
+    }
+    // Add the fauna image files to the request
+    for (int i = 0; i < faunaPictures.length; i++) {
+      var multipartFile = await http.MultipartFile.fromPath('faunaFiles', faunaPictures[i].path);
+      request.files.add(multipartFile);
+    }
+    // Add the activity image files to the request
+    for (int i = 0; i < activityPictures.length; i++) {
+      var multipartFile = await http.MultipartFile.fromPath('activityFiles', activityPictures[i].path);
+      request.files.add(multipartFile);
+    }
+    // Add the group image files to the request
+    for (int i = 0; i < groupPictures.length; i++) {
+      var multipartFile = await http.MultipartFile.fromPath('groupFiles', groupPictures[i].path);
+      request.files.add(multipartFile);
+    }
+    // Add the artwork image files to the request
+    for (int i = 0; i < artworkPictures.length; i++) {
+      var multipartFile = await http.MultipartFile.fromPath('artworkFiles', artworkPictures[i].path);
+      request.files.add(multipartFile);
+    }
+
+    request.fields['userId'] = user.id.toString();
+    request.fields['generalInformation.activityDate'] = waterTestObj['generalInformation']["activityDate"] ;
+    request.fields['generalInformation.activityTime'] = waterTestObj['generalInformation']["activityTime"] ;
+    request.fields['generalInformation.testerName'] =  waterTestObj['generalInformation']["testerName"];
+    request.fields['generalInformation.location'] =  waterTestObj['generalInformation']["location"];
+    request.fields['generalInformation.latitude'] = waterTestObj['generalInformation']['latitude'];
+    request.fields['generalInformation.longitude'] = waterTestObj['generalInformation']['longitude'];
+    request.fields['waterLevelAndWeather.airTemperature'] = waterTestObj['waterLevelAndWeather']['airTemperature'];
+    request.fields['waterLevelAndWeather.waterLevel'] = waterTestObj['waterLevelAndWeather']['waterLevel'];
+    request.fields['waterLevelAndWeather.weather'] = waterTestObj['waterLevelAndWeather']['weather'];
+    request.fields['waterTesting.dissolvedOxygen'] =waterTestObj['waterTesting']['dissolvedOxygen'] ?? '';
+    request.fields['waterTesting.waterTemperature'] = waterTestObj['waterTesting']['waterTemperature']?? '';
+    request.fields['waterTesting.pH'] = waterTestObj['waterTesting']['pH']?? '';
+    request.fields['waterTesting.hardness'] = waterTestObj['waterTesting']['hardness']?? '';
+    request.fields['waterTesting.nitrate'] = waterTestObj['waterTesting']['nitrate']?? '';
+    request.fields['waterTesting.nitrite'] = waterTestObj['waterTesting']['nitrite']?? '';
+    request.fields['waterTesting.chlorine'] = waterTestObj['waterTesting']['chlorine']?? '';
+    request.fields['waterTesting.alkalinity'] = waterTestObj['waterTesting']['alkalinity']?? '';
+    request.fields['waterTesting.iron'] = waterTestObj['waterTesting']['iron']?? '';
+    request.fields['waterTesting.bacteria'] = waterTestObj['waterTesting']['bacteria']?? '';
+    request.fields['waterTesting.turbidity'] = waterTestObj['waterTesting']['turbidity']?? '';
+    request.fields['waterTesting.phosphate'] = waterTestObj['waterTesting']['phosphate']?? '';
+    request.fields['waterTesting.ammonia'] = waterTestObj['waterTesting']['ammonia']?? '';
+    request.fields['waterTesting.lead'] = waterTestObj['waterTesting']['lead']?? '';
+    request.fields['surroundings'] = jsonEncode(waterTestObj['surroundings']);
+    request.fields['surroundingPictures'] = jsonEncode(waterTestObj['surroundingPictures']);
+    request.fields['riverPictures'] = jsonEncode(waterTestObj['riverPictures']);
+    request.fields['floraPictures'] = jsonEncode(waterTestObj['floraPictures']);
+    request.fields['faunaPictures'] = jsonEncode(waterTestObj['faunaPictures']);
+    request.fields['artworkPictures'] = jsonEncode(waterTestObj['artworkPictures']);
+    request.fields['groupPictures'] = jsonEncode(waterTestObj['groupPictures']);
+    request.fields['activityPictures'] = jsonEncode(waterTestObj['activityPictures']);
+    // Add generalInformation fields
+    request.headers.addAll(headers);
+    // var response;
+    http.StreamedResponse updateResponse = await request.send();
+    var responseBody =await updateResponse.stream.bytesToString();
+    if (updateResponse.statusCode == 200) {
+      generateCertificate(jsonDecode(responseBody),context,'create');
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return ShowAlert("Thanks for your participation. Your data was submitted sucessfully","waterTestSubmit");
+          });
+      return WaterTestDetails.fromJson(jsonDecode(responseBody));
+    }
+    else {
+      if (updateResponse.statusCode == 401) {
+        await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return ShowAlert("Unauthorized","waterTestSubmit");
+            });;
+        return WaterTestDetails.fromJson(jsonDecode(responseBody));
+      }
+      else if (updateResponse.statusCode == 400) {
+        await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return ShowAlert("Bad request","waterTestSubmit");
+            });
+        return WaterTestDetails.fromJson(jsonDecode(responseBody));
+      }
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return ShowAlert("Failed to create water test details","waterTestSubmit");
+          });
+      return WaterTestDetails.fromJson(jsonDecode(responseBody));
+    }
+  }
+
+  Future<WaterTestDetails> updateWaterTestDetail1(
+      id,
       generalInformation,
       waterLevelAndWeather,
       surr,

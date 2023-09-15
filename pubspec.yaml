@@ -47,7 +47,9 @@ dependencies:
   flutter_svg: ^2.0.5
   url_launcher: ^6.1.11
   google_maps_flutter: ^2.2.6
-#  geocoding: ^2.1.0
+  flutter_map_marker_cluster: ^0.3.0
+  floating_action_bubble: ^1.0.0
+  #  geocoding: ^2.1.0
 #  location: ^4.4.0
 #  permission_handler: ^10.2.0
   image_picker: ^0.8.7+5
@@ -63,6 +65,7 @@ dependencies:
   flutter_image_compress: ^2.0.4
   cached_network_image: ^3.2.3
   package_info_plus: ^4.1.0
+  latlng: ^1.0.0
 #  multi_image_picker: ^4.8.01
 
 dev_dependencies:
@@ -85,6 +88,7 @@ flutter:
   assets:
     - assets/images/
     - assets/logos/
+    - assets/icons/
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

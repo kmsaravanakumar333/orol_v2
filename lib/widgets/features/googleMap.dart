@@ -5,7 +5,9 @@ import 'package:location/location.dart' as loc;
 import 'package:permission_handler/permission_handler.dart';
 
 class CustomGoogleMap extends StatefulWidget {
-  const CustomGoogleMap({Key? key}) : super(key: key);
+  final Function(String locationName, double latitude, double longitude) onLocationPicked;
+
+  CustomGoogleMap({Key? key, required this.onLocationPicked}) : super(key: key);
 
   @override
   State<CustomGoogleMap> createState() => _CustomGoogleMapState();
@@ -13,7 +15,7 @@ class CustomGoogleMap extends StatefulWidget {
 
 class _CustomGoogleMapState extends State<CustomGoogleMap> {
   late GoogleMapController mapController;
-  CameraPosition _initialLocation = const CameraPosition(target: LatLng(19.2169506, 72.9775735), zoom: 3);
+  CameraPosition _initialLocation = const CameraPosition(target: LatLng(9.9252, 78.1198), zoom: 0);
   loc.Location location = loc.Location();
   LatLng? selectedPosition;
   var selectedLocation;
@@ -97,8 +99,9 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
             TextButton(
               child: Text('Ok'),
               onPressed: () {
+                widget.onLocationPicked(locationName,latitude,longitude);
                 Navigator.of(context).pop();
-                Navigator.pop(context, {'locationName': locationName, 'lat': latitude,'lan':longitude});
+                // Navigator.pop(context, {'locationName': locationName, 'lat': latitude,'lan':longitude});
               },
             ),
           ],
@@ -112,44 +115,46 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
     var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height-100;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Select location'),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              height: h,
-              width: w,
-              child: GoogleMap(
-                mapType: MapType.normal,
-                myLocationEnabled: true,
-                zoomGesturesEnabled: true,
-                zoomControlsEnabled: true,
-                initialCameraPosition: _initialLocation,
-                onMapCreated: (GoogleMapController controller) async {
-                  mapController = controller;
-                  // location.onLocationChanged.listen((loc.LocationData currentLocation) async {
-                  //   mapController.animateCamera(
-                  //     CameraUpdate.newLatLng(LatLng(
-                  //       currentLocation.latitude!,
-                  //       currentLocation.longitude!,
-                  //     )),
-                  //   );
-                  // });
-                },
-                onTap: (LatLng position) async {
-                  String locationName = await getLocationName(position.latitude, position.longitude);
-                  setState(() {
-                    selectedPosition = position;
-                    selectedLocation = locationName;
-                  });
-                  _showAlertBox(locationName,position.latitude,position.longitude);
-                },
-                markers: _buildMarkers(),
+      // appBar: AppBar(
+      //   title: Text('Select location'),
+      // ),
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Column(
+            children: [
+              Container(
+                height: h,
+                width: w,
+                child: GoogleMap(
+                  mapType: MapType.normal,
+                  myLocationEnabled: true,
+                  zoomGesturesEnabled: true,
+                  zoomControlsEnabled: true,
+                  initialCameraPosition: _initialLocation,
+                  onMapCreated: (GoogleMapController controller) async {
+                    mapController = controller;
+                    // location.onLocationChanged.listen((loc.LocationData currentLocation) async {
+                    //   mapController.animateCamera(
+                    //     CameraUpdate.newLatLng(LatLng(
+                    //       currentLocation.latitude!,
+                    //       currentLocation.longitude!,
+                    //     )),
+                    //   );
+                    // });
+                  },
+                  onTap: (LatLng position) async {
+                    String locationName = await getLocationName(position.latitude, position.longitude);
+                    setState(() {
+                      selectedPosition = position;
+                      selectedLocation = locationName;
+                    });
+                    _showAlertBox(locationName,position.latitude,position.longitude);
+                  },
+                  markers: _buildMarkers(),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
