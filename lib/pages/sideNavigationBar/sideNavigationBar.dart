@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_orol_v2/auth/loginPage.dart';
 import 'package:flutter_orol_v2/auth/registerPage.dart';
+import 'package:flutter_orol_v2/pages/floodWatch.dart';
 import 'package:flutter_orol_v2/pages/home.dart';
 import 'package:flutter_orol_v2/utils/resources.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../services/models/user.dart';
 import '../../services/providers/AppSharedPreferences.dart';
 import '../riverMonitoringList.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
 
 class AppSideNavigationBar extends StatefulWidget {
   
@@ -54,6 +56,13 @@ class _AppSideNavigationBarState extends State<AppSideNavigationBar> {
         MaterialPageRoute(
             builder: (context) => HomePage()));
   }
+  _navigateToFloodWatchScreen(BuildContext context) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => FloodWatchForm(mode:"add")));
+
+  }
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -63,7 +72,7 @@ class _AppSideNavigationBarState extends State<AppSideNavigationBar> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             DrawerHeader(
-              decoration:  BoxDecoration(color: Resources.colors.appTheme.darkBlue),
+              decoration:  BoxDecoration(color: Resources.colors.appTheme.blue),
               child: Padding(
                 padding:const EdgeInsets.all(6),
                 child:Column(crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,24 +94,46 @@ class _AppSideNavigationBarState extends State<AppSideNavigationBar> {
                     const SizedBox(height:3,),
                     Text(
                       '${_user.email}',
-                      style: const TextStyle(
-                          fontFamily: 'Montserrat', fontWeight: FontWeight.bold,fontSize: 12,color: Colors.grey),
+                        style: const TextStyle(
+                          fontFamily: 'Montserrat',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                          color: Color(0xFFFFFFFF),
+                        )
                     )
                   ],
                 ),
               ),
             ),
             ListTile(
-              leading:  Icon(Icons.water,color: Resources.colors.appTheme.darkBlue,),
+              leading: SvgPicture.asset(
+                'assets/icons/riverMonitoring.svg', // Path to your custom SVG icon
+                color: Resources.colors.appTheme.blue, // Set the color of the icon
+                width: 24, // Set the width of the icon
+                height: 24, // Set the height of the icon
+              ),
               title:const Text('River Monitoring',style: TextStyle(
                   fontFamily: 'Montserrat', fontWeight: FontWeight.bold),),
               onTap: (){
                 _navigateToRiverMonitoringScreen(context);
               },
             ),
+            ListTile(
+              leading: SvgPicture.asset(
+                'assets/icons/floodWatch.svg', // Path to your custom SVG icon
+                color: Resources.colors.appTheme.blue, // Set the color of the icon
+                width: 24, // Set the width of the icon
+                height: 24, // Set the height of the icon
+              ),
+              title:const Text('Flood Watch',style: TextStyle(
+                  fontFamily: 'Montserrat', fontWeight: FontWeight.bold),),
+              onTap: (){
+                _navigateToFloodWatchScreen(context);
+              },
+            ),
             const Divider(height: 1,),
             ListTile(
-              leading:  Icon(Icons.logout_outlined,color: Resources.colors.appTheme.darkBlue,),
+              leading:  Icon(Icons.logout_outlined,color: Resources.colors.appTheme.blue,),
               title:const Text('Logout',style: TextStyle(
                   fontFamily: 'Montserrat', fontWeight: FontWeight.bold),),
               onTap: () async {

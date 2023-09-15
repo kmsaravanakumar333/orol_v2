@@ -58,7 +58,7 @@ class _RiverMonitoringDetailsPageState
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => RiverMonitoringForm(mode: "edit")));
+            builder: (context) => RiverMonitoringForm(mode: "edit",id:widget.waterDetailsId)));
   }
 
   Future<WaterTestDetails> deleteWaterTestDetail() async {
@@ -73,18 +73,18 @@ class _RiverMonitoringDetailsPageState
         builder: ((context) =>
             AlertDialog(
               title: const Text("Delete Water Test Detail", style: TextStyle(
-                  fontFamily: 'Montserrat', fontWeight: FontWeight.bold),),
+                  fontFamily: 'WorkSans', fontWeight: FontWeight.bold),),
               content:
               const Text("Are you sure you want to delete this record?",
                 style: TextStyle(
-                  fontFamily: 'Montserrat',),),
+                  fontFamily: 'WorkSans',),),
               actions: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
                       child: const Text("NO", style: TextStyle(
-                        fontFamily: 'Montserrat',)),
+                        fontFamily: 'WorkSans',)),
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
@@ -105,7 +105,7 @@ class _RiverMonitoringDetailsPageState
                     SizedBox(width: 10,),
                     TextButton(
                       child: const Text("YES", style: TextStyle(
-                        fontFamily: 'Montserrat',)),
+                        fontFamily: 'WorkSans',)),
                       onPressed: () {
                         deleteWaterTestDetail();
                       },
@@ -136,18 +136,18 @@ class _RiverMonitoringDetailsPageState
         title: const Text(
           "Water Test Details",
           style: TextStyle(
-              fontFamily: 'Montserrat', fontWeight: FontWeight.bold),
+              fontFamily: 'WorkSans', fontWeight: FontWeight.bold),
         ),
         actions: [
           userId == waterDetailsUserId ?
           Row(
             children: [
-              // IconButton(
-              //   icon: const Icon(Icons.edit),
-              //   onPressed: () {
-              //     _navigateToRiverMonitoringScreen(context);
-              //   },
-              // ),
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  _navigateToRiverMonitoringScreen(context);
+                },
+              ),
               IconButton(
                 icon: const Icon(Icons.delete),
                 onPressed: () {
@@ -232,8 +232,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Activity Date",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -248,8 +248,8 @@ class _RiverMonitoringDetailsPageState
                                                         snapshot.data.createdAt)
                                                         .toLocal())}',
                                                     style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600)))
                                           ],
@@ -270,8 +270,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Activity Time",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -287,8 +287,8 @@ class _RiverMonitoringDetailsPageState
                                                     .generalInformation['activityTime']}"
                                                     : "",
                                                     style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .bold)))
                                           ],
@@ -309,8 +309,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Location",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -322,8 +322,8 @@ class _RiverMonitoringDetailsPageState
                                                 child: Text("${snapshot.data
                                                     .generalInformation['location']}",
                                                     style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        fontFamily: "WorkSans",
                                                         fontWeight:
                                                         FontWeight.w600))),
                                           ],
@@ -344,8 +344,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Name",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -357,8 +357,8 @@ class _RiverMonitoringDetailsPageState
                                                 child: Text("${snapshot.data
                                                     .generalInformation['testerName']}",
                                                     style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600)))
                                           ],
@@ -379,8 +379,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Latitude",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -391,9 +391,9 @@ class _RiverMonitoringDetailsPageState
                                                 alignment: Alignment.centerLeft,
                                                 child: Text("${snapshot.data
                                                     .generalInformation['latitude']}",
-                                                    style: const TextStyle(
-                                                        color: Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                    style: TextStyle(
+                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600)))
                                           ],
@@ -414,8 +414,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Longitude",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -427,8 +427,8 @@ class _RiverMonitoringDetailsPageState
                                                 child: Text("${snapshot.data
                                                     .generalInformation['longitude']}",
                                                     style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600)))
                                           ],
@@ -495,8 +495,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Weather",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -507,9 +507,9 @@ class _RiverMonitoringDetailsPageState
                                                 alignment: Alignment.centerLeft,
                                                 child: Text("${snapshot.data
                                                     .waterLevelAndWeather['weather']}",
-                                                    style: const TextStyle(
-                                                        color: Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                    style: TextStyle(
+                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600)))
                                           ],
@@ -530,8 +530,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Air Temperatue",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -544,9 +544,9 @@ class _RiverMonitoringDetailsPageState
                                                     "${snapshot.data
                                                         .waterLevelAndWeather['airTemperature']}" +
                                                         " °C",
-                                                    style: const TextStyle(
-                                                        color: Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                    style: TextStyle(
+                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600)))
                                           ],
@@ -567,8 +567,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Water Level",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -580,7 +580,7 @@ class _RiverMonitoringDetailsPageState
                                                 child: Text("${snapshot.data
                                                     .waterLevelAndWeather['waterLevel']}",
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: Resources.colors.appTheme.veryDarkGray,
                                                         fontWeight:
                                                         FontWeight.bold))),
                                           ],
@@ -647,8 +647,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Water Temperature",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -663,15 +663,15 @@ class _RiverMonitoringDetailsPageState
                                                     "${snapshot.data
                                                         .waterTesting['waterTemperature']}" +
                                                         " °C",
-                                                    style: const TextStyle(
-                                                        color: Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                    style: TextStyle(
+                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600))
                                                     : const Text(
                                                     "--", style: TextStyle(
                                                     color: Colors.green,
-                                                    fontFamily: "Montserrat",
+                                                    fontFamily: "WorkSans",
                                                     fontSize: 16,
                                                     fontWeight: FontWeight
                                                         .w600))
@@ -694,8 +694,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("pH",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -741,13 +741,13 @@ class _RiverMonitoringDetailsPageState
                                                                 .waterTesting['waterTemperature']) >
                                                             8.5 ? Colors.red
                                                             : Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600))
                                                     : const Text(
                                                     "--", style: TextStyle(
                                                     color: Colors.green,
-                                                    fontFamily: "Montserrat",
+                                                    fontFamily: "WorkSans",
                                                     fontSize: 16,
                                                     fontWeight: FontWeight
                                                         .w600)))
@@ -769,8 +769,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Alkalinity",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -814,13 +814,13 @@ class _RiverMonitoringDetailsPageState
                                                                 .waterTesting['alkalinity'] >
                                                                 250 ? Colors.red
                                                             : Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                        fontFamily: "WorkSans",
                                                         fontWeight:
                                                         FontWeight.w600))
                                                     : const Text(
                                                     "--", style: TextStyle(
                                                     color: Colors.green,
-                                                    fontFamily: "Montserrat",
+                                                    fontFamily: "WorkSans",
                                                     fontSize: 16,
                                                     fontWeight: FontWeight
                                                         .w600))),
@@ -842,8 +842,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Nitrate",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -877,13 +877,13 @@ class _RiverMonitoringDetailsPageState
                                                             1
                                                             ? Colors.red
                                                             : Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600))
                                                     : const Text(
                                                     "--", style: TextStyle(
                                                     color: Colors.green,
-                                                    fontFamily: "Montserrat",
+                                                    fontFamily: "WorkSans",
                                                     fontSize: 16,
                                                     fontWeight: FontWeight
                                                         .w600)))
@@ -905,8 +905,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Nitrite",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -940,13 +940,13 @@ class _RiverMonitoringDetailsPageState
                                                             1
                                                             ? Colors.red
                                                             : Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600))
                                                     : const Text(
                                                     "--", style: TextStyle(
                                                     color: Colors.green,
-                                                    fontFamily: "Montserrat",
+                                                    fontFamily: "WorkSans",
                                                     fontSize: 16,
                                                     fontWeight: FontWeight
                                                         .w600)))
@@ -968,8 +968,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Hardness",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -985,14 +985,14 @@ class _RiverMonitoringDetailsPageState
                                                     .waterTesting['hardness']}" +
                                                     " mg/L",
                                                     style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600))
                                                     : const Text(
                                                     "--", style: TextStyle(
                                                     color: Colors.green,
-                                                    fontFamily: "Montserrat",
+                                                    fontFamily: "WorkSans",
                                                     fontSize: 16,
                                                     fontWeight: FontWeight
                                                         .w600)))
@@ -1014,8 +1014,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Chlorine",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -1049,13 +1049,13 @@ class _RiverMonitoringDetailsPageState
                                                             1.0
                                                             ? Colors.red
                                                             : Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600))
                                                     : const Text(
                                                     "--", style: TextStyle(
                                                     color: Colors.green,
-                                                    fontFamily: "Montserrat",
+                                                    fontFamily: "WorkSans",
                                                     fontSize: 16,
                                                     fontWeight: FontWeight
                                                         .w600)))
@@ -1077,8 +1077,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Iron",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -1125,13 +1125,13 @@ class _RiverMonitoringDetailsPageState
                                                             20.0
                                                             ? Colors.red
                                                             : Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600))
                                                     : const Text(
                                                     "--", style: TextStyle(
                                                     color: Colors.green,
-                                                    fontFamily: "Montserrat",
+                                                    fontFamily: "WorkSans",
                                                     fontSize: 16,
                                                     fontWeight: FontWeight
                                                         .w600)))
@@ -1153,8 +1153,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Dissolved oxygen",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -1204,13 +1204,13 @@ class _RiverMonitoringDetailsPageState
                                                             20.0
                                                             ? Colors.red
                                                             : Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600))
                                                     : const Text(
                                                     "--", style: TextStyle(
                                                     color: Colors.green,
-                                                    fontFamily: "Montserrat",
+                                                    fontFamily: "WorkSans",
                                                     fontSize: 16,
                                                     fontWeight: FontWeight
                                                         .w600))
@@ -1234,8 +1234,8 @@ class _RiverMonitoringDetailsPageState
                                                 child: Text(
                                                     "E Coli/Coliform Bacteria",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -1268,7 +1268,7 @@ class _RiverMonitoringDetailsPageState
                                                     : const Text(
                                                     "--", style: TextStyle(
                                                     color: Colors.green,
-                                                    fontFamily: "Montserrat",
+                                                    fontFamily: "WorkSans",
                                                     fontSize: 16,
                                                     fontWeight: FontWeight
                                                         .w600)))
@@ -1290,8 +1290,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Turbidity",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -1320,13 +1320,13 @@ class _RiverMonitoringDetailsPageState
                                                             15000
                                                             ? Colors.red
                                                             : Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600)) : Text("")
                                                     : const Text(
                                                     "--", style: TextStyle(
                                                     color: Colors.green,
-                                                    fontFamily: "Montserrat",
+                                                    fontFamily: "WorkSans",
                                                     fontSize: 16,
                                                     fontWeight: FontWeight
                                                         .w600)))
@@ -1348,8 +1348,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Phosphate",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -1377,13 +1377,13 @@ class _RiverMonitoringDetailsPageState
                                                             1.0
                                                             ? Colors.red
                                                             : Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600)):Text("")
                                                     : const Text(
                                                     "--", style: TextStyle(
                                                     color: Colors.green,
-                                                    fontFamily: "Montserrat",
+                                                    fontFamily: "WorkSans",
                                                     fontSize: 16,
                                                     fontWeight: FontWeight
                                                         .w600)))
@@ -1405,8 +1405,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Ammonia",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -1435,13 +1435,13 @@ class _RiverMonitoringDetailsPageState
                                                             0
                                                             ? Colors.red
                                                             : Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600))
                                                     : const Text(
                                                     "--", style: TextStyle(
                                                     color: Colors.green,
-                                                    fontFamily: "Montserrat",
+                                                    fontFamily: "WorkSans",
                                                     fontSize: 16,
                                                     fontWeight: FontWeight
                                                         .w600)))
@@ -1464,8 +1464,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Lead",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -1494,13 +1494,13 @@ class _RiverMonitoringDetailsPageState
                                                             0
                                                             ? Colors.red
                                                             : Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600))
                                                     : const Text(
                                                     "--", style: TextStyle(
                                                     color: Colors.green,
-                                                    fontFamily: "Montserrat",
+                                                    fontFamily: "WorkSans",
                                                     fontSize: 16,
                                                     fontWeight: FontWeight
                                                         .w600)))
@@ -1523,8 +1523,8 @@ class _RiverMonitoringDetailsPageState
                                                 child: Text(
                                                     "Total Dissolved Solids",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -1544,13 +1544,13 @@ class _RiverMonitoringDetailsPageState
                                                   //     :int.parse(snapshot.data.waterTesting['totalDissolvedSolids'])>=900
                                                   //     ?Colors.red
                                                   //     :Colors.black,
-                                                  // fontFamily: "Montserrat",
+                                                  // fontFamily: "WorkSans",
                                                   // fontWeight: FontWeight.w600)
                                                 )
                                                     : const Text(
                                                     "--", style: TextStyle(
                                                     color: Colors.green,
-                                                    fontFamily: "Montserrat",
+                                                    fontFamily: "WorkSans",
                                                     fontSize: 16,
                                                     fontWeight: FontWeight
                                                         .w600))
@@ -1573,8 +1573,8 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Conductivity",
                                                     style: TextStyle(
-                                                        color: Colors.grey[700],
-                                                        fontFamily: "Montserrat"))),
+                                                        color: Resources.colors.appTheme.lable,
+                                                        fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
                                                     .of(context)
@@ -1608,13 +1608,13 @@ class _RiverMonitoringDetailsPageState
                                                             10000
                                                             ? Colors.red
                                                             : Colors.black,
-                                                        fontFamily: "Montserrat",
+                                                        fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600))
                                                     : const Text(
                                                     "--", style: TextStyle(
                                                     color: Colors.green,
-                                                    fontFamily: "Montserrat",
+                                                    fontFamily: "WorkSans",
                                                     fontSize: 16,
                                                     fontWeight: FontWeight
                                                         .w600))
@@ -1735,7 +1735,7 @@ class _RiverMonitoringDetailsPageState
                                     child: Row(
                                       mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
-                                      children: const <Widget>[
+                                      children:  const <Widget>[
                                         Text(
                                           "Surroundings",
                                           style: TextStyle(
@@ -1746,6 +1746,41 @@ class _RiverMonitoringDetailsPageState
                                         ),
                                       ],
                                     )),
+                                if (snapshot.data.surroundings.length > 0)
+                                  Container(
+                                    margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 3),
+                                    child: Container(
+                                      height: 200,
+                                      child: Wrap(
+                                        spacing: 5, // Horizontal spacing between buttons
+                                        runSpacing: 5, // Vertical spacing between rows of buttons
+                                        children: List.generate(snapshot.data.surroundings.length, (index) {
+                                          return ElevatedButton(
+                                            onPressed: () {
+                                              // Handle button click here
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              primary: const Color(0xFFD9EAE8), // Background color
+                                              onPrimary: const Color(0xFF212121), // Text color
+                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), // Padding
+                                              minimumSize: const Size(0, 0), // Minimum size
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(5.0), // Border radius
+                                                side: const BorderSide(
+                                                  color: const Color(0xFFA8CFCA), // Border color
+                                                  width: 1.0, // Border width
+                                                ),
+                                              ),
+                                            ),
+                                            child: Text(
+                                              snapshot.data.surroundings[index],
+                                              style: TextStyle(fontSize: 12),
+                                            ),
+                                          );
+                                        }),
+                                      ),
+                                    ),
+                                  ),
                                 if (snapshot.data.surroundingPictures.length >
                                     0)
                                   Container(
