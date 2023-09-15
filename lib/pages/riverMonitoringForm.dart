@@ -292,8 +292,15 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
         // riverDescriptions.add(TextEditingController());
         // _steps = _generateSteps();
         selectedRiverImages.add(compressedImageFile);
+        _steps = _generateSteps();
         riverDescriptions.add(TextEditingController());
         _steps = _generateSteps();
+        if(widget.mode!="add"){
+          if(selectedRiverImages[0].runtimeType==String){
+            selectedRiverImages.removeAt(0);
+            _steps = _generateSteps();
+          }
+        }
       }
       else if(name=='surroundingImages'){
         selectedSurroundingImages.add(compressedImageFile);
@@ -1122,24 +1129,36 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           _error==true?const Text("This image is required",style: TextStyle(color: Colors.red,fontSize: 10),):SizedBox(),
           if (riverPictures != null && riverPictures.isNotEmpty)
             Container(
-              child: Image.network(
-                riverPictures[0]['imageURL'],
-                loadingBuilder: (BuildContext context, Widget child,
-                    ImageChunkEvent? loadingProgress) {
-                  if (loadingProgress == null) {
-                    return child;
-                  } else {
-                    return CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
-                          : null,
-                    );
-                  }
+              height: 255,
+              child: ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: riverPictures.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                        height: (MediaQuery.of(context).size.width - 100) /1.6,
+                        // width: (MediaQuery.of(context).size.width - 30) / 2,
+                        child:  Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Image.network(riverPictures[index]['imageURL']),
+                            IconButton(onPressed: (){
+                              setState(() {
+                                riverPictures.removeAt(index);
+                                selectedRiverImages.removeAt(index);
+                                _steps = _generateSteps();
+                              });
+                            }, icon: Icon(Icons.delete,color: Colors.red,),),
+                          ],
+                        )
+                    ),
+                  );
                 },
               ),
             ),
-          if (selectedRiverImages.isNotEmpty)
+          if (selectedRiverImages.isNotEmpty && selectedRiverImages[0].runtimeType!=String)
             Container(
                 margin: EdgeInsets.symmetric( vertical: 20),
                 child: Container(
@@ -2992,55 +3011,55 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                     ),
                                   );
                                 }))),
-                  if (riverPictures != null && riverPictures.isNotEmpty)
-                    Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        child: Container(
-                            height: 150,
-                            child: ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                itemCount: riverPictures.length,
-                                itemBuilder:
-                                    (BuildContext ctxt, int Index) {
-                                  return Container(
-                                    height: (MediaQuery.of(context).size.width - 30) / 2,
-                                    width: (MediaQuery.of(context).size.width - 30) / 2,
-                                    padding: const EdgeInsets.only(
-                                        bottom: 10, left: 5),
-                                    alignment: Alignment.bottomLeft,
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          // width:180,
-                                            height:90,
-                                            child: Image.file(
-                                                fit: BoxFit.fill,
-                                                File(riverPictures[Index]!.path)
-                                            )
-                                        ),
-                                        SizedBox(height:20),
-                                        Container(
-                                          height: 30,
-                                          child: TextFormField(
-                                            controller: riverDescriptions[Index],
-                                            style: const TextStyle(fontSize: 12),
-                                            readOnly: true,
-                                            decoration: const InputDecoration(
-                                              border: OutlineInputBorder(
-                                                borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(color: Colors.white, width: 1.0),
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                }))),
+                  // if (riverPictures != null && riverPictures.isNotEmpty)
+                  //   Container(
+                  //       margin: const EdgeInsets.symmetric(
+                  //           horizontal: 10, vertical: 5),
+                  //       child: Container(
+                  //           height: 150,
+                  //           child: ListView.builder(
+                  //               shrinkWrap: true,
+                  //               scrollDirection: Axis.horizontal,
+                  //               itemCount: riverPictures.length,
+                  //               itemBuilder:
+                  //                   (BuildContext ctxt, int Index) {
+                  //                 return Container(
+                  //                   height: (MediaQuery.of(context).size.width - 30) / 2,
+                  //                   width: (MediaQuery.of(context).size.width - 30) / 2,
+                  //                   padding: const EdgeInsets.only(
+                  //                       bottom: 10, left: 5),
+                  //                   alignment: Alignment.bottomLeft,
+                  //                   child: Column(
+                  //                     children: [
+                  //                       Container(
+                  //                         // width:180,
+                  //                           height:90,
+                  //                           child: Image.file(
+                  //                               fit: BoxFit.fill,
+                  //                               File(riverPictures[Index]!.path)
+                  //                           )
+                  //                       ),
+                  //                       SizedBox(height:20),
+                  //                       Container(
+                  //                         height: 30,
+                  //                         child: TextFormField(
+                  //                           controller: riverDescriptions[Index],
+                  //                           style: const TextStyle(fontSize: 12),
+                  //                           readOnly: true,
+                  //                           decoration: const InputDecoration(
+                  //                             border: OutlineInputBorder(
+                  //                               borderSide: BorderSide(color: Colors.white, width: 1.0),
+                  //                             ),
+                  //                             focusedBorder: OutlineInputBorder(
+                  //                               borderSide: BorderSide(color: Colors.white, width: 1.0),
+                  //                             ),
+                  //                           ),
+                  //                         ),
+                  //                       )
+                  //                     ],
+                  //                   ),
+                  //                 );
+                  //               }))),
                 ],
               )),
           Container(
