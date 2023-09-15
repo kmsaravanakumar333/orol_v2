@@ -15,11 +15,43 @@
       },
       "oauth_client": [
         {
+          "client_id": "1085141870142-6h76lo42opl4nd5fglai8epm520devg7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.our_river_our_life.app",
+            "certificate_hash": "0233acad322916e2b74363b02fc64826a5669669"
+          }
+        },
+        {
           "client_id": "1085141870142-6tlvgj6s3ct0n2d3agssivt2epfet95o.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.our_river_our_life.app",
             "certificate_hash": "8fe6565bef9700a00c8a59366808f592c9a3b453"
+          }
+        },
+        {
+          "client_id": "1085141870142-dv02tm7s4bgmq7uamh4k3sgjktipcvij.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.our_river_our_life.app",
+            "certificate_hash": "8e8b1e4562927061023052c1b68fa0f1e4e93ede"
+          }
+        },
+        {
+          "client_id": "1085141870142-fokueag4c67vl0famshngvkh1udfgjve.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.our_river_our_life.app",
+            "certificate_hash": "b3bc609c9fd5984272688d253ffddc8798d366d2"
+          }
+        },
+        {
+          "client_id": "1085141870142-qeq0qpq9katl3hga64mk9sinnosl6fvm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.our_river_our_life.app",
+            "certificate_hash": "928ee7c69eb415a808b88fbfb9a20a62833ced75"
           }
         },
         {

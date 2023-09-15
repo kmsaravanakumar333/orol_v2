@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_orol_v2/pages/home.dart';
@@ -121,8 +122,9 @@ class Users {
 
   //Function to login the user using phone number
   loginByPhone(_user, context, mode) async {
+    print(_user.runtimeType);
     var body;
-    if(_user['email']!=''||_user['email']==null){
+    if(_user.runtimeType==UnmodifiableMapView<String, Object?>){
       body=jsonEncode(<String, String>{
         'phoneNumber': _user['email'],
         'password': _user['password'],
