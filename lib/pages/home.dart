@@ -4,7 +4,8 @@ import 'package:flutter_orol_v2/utils/resources.dart';
 import 'bottomNavigationBar/bottomNavigationBar.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  int selectedIndex;
+  HomePage({Key? key, required this.selectedIndex}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -15,7 +16,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Resources.colors.scaffold.background,
-        body:AppBottomNavigationBar()
+        body:AppBottomNavigationBar(selectedIndex:widget.selectedIndex)
     );
   }
 }

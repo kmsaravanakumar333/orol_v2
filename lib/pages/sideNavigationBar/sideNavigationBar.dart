@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_orol_v2/auth/loginPage.dart';
-import 'package:flutter_orol_v2/auth/registerPage.dart';
-import 'package:flutter_orol_v2/pages/floodWatch.dart';
+import 'package:flutter_orol_v2/pages/floodAlertMap.dart';
 import 'package:flutter_orol_v2/pages/home.dart';
 import 'package:flutter_orol_v2/utils/resources.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/models/user.dart';
 import '../../services/providers/AppSharedPreferences.dart';
-import '../riverMonitoringList.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 
@@ -54,13 +52,13 @@ class _AppSideNavigationBarState extends State<AppSideNavigationBar> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => HomePage()));
+            builder: (context) => HomePage(selectedIndex:0)));
   }
-  _navigateToFloodWatchScreen(BuildContext context) {
+  _navigateToFloodAlertMapScreen(BuildContext context) {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => FloodWatchForm(mode:"add")));
+            builder: (context) => HomePage(selectedIndex:1)));
 
   }
   @override
@@ -128,7 +126,7 @@ class _AppSideNavigationBarState extends State<AppSideNavigationBar> {
               title:const Text('Flood Watch',style: TextStyle(
                   fontFamily: 'Montserrat', fontWeight: FontWeight.bold),),
               onTap: (){
-                _navigateToFloodWatchScreen(context);
+                _navigateToFloodAlertMapScreen(context);
               },
             ),
             const Divider(height: 1,),

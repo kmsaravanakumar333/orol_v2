@@ -82,7 +82,7 @@ class _MyAppState extends State<MyApp> {
       home: AnimatedSplashScreen(
           duration: 1000,
           splash: const Image(image: AssetImage('assets/logos/logo_app.png')),
-          nextScreen:  (accessToken!=""&&accessToken!=null)?HomePage():GetStartedPage(),
+          nextScreen:  (accessToken!=""&&accessToken!=null)?HomePage(selectedIndex: 0,):GetStartedPage(),
           // nextScreen:GetStartedPage(),
           // nextScreen:  MultiImageUploader(mode:"Camera"),
           splashTransition: SplashTransition.fadeTransition,

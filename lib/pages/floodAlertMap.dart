@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_orol_v2/pages/floodAlertList.dart';
 import 'package:flutter_orol_v2/pages/floodWatch.dart';
+import 'package:flutter_orol_v2/pages/sideNavigationBar/sideNavigationBar.dart';
 import 'package:flutter_orol_v2/services/models/floodWatch.dart';
 import 'package:flutter_orol_v2/utils/resources.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart'; // Import Google Maps package
@@ -23,6 +24,7 @@ class _FloodAlertMapState extends State<FloodAlertMap> {
   List<dynamic> allData = [];
   bool isExpanded = false;
   var today;
+  int index =0;
   bool isTodayButtonActive = false;
   bool isThisWeekButtonActive = false;
   bool isThisMonthButtonActive = false;
@@ -345,6 +347,13 @@ class _FloodAlertMapState extends State<FloodAlertMap> {
             },
           ),
         ],
+      ),
+      drawer: AppSideNavigationBar(onTap: (ctx,i){
+        setState(() {
+          index=i;
+          Navigator.pop(ctx);
+        });
+      }
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Resources.colors.appTheme.blue,

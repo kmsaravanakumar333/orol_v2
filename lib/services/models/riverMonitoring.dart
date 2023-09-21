@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_orol_v2/pages/home.dart';
 import 'package:flutter_orol_v2/pages/riverMonitoringList.dart';
 import 'package:flutter_orol_v2/services/models/user.dart';
@@ -14,13 +15,6 @@ import '../../widgets/features/alertBox.dart';
 import '../constants/constants.dart';
 import '../providers/AppSharedPreferences.dart';
 
-_navigateToHomeScreen(BuildContext context) {
-  Navigator.of(context).pop();
-  Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => HomePage()));
-}
 class WaterTestResult {
   List<WaterTestDetails> details;
   int count;
@@ -265,39 +259,54 @@ class WaterTestDetails {
     var request = http.MultipartRequest('PUT', Uri.parse(URL.apiURL+'/water-test-details/'+id));
     // Add the river image files to the request
     for (int i = 0; i < riverPictures.length; i++) {
-      var multipartFile = await http.MultipartFile.fromPath('riverFiles', riverPictures[i].path);
-      request.files.add(multipartFile);
+      if(riverPictures[i].runtimeType == XFile){
+        var multipartFile = await http.MultipartFile.fromPath('riverFiles', riverPictures[i].path);
+        request.files.add(multipartFile);
+      }
     }
     // Add the surrounding image files to the request
     for (int i = 0; i < surroundingPictures.length; i++) {
-      var multipartFile = await http.MultipartFile.fromPath('surroundingFiles', surroundingPictures[i].path);
-      request.files.add(multipartFile);
+      if(surroundingPictures[i].runtimeType == XFile){
+        var multipartFile = await http.MultipartFile.fromPath('surroundingFiles', surroundingPictures[i].path);
+        request.files.add(multipartFile);
+      }
     }
     // Add the flora image files to the request
     for (int i = 0; i < floraPictures.length; i++) {
-      var multipartFile = await http.MultipartFile.fromPath('floraFiles', floraPictures[i].path);
-      request.files.add(multipartFile);
+      if(floraPictures[i].runtimeType == XFile){
+        var multipartFile = await http.MultipartFile.fromPath('floraFiles', floraPictures[i].path);
+        request.files.add(multipartFile);
+      }
     }
     // Add the fauna image files to the request
     for (int i = 0; i < faunaPictures.length; i++) {
-      var multipartFile = await http.MultipartFile.fromPath('faunaFiles', faunaPictures[i].path);
-      request.files.add(multipartFile);
+      if(faunaPictures[i].runtimeType == XFile){
+        var multipartFile = await http.MultipartFile.fromPath('faunaFiles', faunaPictures[i].path);
+        request.files.add(multipartFile);
+      }
     }
     // Add the activity image files to the request
     for (int i = 0; i < activityPictures.length; i++) {
-      var multipartFile = await http.MultipartFile.fromPath('activityFiles', activityPictures[i].path);
-      request.files.add(multipartFile);
+      if(activityPictures[i].runtimeType == XFile){
+        var multipartFile = await http.MultipartFile.fromPath('activityFiles', activityPictures[i].path);
+        request.files.add(multipartFile);
+      }
     }
     // Add the group image files to the request
     for (int i = 0; i < groupPictures.length; i++) {
-      var multipartFile = await http.MultipartFile.fromPath('groupFiles', groupPictures[i].path);
-      request.files.add(multipartFile);
+      if(groupPictures[i].runtimeType == XFile){
+        var multipartFile = await http.MultipartFile.fromPath('groupFiles', groupPictures[i].path);
+        request.files.add(multipartFile);
+      }
     }
     // Add the artwork image files to the request
     for (int i = 0; i < artworkPictures.length; i++) {
-      var multipartFile = await http.MultipartFile.fromPath('artworkFiles', artworkPictures[i].path);
-      request.files.add(multipartFile);
+      if(artworkPictures[i].runtimeType == XFile){
+        var multipartFile = await http.MultipartFile.fromPath('artworkFiles', artworkPictures[i].path);
+        request.files.add(multipartFile);
+      }
     }
+
 
     request.fields['userId'] = user.id.toString();
     request.fields['generalInformation.activityDate'] = waterTestObj['generalInformation']["activityDate"] ;
