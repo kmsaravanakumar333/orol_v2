@@ -121,18 +121,27 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
+
+    // Check if you are in "edit" mode
+    if (widget.mode == "add") {
+      // Only get the current location if you are in "add" mode
+      _getCurrentLocation();
+    }
+
     setState(() {
       form.control('generalInformation.activityDate').value =
           DateFormat('yyyy-MM-dd').format(now);
       form.control('generalInformation.activityTime').value =
           DateFormat('h:mm a').format(now);
     });
+
     if (widget.mode == "edit") {
       getRiverMonitoringDetail();
     }
+
     _steps = _generateSteps();
   }
+
 
   @override
   void dispose() {
