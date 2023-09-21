@@ -18,7 +18,7 @@ class _ShowAlertState extends State<ShowAlert> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => const HomePage()));
+            builder: (context) => HomePage(selectedIndex: 0,)));
   }
 
   @override

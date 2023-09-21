@@ -5,7 +5,6 @@ import 'package:flutter_orol_v2/pages/sideNavigationBar/sideNavigationBar.dart';
 import 'package:flutter_orol_v2/utils/resources.dart';
 import 'package:flutter_pagewise/flutter_pagewise.dart';
 import 'package:intl/intl.dart';
-import 'package:path/path.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/models/riverMonitoring.dart';
 class RiverMonitoringPage extends StatefulWidget {

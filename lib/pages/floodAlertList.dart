@@ -61,13 +61,6 @@ class _FloodAlertListState extends State<FloodAlertList> {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(title: const Text('List of Flood Alert'),),
-      drawer: AppSideNavigationBar(onTap: (ctx,i){
-        setState(() {
-          index=i;
-          Navigator.pop(ctx);
-        });
-      }
-      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Resources.colors.appTheme.blue,
         foregroundColor: Resources.colors.appTheme.white,

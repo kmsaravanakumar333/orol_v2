@@ -14,7 +14,7 @@ _navigateToHomeScreen(BuildContext context) {
   Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => HomePage()));
+          builder: (context) => HomePage(selectedIndex: 0,)));
 }
 
 
@@ -192,7 +192,7 @@ class Users {
     }
     final response = await http.post(
       Uri.parse(
-          '${URL.apiURL}/user/sign-in-web'),
+          '${URL.apiURL}/user'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
