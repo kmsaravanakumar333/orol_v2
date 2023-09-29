@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../services/models/riverMonitoring.dart';
 import '../services/models/user.dart';
 import '../services/providers/AppSharedPreferences.dart';
+import 'package:nuts_activity_indicator/nuts_activity_indicator.dart';
 
 class RiverMonitoringDetailsPage extends StatefulWidget {
   var waterDetailsId;
@@ -164,14 +165,26 @@ class _RiverMonitoringDetailsPageState
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Scaffold(
-                body: Center(child: CircularProgressIndicator()));
+                body: Center(child: NutsActivityIndicator(
+                  radius: 10,
+                  activeColor: Colors.lightGreen,
+                  inactiveColor: Colors.grey,
+                  tickCount: 8,
+                  relativeWidth: 0.6,
+                  startRatio: 2.0,)));
           } else {
             if (snapshot.hasError) {
               return Scaffold(
                   body: Center(child: Text('Error: ${snapshot.error}')));
             } else {
               return Scaffold(
-                  body: isLoading?Center(child:CircularProgressIndicator()):SingleChildScrollView(
+                  body: isLoading?Center(child: NutsActivityIndicator(
+                    radius: 10,
+                    activeColor: Colors.lightGreen,
+                    inactiveColor: Colors.grey,
+                    tickCount: 8,
+                    relativeWidth: 0.6,
+                    startRatio: 2.0,)):SingleChildScrollView(
                     child: Column(
                       children: [
                         Container(
@@ -180,8 +193,9 @@ class _RiverMonitoringDetailsPageState
                                 horizontal: 25, vertical: 20),
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
+                                color: Resources.colors.appTheme.lightGray,
                               border: Border.all(
-                                color: Color(0xFF1C3764),
+                                color: Resources.colors.appTheme.gray,
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -191,22 +205,20 @@ class _RiverMonitoringDetailsPageState
                                 Container(
                                     padding: EdgeInsets.only(bottom: 5),
                                     margin: EdgeInsets.only(bottom: 20),
-                                    decoration: const BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(),
-                                      ),
+                                    decoration:  BoxDecoration(
+                                      color: Resources.colors.appTheme.lightGray,
                                     ),
                                     child: Row(
                                       mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
-                                      children: const <Widget>[
+                                      children: <Widget>[
                                         Text(
                                           "General Information",
                                           style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(
-                                                0xFF1C3764,
-                                              )),
+                                            fontFamily: "WorkSans",
+                                            color: Resources.colors.appTheme.blue,
+                                            fontWeight: FontWeight.w600,
+                                          ),
 
                                         ),
                                       ],
@@ -248,7 +260,7 @@ class _RiverMonitoringDetailsPageState
                                                         snapshot.data.createdAt)
                                                         .toLocal())}',
                                                     style: TextStyle(
-                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        color: Resources.colors.appTheme.seondary,
                                                         fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600)))
@@ -287,7 +299,7 @@ class _RiverMonitoringDetailsPageState
                                                     .generalInformation['activityTime']}"
                                                     : "",
                                                     style: TextStyle(
-                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        color: Resources.colors.appTheme.seondary,
                                                         fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .bold)))
@@ -322,7 +334,7 @@ class _RiverMonitoringDetailsPageState
                                                 child: Text("${snapshot.data
                                                     .generalInformation['location']}",
                                                     style: TextStyle(
-                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        color: Resources.colors.appTheme.seondary,
                                                         fontFamily: "WorkSans",
                                                         fontWeight:
                                                         FontWeight.w600))),
@@ -357,7 +369,7 @@ class _RiverMonitoringDetailsPageState
                                                 child: Text("${snapshot.data
                                                     .generalInformation['testerName']}",
                                                     style: TextStyle(
-                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        color: Resources.colors.appTheme.seondary,
                                                         fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600)))
@@ -392,7 +404,7 @@ class _RiverMonitoringDetailsPageState
                                                 child: Text("${snapshot.data
                                                     .generalInformation['latitude']}",
                                                     style: TextStyle(
-                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        color: Resources.colors.appTheme.seondary,
                                                         fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600)))
@@ -427,7 +439,7 @@ class _RiverMonitoringDetailsPageState
                                                 child: Text("${snapshot.data
                                                     .generalInformation['longitude']}",
                                                     style: TextStyle(
-                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        color: Resources.colors.appTheme.seondary,
                                                         fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600)))
@@ -444,8 +456,9 @@ class _RiverMonitoringDetailsPageState
                             EdgeInsets.symmetric(horizontal: 25, vertical: 20),
                             padding: EdgeInsets.all(10),
                             decoration: BoxDecoration(
+                              color: Resources.colors.appTheme.lightGray,
                               border: Border.all(
-                                color: Color(0xFF1C3764),
+                                color: Resources.colors.appTheme.gray,
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -456,21 +469,19 @@ class _RiverMonitoringDetailsPageState
                                     padding: EdgeInsets.only(bottom: 5),
                                     margin: EdgeInsets.only(bottom: 20),
                                     decoration: BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(),
-                                      ),
+                                      color: Resources.colors.appTheme.lightGray,
                                     ),
                                     child: Row(
                                       mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
-                                      children: const <Widget>[
+                                      children:  <Widget>[
                                         Text(
                                           "Water Level & Weather",
                                           style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(
-                                                0xFF1C3764,
-                                              )),
+                                            fontFamily: "WorkSans",
+                                            color: Resources.colors.appTheme.blue,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ],
                                     )),
@@ -508,7 +519,7 @@ class _RiverMonitoringDetailsPageState
                                                 child: Text("${snapshot.data
                                                     .waterLevelAndWeather['weather']}",
                                                     style: TextStyle(
-                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        color: Resources.colors.appTheme.seondary,
                                                         fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600)))
@@ -545,7 +556,7 @@ class _RiverMonitoringDetailsPageState
                                                         .waterLevelAndWeather['airTemperature']}" +
                                                         " °C",
                                                     style: TextStyle(
-                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        color: Resources.colors.appTheme.seondary,
                                                         fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600)))
@@ -567,7 +578,7 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 child: Text("Water Level",
                                                     style: TextStyle(
-                                                        color: Resources.colors.appTheme.lable,
+                                                        color: Resources.colors.appTheme.seondary,
                                                         fontFamily: "WorkSans"))),
                                             Container(
                                                 width: (MediaQuery
@@ -580,7 +591,7 @@ class _RiverMonitoringDetailsPageState
                                                 child: Text("${snapshot.data
                                                     .waterLevelAndWeather['waterLevel']}",
                                                     style: TextStyle(
-                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        color: Resources.colors.appTheme.seondary,
                                                         fontWeight:
                                                         FontWeight.bold))),
                                           ],
@@ -596,8 +607,9 @@ class _RiverMonitoringDetailsPageState
                             EdgeInsets.symmetric(horizontal: 25, vertical: 20),
                             padding: EdgeInsets.all(10),
                             decoration: BoxDecoration(
+                              color: Resources.colors.appTheme.lightGray,
                               border: Border.all(
-                                color: Color(0xFF1C3764),
+                                color: Resources.colors.appTheme.gray,
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -608,21 +620,19 @@ class _RiverMonitoringDetailsPageState
                                     padding: EdgeInsets.only(bottom: 5),
                                     margin: EdgeInsets.only(bottom: 20),
                                     decoration: BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(),
-                                      ),
+                                      color: Resources.colors.appTheme.lightGray,
                                     ),
                                     child: Row(
                                       mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
-                                      children: const <Widget>[
+                                      children:  <Widget>[
                                         Text(
                                           "Water Quality Testing",
                                           style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(
-                                                0xFF1C3764,
-                                              )),
+                                            fontFamily: "WorkSans",
+                                            color: Resources.colors.appTheme.blue,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ],
                                     )),
@@ -664,7 +674,7 @@ class _RiverMonitoringDetailsPageState
                                                         .waterTesting['waterTemperature']}" +
                                                         " °C",
                                                     style: TextStyle(
-                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        color: Resources.colors.appTheme.seondary,
                                                         fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600))
@@ -985,7 +995,7 @@ class _RiverMonitoringDetailsPageState
                                                     .waterTesting['hardness']}" +
                                                     " mg/L",
                                                     style: TextStyle(
-                                                        color: Resources.colors.appTheme.veryDarkGray,
+                                                        color: Resources.colors.appTheme.seondary,
                                                         fontFamily: "WorkSans",
                                                         fontWeight: FontWeight
                                                             .w600))
@@ -1632,8 +1642,9 @@ class _RiverMonitoringDetailsPageState
                             EdgeInsets.symmetric(horizontal: 25, vertical: 20),
                             padding: EdgeInsets.all(10),
                             decoration: BoxDecoration(
+                              color: Resources.colors.appTheme.lightGray,
                               border: Border.all(
-                                color: Color(0xFF1C3764),
+                                color: Resources.colors.appTheme.gray,
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -1643,22 +1654,20 @@ class _RiverMonitoringDetailsPageState
                                 Container(
                                     padding: EdgeInsets.only(bottom: 5),
                                     margin: EdgeInsets.only(bottom: 20),
-                                    decoration: const BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(),
-                                      ),
+                                    decoration:  BoxDecoration(
+                                        color: Resources.colors.appTheme.lightGray,
                                     ),
                                     child: Row(
                                       mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
-                                      children: const <Widget>[
+                                      children: <Widget>[
                                         Text(
                                           "Rivers",
                                           style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(
-                                                0xFF1C3764,
-                                              )),
+                                            fontFamily: "WorkSans",
+                                            color: Resources.colors.appTheme.blue,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ],
                                     )),
@@ -1679,22 +1688,13 @@ class _RiverMonitoringDetailsPageState
                                                 return Column(
                                                   children: [
                                                     Container(
-                                                      margin: EdgeInsets.only(
-                                                          right: 10),
-                                                      height: (MediaQuery
-                                                          .of(context)
-                                                          .size
-                                                          .width - 30) / 2,
-                                                      width: (MediaQuery
-                                                          .of(context)
-                                                          .size
-                                                          .width - 30) / 2,
-                                                      padding: const EdgeInsets
-                                                          .only(
-                                                          bottom: 10, left: 5),
-                                                      alignment: Alignment
-                                                          .bottomLeft,
+                                                      margin: EdgeInsets.only(right: 10),
+                                                      height: (MediaQuery.of(context).size.width - 30) / 2,
+                                                      width: (MediaQuery.of(context).size.width - 200) / 2,
+                                                      padding: const EdgeInsets.only(bottom: 10, left: 5),
+                                                      alignment: Alignment.bottomLeft,
                                                       decoration: BoxDecoration(
+                                                        color: Resources.colors.appTheme.lightGray, // Use the desired background color
                                                         image: DecorationImage(
                                                           image: NetworkImage(
                                                               snapshot.data
@@ -1716,8 +1716,9 @@ class _RiverMonitoringDetailsPageState
                                 horizontal: 25, vertical: 20),
                             padding: EdgeInsets.all(10),
                             decoration: BoxDecoration(
+                              color: Resources.colors.appTheme.lightGray,
                               border: Border.all(
-                                color: Color(0xFF1C3764),
+                                color: Resources.colors.appTheme.gray,
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -1727,22 +1728,20 @@ class _RiverMonitoringDetailsPageState
                                 Container(
                                     padding: EdgeInsets.only(bottom: 5),
                                     margin: EdgeInsets.only(bottom: 20),
-                                    decoration: const BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(),
-                                      ),
+                                    decoration:  BoxDecoration(
+                                      color: Resources.colors.appTheme.lightGray,
                                     ),
                                     child: Row(
                                       mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
-                                      children:  const <Widget>[
+                                      children:  <Widget>[
                                         Text(
                                           "Surroundings",
                                           style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(
-                                                0xFF1C3764,
-                                              )),
+                                            fontFamily: "WorkSans",
+                                            color: Resources.colors.appTheme.blue,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ],
                                     )),
@@ -1750,7 +1749,7 @@ class _RiverMonitoringDetailsPageState
                                   Container(
                                     margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 3),
                                     child: Container(
-                                      height: 200,
+                                      height: 100,
                                       child: Wrap(
                                         spacing: 5, // Horizontal spacing between buttons
                                         runSpacing: 5, // Vertical spacing between rows of buttons
@@ -1799,25 +1798,13 @@ class _RiverMonitoringDetailsPageState
                                                 return Column(
                                                   children: [
                                                     Container(
-                                                      margin: EdgeInsets.only(
-                                                          right: 10),
-                                                      height: (MediaQuery
-                                                          .of(context)
-                                                          .size
-                                                          .width -
-                                                          30) /
-                                                          2,
-                                                      width: (MediaQuery
-                                                          .of(context)
-                                                          .size
-                                                          .width -
-                                                          30) /
-                                                          2,
-                                                      padding: EdgeInsets.only(
-                                                          bottom: 10, left: 5),
-                                                      alignment: Alignment
-                                                          .bottomLeft,
+                                                      margin: EdgeInsets.only(right: 10),
+                                                      height: (MediaQuery.of(context).size.width - 50) / 2,
+                                                      width: (MediaQuery.of(context).size.width - 200) / 2,
+                                                      padding: const EdgeInsets.only(bottom: 10, left: 5),
+                                                      alignment: Alignment.bottomLeft,
                                                       decoration: BoxDecoration(
+                                                        color: Resources.colors.appTheme.lightGray, // Use the desired background color
                                                         image: DecorationImage(
                                                           image: NetworkImage(
                                                               snapshot.data
@@ -1839,8 +1826,9 @@ class _RiverMonitoringDetailsPageState
                             EdgeInsets.symmetric(horizontal: 25, vertical: 20),
                             padding: EdgeInsets.all(10),
                             decoration: BoxDecoration(
+                              color: Resources.colors.appTheme.lightGray,
                               border: Border.all(
-                                color: Color(0xFF1C3764),
+                                color: Resources.colors.appTheme.gray,
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -1850,22 +1838,20 @@ class _RiverMonitoringDetailsPageState
                                 Container(
                                     padding: EdgeInsets.only(bottom: 5),
                                     margin: EdgeInsets.only(bottom: 20),
-                                    decoration: const BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(),
-                                      ),
+                                    decoration:  BoxDecoration(
+                                        color: Resources.colors.appTheme.lightGray,
                                     ),
                                     child: Row(
                                       mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
-                                      children: const <Widget>[
+                                      children:  <Widget>[
                                         Text(
                                           "Flora & Fauna",
                                           style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(
-                                                0xFF1C3764,
-                                              )),
+                                            fontFamily: "WorkSans",
+                                            color: Resources.colors.appTheme.blue,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         )
                                       ],
                                     )),
@@ -1885,8 +1871,8 @@ class _RiverMonitoringDetailsPageState
                                             ),
                                             child: SvgPicture.asset(
                                               "assets/images/Flora-1.svg",
-                                              width: 30,
-                                              height: 30,
+                                              width: 25,
+                                              height: 25,
                                             ),
                                           ),
                                           Container(
@@ -1924,22 +1910,13 @@ class _RiverMonitoringDetailsPageState
                                                 return Column(
                                                   children: [
                                                     Container(
-                                                      margin: EdgeInsets.only(
-                                                          right: 10),
-                                                      height: (MediaQuery
-                                                          .of(context)
-                                                          .size
-                                                          .width - 30) / 2,
-                                                      width: (MediaQuery
-                                                          .of(context)
-                                                          .size
-                                                          .width - 30) / 2,
-                                                      padding: const EdgeInsets
-                                                          .only(
-                                                          bottom: 10, left: 5),
-                                                      alignment: Alignment
-                                                          .bottomLeft,
+                                                      margin: EdgeInsets.only(right: 10),
+                                                      height: (MediaQuery.of(context).size.width - 50) / 2,
+                                                      width: (MediaQuery.of(context).size.width - 200) / 2,
+                                                      padding: const EdgeInsets.only(bottom: 10, left: 5),
+                                                      alignment: Alignment.bottomLeft,
                                                       decoration: BoxDecoration(
+                                                        color: Resources.colors.appTheme.lightGray, // Use the desired background color
                                                         image: DecorationImage(
                                                           image: NetworkImage(
                                                               snapshot.data
@@ -1965,8 +1942,8 @@ class _RiverMonitoringDetailsPageState
                                       ),
                                       child: SvgPicture.asset(
                                         "assets/images/Fauna-1.svg",
-                                        width: 30,
-                                        height: 30,
+                                        width: 25,
+                                        height: 25,
                                       ),
                                     ),
                                     Container(
@@ -1984,6 +1961,7 @@ class _RiverMonitoringDetailsPageState
                                         )),
                                   ],
                                 ),
+                                SizedBox(height: 5,),
                                 if (snapshot.data.faunaPictures.length > 0)
                                   Container(
                                       margin: const EdgeInsets.symmetric(
@@ -2001,22 +1979,13 @@ class _RiverMonitoringDetailsPageState
                                                 return Column(
                                                   children: [
                                                     Container(
-                                                      margin: EdgeInsets.only(
-                                                          right: 10),
-                                                      height: (MediaQuery
-                                                          .of(context)
-                                                          .size
-                                                          .width - 30) / 2,
-                                                      width: (MediaQuery
-                                                          .of(context)
-                                                          .size
-                                                          .width - 30) / 2,
-                                                      padding: const EdgeInsets
-                                                          .only(
-                                                          bottom: 10, left: 5),
-                                                      alignment: Alignment
-                                                          .bottomLeft,
+                                                      margin: EdgeInsets.only(right: 10),
+                                                      height: (MediaQuery.of(context).size.width - 50) / 2,
+                                                      width: (MediaQuery.of(context).size.width - 200) / 2,
+                                                      padding: const EdgeInsets.only(bottom: 10, left: 5),
+                                                      alignment: Alignment.bottomLeft,
                                                       decoration: BoxDecoration(
+                                                        color: Resources.colors.appTheme.lightGray, // Use the desired background color
                                                         image: DecorationImage(
                                                           image: NetworkImage(
                                                               snapshot.data
@@ -2038,8 +2007,9 @@ class _RiverMonitoringDetailsPageState
                             EdgeInsets.symmetric(horizontal: 25, vertical: 20),
                             padding: EdgeInsets.all(10),
                             decoration: BoxDecoration(
+                              color: Resources.colors.appTheme.lightGray,
                               border: Border.all(
-                                color: Color(0xFF1C3764),
+                                color: Resources.colors.appTheme.gray,
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -2049,22 +2019,20 @@ class _RiverMonitoringDetailsPageState
                                 Container(
                                     padding: EdgeInsets.only(bottom: 5),
                                     margin: EdgeInsets.only(bottom: 20),
-                                    decoration: const BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(),
-                                      ),
+                                    decoration:  BoxDecoration(
+                                      color: Resources.colors.appTheme.lightGray,
                                     ),
                                     child: Row(
                                       mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
-                                      children: const <Widget>[
+                                      children:  <Widget>[
                                         Text(
                                           "Pictures",
                                           style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(
-                                                0xFF1C3764,
-                                              )),
+                                            fontFamily: "WorkSans",
+                                            color: Resources.colors.appTheme.blue,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ],
                                     )),
@@ -2072,22 +2040,12 @@ class _RiverMonitoringDetailsPageState
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
                                     Container(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 5,
-                                      ),
-                                      child: SvgPicture.asset(
-                                        "assets/images/Flora-1.svg",
-                                        width: 30,
-                                        height: 30,
-                                      ),
-                                    ),
-                                    Container(
                                         padding: const EdgeInsets.only(
                                           left: 10,
                                           bottom: 5,
                                         ),
                                         child: const Text(
-                                          "Groups",
+                                          "Group Pictures",
                                           style: TextStyle(
                                               fontSize: 16,
                                               color: Color(0xFF1C3764),
@@ -2112,26 +2070,15 @@ class _RiverMonitoringDetailsPageState
                                                 return Column(
                                                   children: [
                                                     Container(
-                                                      margin: EdgeInsets.only(
-                                                          right: 10),
-                                                      height: (MediaQuery
-                                                          .of(context)
-                                                          .size
-                                                          .width - 30) / 2,
-                                                      width: (MediaQuery
-                                                          .of(context)
-                                                          .size
-                                                          .width - 30) / 2,
-                                                      padding: const EdgeInsets
-                                                          .only(
-                                                          bottom: 10, left: 5),
-                                                      alignment: Alignment
-                                                          .bottomLeft,
+                                                      margin: EdgeInsets.only(right: 10),
+                                                      height: (MediaQuery.of(context).size.width - 50) / 2,
+                                                      width: (MediaQuery.of(context).size.width - 200) / 2,
+                                                      padding: const EdgeInsets.only(bottom: 10, left: 5),
+                                                      alignment: Alignment.bottomLeft,
                                                       decoration: BoxDecoration(
+                                                        color: Resources.colors.appTheme.lightGray, // Use the desired background color
                                                         image: DecorationImage(
-                                                          image: NetworkImage(
-                                                              snapshot.data
-                                                                  .groupPictures[Index]['imageURL']),
+                                                          image: NetworkImage(snapshot.data.groupPictures[Index]['imageURL']),
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),
@@ -2146,22 +2093,12 @@ class _RiverMonitoringDetailsPageState
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
                                     Container(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 5,
-                                      ),
-                                      child: SvgPicture.asset(
-                                        "assets/images/Flora-1.svg",
-                                        width: 30,
-                                        height: 30,
-                                      ),
-                                    ),
-                                    Container(
                                         padding: const EdgeInsets.only(
                                           left: 10,
                                           bottom: 5,
                                         ),
                                         child: const Text(
-                                          "Activities",
+                                          "Activity Pictures",
                                           style: TextStyle(
                                               fontSize: 16,
                                               color: Color(0xFF1C3764),
@@ -2186,22 +2123,13 @@ class _RiverMonitoringDetailsPageState
                                                 return Column(
                                                   children: [
                                                     Container(
-                                                      margin: EdgeInsets.only(
-                                                          right: 10),
-                                                      height: (MediaQuery
-                                                          .of(context)
-                                                          .size
-                                                          .width - 30) / 2,
-                                                      width: (MediaQuery
-                                                          .of(context)
-                                                          .size
-                                                          .width - 30) / 2,
-                                                      padding: const EdgeInsets
-                                                          .only(
-                                                          bottom: 10, left: 5),
-                                                      alignment: Alignment
-                                                          .bottomLeft,
+                                                      margin: EdgeInsets.only(right: 10),
+                                                      height: (MediaQuery.of(context).size.width - 50) / 2,
+                                                      width: (MediaQuery.of(context).size.width - 200) / 2,
+                                                      padding: const EdgeInsets.only(bottom: 10, left: 5),
+                                                      alignment: Alignment.bottomLeft,
                                                       decoration: BoxDecoration(
+                                                        color: Resources.colors.appTheme.lightGray, // Use the desired background color
                                                         image: DecorationImage(
                                                           image: NetworkImage(
                                                               snapshot.data
@@ -2220,22 +2148,12 @@ class _RiverMonitoringDetailsPageState
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
                                     Container(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 5,
-                                      ),
-                                      child: SvgPicture.asset(
-                                        "assets/images/Flora-1.svg",
-                                        width: 30,
-                                        height: 30,
-                                      ),
-                                    ),
-                                    Container(
                                         padding: const EdgeInsets.only(
                                           left: 10,
                                           bottom: 5,
                                         ),
                                         child: const Text(
-                                          "Artworks",
+                                          "Artwork Pictures",
                                           style: TextStyle(
                                               fontSize: 16,
                                               color: Color(0xFF1C3764),
@@ -2260,22 +2178,13 @@ class _RiverMonitoringDetailsPageState
                                                 return Column(
                                                   children: [
                                                     Container(
-                                                      margin: EdgeInsets.only(
-                                                          right: 10),
-                                                      height: (MediaQuery
-                                                          .of(context)
-                                                          .size
-                                                          .width - 30) / 2,
-                                                      width: (MediaQuery
-                                                          .of(context)
-                                                          .size
-                                                          .width - 30) / 2,
-                                                      padding: const EdgeInsets
-                                                          .only(
-                                                          bottom: 10, left: 5),
-                                                      alignment: Alignment
-                                                          .bottomLeft,
+                                                      margin: EdgeInsets.only(right: 10),
+                                                      height: (MediaQuery.of(context).size.width - 50) / 2,
+                                                      width: (MediaQuery.of(context).size.width - 200) / 2,
+                                                      padding: const EdgeInsets.only(bottom: 10, left: 5),
+                                                      alignment: Alignment.bottomLeft,
                                                       decoration: BoxDecoration(
+                                                        color: Resources.colors.appTheme.lightGray, // Use the desired background color
                                                         image: DecorationImage(
                                                           image: NetworkImage(
                                                               snapshot.data
@@ -2297,8 +2206,9 @@ class _RiverMonitoringDetailsPageState
                             EdgeInsets.symmetric(horizontal: 25, vertical: 20),
                             padding: EdgeInsets.all(10),
                             decoration: BoxDecoration(
+                              color: Resources.colors.appTheme.lightGray,
                               border: Border.all(
-                                color: Color(0xFF1C3764),
+                                color: Resources.colors.appTheme.gray,
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -2309,21 +2219,19 @@ class _RiverMonitoringDetailsPageState
                                     padding: EdgeInsets.only(bottom: 5),
                                     margin: EdgeInsets.only(bottom: 20),
                                     decoration: BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(),
-                                      ),
+                                      color: Resources.colors.appTheme.lightGray,
                                     ),
                                     child: Row(
                                       mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
-                                      children: const <Widget>[
+                                      children:  <Widget>[
                                         Text(
                                           "Certificate",
                                           style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(
-                                                0xFF1C3764,
-                                              )),
+                                            fontFamily: "WorkSans",
+                                            color: Resources.colors.appTheme.blue,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ],
                                     )),

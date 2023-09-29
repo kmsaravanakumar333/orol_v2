@@ -1,13 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_orol_v2/pages/floodWatch.dart';
 import 'package:flutter_orol_v2/utils/resources.dart';
 import 'package:reactive_forms/reactive_forms.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../services/models/floodWatch.dart';
-import '../services/models/user.dart';
-import '../services/providers/AppSharedPreferences.dart';
-import '../widgets/features/alertBox.dart';
 import '../widgets/features/googleMap.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -16,6 +13,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import '../widgets/features/pictureOptions.dart';
 import 'package:path/path.dart' as path;
+import 'package:nuts_activity_indicator/nuts_activity_indicator.dart';
 
 
 class FloodAlertForm extends StatefulWidget {
@@ -47,7 +45,14 @@ class _FloodAlertFormState extends State<FloodAlertForm> {
   var newLongitude;
   var floodPicture;
 
-
+  _navigateToFloodWatchFormScreen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FloodWatchForm(mode: "add"),
+      ),
+    );
+  }
   @override
   void initState() {
     super.initState();
@@ -147,7 +152,13 @@ class _FloodAlertFormState extends State<FloodAlertForm> {
         title: Text("Flood Alert"),
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: NutsActivityIndicator(
+        radius: 10,
+        activeColor: Colors.lightGreen,
+        inactiveColor: Colors.grey,
+        tickCount: 8,
+        relativeWidth: 0.6,
+        startRatio: 2.0,))
           : Padding(
         padding: const EdgeInsets.all(30), // Add 30 units of padding to the entire container
         child: Stack(
@@ -291,7 +302,7 @@ class _FloodAlertFormState extends State<FloodAlertForm> {
                             style: TextStyle(
                               fontSize: 14.0,
                               fontFamily: 'WorkSans',
-                              color: Resources.colors.appTheme.veryDarkGray,
+                              color: Resources.colors.appTheme.seondary,
                             ),
                           ),
                         ],
@@ -348,7 +359,7 @@ class _FloodAlertFormState extends State<FloodAlertForm> {
                             style: TextStyle(
                               fontSize: 14.0,
                               fontFamily: 'WorkSans',
-                              color: Resources.colors.appTheme.veryDarkGray,
+                              color: Resources.colors.appTheme.seondary,
                             ),
                           ),
                           const SizedBox(height: 30,),
@@ -482,12 +493,12 @@ class _FloodAlertFormState extends State<FloodAlertForm> {
                         style: TextStyle(
                           fontSize: 14.0,
                           fontFamily: 'WorkSans',
-                          color: Resources.colors.appTheme.veryDarkGray,
+                          color: Resources.colors.appTheme.seondary,
                         ),
                       ),
                       SizedBox(height: 20,),
                       Container(
-                        height: 300, // Adjust the height as needed
+                        height: 500, // Adjust the height as needed
                         child: CustomGoogleMap(
                           onLocationPicked: (locationName, latitude, longitude) {
                             setState(() {
@@ -505,13 +516,13 @@ class _FloodAlertFormState extends State<FloodAlertForm> {
                         children: [
                           ElevatedButton(
                             onPressed: () {
-                              // Add your cancel button functionality here
+                              _navigateToFloodWatchFormScreen(context);
                             },
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(Colors.red), // Customize the button color
                             ),
                             child: Text(
-                              'Cancel',
+                              'CANCEL',
                               style: TextStyle(
                                 color: Colors.white, // Customize the text color
                                 fontSize: 16.0,
@@ -544,10 +555,10 @@ class _FloodAlertFormState extends State<FloodAlertForm> {
                               }
                             },
                             style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(Colors.blue), // Customize the button color
+                              backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.blue), // Customize the button color
                             ),
                             child: Text(
-                              '+ Add Alert',
+                              '+ ADD ALERT',
                               style: TextStyle(
                                 color: Colors.white, // Customize the text color
                                 fontSize: 16.0,

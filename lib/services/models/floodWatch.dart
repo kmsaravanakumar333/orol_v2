@@ -28,6 +28,7 @@ class FloodAlert {
   List? floodPicture = [];
   List? photos = [];
   int? count;
+  String? createdAt='';
 
   FloodAlert({
     this.id,
@@ -41,6 +42,7 @@ class FloodAlert {
     this.floodAlert,
     this.floodPicture,
     this.photos,
+    this.createdAt,
   });
 
   Map<String, dynamic> toJson() => {
@@ -55,6 +57,7 @@ class FloodAlert {
     "floodAlert":floodAlert,
     "floodPicture":floodPicture,
     "photos":photos,
+    "createdAt":createdAt,
     "count":null
   };
 
@@ -71,6 +74,7 @@ class FloodAlert {
         floodAlert:json["floodAlert"],
         floodPicture:json["floodPicture"],
       photos:json["photos"],
+      createdAt:json["createdAt"],
     );
   }
 
@@ -110,7 +114,7 @@ class FloodAlert {
       await showDialog(
           context: context,
           builder: (BuildContext context) {
-            return ShowAlert("Thanks for your participation. Your data was submitted sucessfully","waterTestSubmit");
+            return ShowAlert("Thanks for your participation. Your data was submitted sucessfully","floodAlertSubmit");
           });
       return FloodAlert.fromJson(jsonDecode(responseBody));
     }

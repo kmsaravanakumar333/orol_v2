@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/models/user.dart';
 import '../../services/providers/AppSharedPreferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 
 class AppSideNavigationBar extends StatefulWidget {
@@ -19,12 +20,15 @@ class AppSideNavigationBar extends StatefulWidget {
 
 class _AppSideNavigationBarState extends State<AppSideNavigationBar> {
   Users _user = new Users();
+  String _appVersion = '';
+  var _buildNumber;
 
 
   @override
   void initState() {
     _getUserDetails();
     super.initState();
+    _getAppVersion();
   }
 
   void _getUserDetails() async {
@@ -33,7 +37,13 @@ class _AppSideNavigationBarState extends State<AppSideNavigationBar> {
       _user.firstName=_user.firstName;
     });
   }
-
+  void _getAppVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      _appVersion = packageInfo.version;
+      _buildNumber = packageInfo.buildNumber;
+    });
+  }
   _navigateToLoginScreen(context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("access_token", "");
@@ -70,36 +80,75 @@ class _AppSideNavigationBarState extends State<AppSideNavigationBar> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             DrawerHeader(
-              decoration:  BoxDecoration(color: Resources.colors.appTheme.blue),
-              child: Padding(
-                padding:const EdgeInsets.all(6),
-                child:Column(crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children:  <Widget>[
-                    const SizedBox(
-                      width: 60,
-                      height: 60,
-                      child: CircleAvatar(
-                        child: Icon(Icons.person),
+              decoration: BoxDecoration(color: Resources.colors.appTheme.primary),
+              child: SingleChildScrollView( // Wrap the content in SingleChildScrollView
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      SizedBox(
+                        width: 30,
+                        height: 30,
+                        child: _user.avatarURL != null && _user.avatarURL!.isNotEmpty
+                            ? CircleAvatar(
+                          backgroundImage: NetworkImage(_user.avatarURL![0]),
+                          radius: 30.0,
+                        )
+                            : CircleAvatar(
+                          backgroundColor: Colors.transparent,
+                          child: SvgPicture.asset(
+                            'assets/images/profile-user.svg', // Default SVG image
+                            width: 60, // Specify the width of the SVG
+                            height: 60, // Specify the height of the SVG
+                            color: Colors.black, // Change the color here
+                          ),
+                          radius: 30.0,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height:15,),
-                    Text(
-                      '${_user.firstName} ${_user.lastName}',
-                      style: const TextStyle(
-                          fontFamily: 'Montserrat', fontWeight: FontWeight.bold,fontSize: 16,color: Colors.white),
-                    ),
-                    const SizedBox(height:3,),
-                    Text(
-                      '${_user.email}',
+                      const SizedBox(height: 15,),
+                      Text(
+                        '${_user.firstName} ${_user.lastName}',
+                        style: const TextStyle(
+                          fontFamily: 'Montserrat',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Color(0xFF242424),
+                        ),
+                      ),
+                      const SizedBox(height: 3,),
+                      Text(
+                        '${_user.email}',
                         style: const TextStyle(
                           fontFamily: 'Montserrat',
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
-                          color: Color(0xFFFFFFFF),
-                        )
-                    )
-                  ],
+                          color: Color(0xFF242424),
+                        ),
+                      ),
+                      const SizedBox(height: 5,),
+                      Text(
+                        'Version $_appVersion',
+                        style: const TextStyle(
+                          fontFamily: 'Montserrat',
+                          // fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                          color: Color(0xFF242424),
+                        ),
+                      ),
+                      const SizedBox(height: 5,),
+                      Text(
+                        'Build $_buildNumber',
+                        style: const TextStyle(
+                          fontFamily: 'Montserrat',
+                          // fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                          color: Color(0xFF242424),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -110,8 +159,8 @@ class _AppSideNavigationBarState extends State<AppSideNavigationBar> {
                 width: 24, // Set the width of the icon
                 height: 24, // Set the height of the icon
               ),
-              title:const Text('River Monitoring',style: TextStyle(
-                  fontFamily: 'Montserrat', fontWeight: FontWeight.bold),),
+              title: Text('River Monitoring',style: TextStyle(
+                  fontFamily: 'Montserrat', fontWeight: FontWeight.bold, color: Resources.colors.appTheme.seondary,),),
               onTap: (){
                 _navigateToRiverMonitoringScreen(context);
               },
@@ -123,8 +172,8 @@ class _AppSideNavigationBarState extends State<AppSideNavigationBar> {
                 width: 24, // Set the width of the icon
                 height: 24, // Set the height of the icon
               ),
-              title:const Text('Flood Watch',style: TextStyle(
-                  fontFamily: 'Montserrat', fontWeight: FontWeight.bold),),
+              title: Text('Flood Watch',style: TextStyle(
+                  fontFamily: 'Montserrat', fontWeight: FontWeight.bold, color: Resources.colors.appTheme.seondary,),),
               onTap: (){
                 _navigateToFloodAlertMapScreen(context);
               },
@@ -132,8 +181,8 @@ class _AppSideNavigationBarState extends State<AppSideNavigationBar> {
             const Divider(height: 1,),
             ListTile(
               leading:  Icon(Icons.logout_outlined,color: Resources.colors.appTheme.blue,),
-              title:const Text('Logout',style: TextStyle(
-                  fontFamily: 'Montserrat', fontWeight: FontWeight.bold),),
+              title: Text('Logout',style: TextStyle(
+                  fontFamily: 'Montserrat', fontWeight: FontWeight.bold, color: Resources.colors.appTheme.seondary,),),
               onTap: () async {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                 AppSharedPreference().removeUserInfo();

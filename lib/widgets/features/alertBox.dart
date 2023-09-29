@@ -1,5 +1,6 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
+import 'package:flutter_orol_v2/pages/floodAlertList.dart';
 import 'package:flutter_orol_v2/pages/home.dart';
 
 import '../../pages/riverMonitoringList.dart';
@@ -19,6 +20,14 @@ class _ShowAlertState extends State<ShowAlert> {
         context,
         MaterialPageRoute(
             builder: (context) => HomePage(selectedIndex: 0,)));
+  }
+  _navigateToFloodAlertListScreen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FloodAlertList(),
+      ),
+    );
   }
 
   @override
@@ -59,12 +68,15 @@ class _ShowAlertState extends State<ShowAlert> {
             ),
             child: Text("Okay"),
             onPressed: () {
-              if(widget.mode=="waterTestSubmit"){
+              if (widget.mode == "waterTestSubmit") {
                 Navigator.pop(context, "Okay");
                 Navigator.pop(context, "Okay");
                 Navigator.pop(context, "Okay");
                 _navigateToRiverMonitoringScreen(context);
-              }else{
+              } else if (widget.mode == "floodAlertSubmit") {
+                Navigator.pop(context, "Okay");
+                _navigateToFloodAlertListScreen(context);
+              } else {
                 Navigator.pop(context, "Okay");
               }
               // Navigator.push(context, MaterialPageRoute(builder: (context) => NextScreen()));

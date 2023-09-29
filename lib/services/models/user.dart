@@ -25,6 +25,8 @@ class Users {
   String? email = '';
   String? phoneNumber = '';
   String? password = '';
+  List? avatarURL = [];
+
 
   Users({
     this.id,
@@ -33,6 +35,7 @@ class Users {
     this.email,
     this.phoneNumber,
     this.password,
+    this.avatarURL,
   });
 
   Map<String, dynamic> toJson() => {
@@ -42,6 +45,7 @@ class Users {
     "email": email,
     "phoneNumber": phoneNumber,
     "password": password,
+    "avatarURL": avatarURL,
   };
 
   factory Users.fromJson(Map<String, dynamic> json) {
@@ -52,6 +56,7 @@ class Users {
       email: json['email'],
       phoneNumber: json['phoneNumber'],
       password: json['password'],
+      avatarURL: json['avatarURL'],
     );
   }
 

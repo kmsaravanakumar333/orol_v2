@@ -6,6 +6,7 @@ import 'package:flutter_orol_v2/pages/sideNavigationBar/sideNavigationBar.dart';
 import 'package:flutter_orol_v2/services/models/floodWatch.dart';
 import 'package:flutter_orol_v2/utils/resources.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart'; // Import Google Maps package
+import 'package:nuts_activity_indicator/nuts_activity_indicator.dart';
 
 class FloodAlertMap extends StatefulWidget {
   String mode;
@@ -365,7 +366,13 @@ class _FloodAlertMapState extends State<FloodAlertMap> {
         child: Icon(Icons.add),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator()) // Show loading indicator
+          ? Center(child: NutsActivityIndicator(
+        radius: 10,
+        activeColor: Colors.lightGreen,
+        inactiveColor: Colors.grey,
+        tickCount: 8,
+        relativeWidth: 0.6,
+        startRatio: 2.0,)) // Show loading indicator
           : GoogleMap(
         initialCameraPosition: CameraPosition(
           target: LatLng(20.5937, 78.9629),

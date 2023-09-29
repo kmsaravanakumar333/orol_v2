@@ -157,67 +157,31 @@ class _LoginPageState extends State<LoginPage> {
             alignment: Alignment.center,
             children:[
               Column(
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 40, bottom: 40),
-                  alignment: Alignment.center,
-                  child: SizedBox(
-                    height: 75,
-                    width: 175,
-                    child: Image.asset("assets/logos/logo_app.png"),
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(top: 40, bottom: 40),
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      height: 75,
+                      width: 175,
+                      child: Image.asset("assets/logos/logo_app.png"),
+                    ),
                   ),
-                ),
-                ReactiveFormBuilder(
-                  form: buildForm,
-                  builder: (context, form, child) {
-                    return Column(
-                      children: [
-                        ReactiveTextField<String>(
-                          formControlName: 'email',
-                          onChanged: (value){
-                            setState(() {
-                              form.control('email').value =value.value;
-                            });
-                          },
-                          textInputAction: TextInputAction.next,
-                          decoration: InputDecoration(
-                            labelText: 'Email / Phone',
-                            labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
-                                width: 1.0,         // Replace with your desired focus border width
-                              ),
-                            ),
-                            helperText: '',
-                            helperStyle: TextStyle(height: 0.7),
-                            errorStyle: TextStyle(height: 0.7),
-                          ),
-                        ),
-                        const SizedBox(height: 16.0),
-                        Visibility(
-                          visible:emailRegex.hasMatch(form.value['email'].toString()),
-                          child: ReactiveTextField<String>(
-                            formControlName: 'password',
-                            obscureText: !_showPassword,
-                            validationMessages: {
-                              ValidationMessage.required: (_) =>
-                              'The password must not be empty',
-                              ValidationMessage.minLength: (_) =>
-                              'The password must be at least 8 characters',
+                  ReactiveFormBuilder(
+                    form: buildForm,
+                    builder: (context, form, child) {
+                      return Column(
+                        children: [
+                          ReactiveTextField<String>(
+                            formControlName: 'email',
+                            onChanged: (value){
+                              setState(() {
+                                form.control('email').value =value.value;
+                              });
                             },
-                            textInputAction: TextInputAction.done,
-                            decoration:  InputDecoration(
-                              suffixIconColor:Resources.colors.appTheme.darkBlue,
-                              suffixIcon: IconButton(
-                                icon: Icon(_showPassword?Icons.visibility:Icons.visibility_off),
-                                onPressed: (){
-                                  setState(() {
-                                    _showPassword=!_showPassword;
-                                  });
-                                },
-                              ),
-                              labelText: 'Password',
+                            textInputAction: TextInputAction.next,
+                            decoration: InputDecoration(
+                              labelText: 'Email / Phone',
                               labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue),
                               focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
@@ -230,20 +194,56 @@ class _LoginPageState extends State<LoginPage> {
                               errorStyle: TextStyle(height: 0.7),
                             ),
                           ),
-                        ),
-                        // Row(
-                        //   children: [
-                        //     ReactiveCheckbox(formControlName: 'rememberMe'),
-                        //     const Text('Remember me')
-                        //   ],
-                        // ),
-                        // const SizedBox(height: 16.0),
-                        ElevatedButton(
-                          style:ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
-                            padding: MaterialStateProperty.all<EdgeInsetsGeometry>(const EdgeInsets.only(top: 10.0,bottom: 10.0,left: 20.0,right: 20.0)),
+                          const SizedBox(height: 16.0),
+                          Visibility(
+                            visible:emailRegex.hasMatch(form.value['email'].toString()),
+                            child: ReactiveTextField<String>(
+                              formControlName: 'password',
+                              obscureText: !_showPassword,
+                              validationMessages: {
+                                ValidationMessage.required: (_) =>
+                                'The password must not be empty',
+                                ValidationMessage.minLength: (_) =>
+                                'The password must be at least 8 characters',
+                              },
+                              textInputAction: TextInputAction.done,
+                              decoration:  InputDecoration(
+                                suffixIconColor:Resources.colors.appTheme.darkBlue,
+                                suffixIcon: IconButton(
+                                  icon: Icon(_showPassword?Icons.visibility:Icons.visibility_off),
+                                  onPressed: (){
+                                    setState(() {
+                                      _showPassword=!_showPassword;
+                                    });
+                                  },
+                                ),
+                                labelText: 'Password',
+                                labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
+                                    width: 1.0,         // Replace with your desired focus border width
+                                  ),
+                                ),
+                                helperText: '',
+                                helperStyle: TextStyle(height: 0.7),
+                                errorStyle: TextStyle(height: 0.7),
+                              ),
+                            ),
                           ),
-                          onPressed: () async {
+                          // Row(
+                          //   children: [
+                          //     ReactiveCheckbox(formControlName: 'rememberMe'),
+                          //     const Text('Remember me')
+                          //   ],
+                          // ),
+                          // const SizedBox(height: 16.0),
+                          ElevatedButton(
+                            style:ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
+                              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(const EdgeInsets.only(top: 10.0,bottom: 10.0,left: 20.0,right: 20.0)),
+                            ),
+                            onPressed: () async {
                               if (phoneRegex.hasMatch(form.value['email'].toString())) {
                                 if(form.control('email').valid){
                                   AppSharedPreference().saveUserInfo(Users.fromJson(form.value));
@@ -268,11 +268,11 @@ class _LoginPageState extends State<LoginPage> {
                                     _isLoggedIn=false;
                                   });
                                 }
-                               // var response = await _user.loginByPhone(form.value,context,"UserLogin");
-                               // bool hasLocationPermission = await checkAndRequestLocationPermission();
-                               // setState(() {
-                               //   _isLoggedIn=false;
-                               // });
+                                // var response = await _user.loginByPhone(form.value,context,"UserLogin");
+                                // bool hasLocationPermission = await checkAndRequestLocationPermission();
+                                // setState(() {
+                                //   _isLoggedIn=false;
+                                // });
                               }else{
                                 if (form.valid) {
                                   // setState(() {
@@ -292,59 +292,59 @@ class _LoginPageState extends State<LoginPage> {
                                   });
                                 }
                               }
-                          },
-                          child:  Text(
-                              emailRegex.hasMatch(form.value['email'].toString())?'Login':
-                              phoneRegex.hasMatch(form.value['email'].toString())?'Send OTP':'Login'),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Container(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children:  [
-                                  Text(
-                                      "Don't have an account?",
-                                      style: TextStyle(
-                                          fontFamily: 'Montserrat', fontSize: 14, fontWeight: FontWeight.bold,color: Resources.colors.appTheme.darkBlue)),
-                                  TextButton(
-                                    onPressed: () async {
-                                      _navigateToRegister(context);
-                                    },
-                                    child: const Text("Register",style: TextStyle(
+                            },
+                            child:  Text(
+                                emailRegex.hasMatch(form.value['email'].toString())?'Login':
+                                phoneRegex.hasMatch(form.value['email'].toString())?'Send OTP':'Login'),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Container(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children:  [
+                                    Text(
+                                        "Don't have an account?",
+                                        style: TextStyle(
+                                            fontFamily: 'Montserrat', fontSize: 14, fontWeight: FontWeight.bold,color: Resources.colors.appTheme.darkBlue)),
+                                    TextButton(
+                                      onPressed: () async {
+                                        _navigateToRegister(context);
+                                      },
+                                      child: const Text("Register",style: TextStyle(
                                         fontFamily: 'Montserrat', fontSize: 14, fontWeight: FontWeight.bold,
-                                      decoration: TextDecoration.underline,
-                                      decorationThickness: 2.0,
-                                    ),
-                                    ),
-                                  )
-                                ],
-                              )),
-                        ),
-                        TextButton(
-                          onPressed: () async {
-                            _navigateToForgotPassword(context);
-                          },
-                          child: const Text("Forgot Password?",style: TextStyle(
-                            fontFamily: 'Montserrat', fontSize: 14, fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                            decorationThickness: 2.0,
+                                        decoration: TextDecoration.underline,
+                                        decorationThickness: 2.0,
+                                      ),
+                                      ),
+                                    )
+                                  ],
+                                )),
                           ),
+                          TextButton(
+                            onPressed: () async {
+                              _navigateToForgotPassword(context);
+                            },
+                            child: const Text("Forgot Password?",style: TextStyle(
+                              fontFamily: 'Montserrat', fontSize: 14, fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
+                              decorationThickness: 2.0,
+                            ),
+                            ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ],
-            ),
-              if (_isLoggedIn)
-              BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                child: Container(
-                  color: Colors.black.withOpacity(0.5),
-                ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
               ),
+              if (_isLoggedIn)
+                BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                  child: Container(
+                    color: Colors.black.withOpacity(0.5),
+                  ),
+                ),
               if (_isLoggedIn)
                 CircularProgressIndicator(
                   backgroundColor: Resources.colors.appTheme.lightTeal,

@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:nuts_activity_indicator/nuts_activity_indicator.dart';
 
 
 
@@ -148,7 +149,13 @@ class _FloodWatchFormState extends State<FloodWatchForm> {
         title: Text("Flood Watch"),
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: NutsActivityIndicator(
+        radius: 10,
+        activeColor: Colors.lightGreen,
+        inactiveColor: Colors.grey,
+        tickCount: 8,
+        relativeWidth: 0.6,
+        startRatio: 2.0,))
           : Padding(
         padding: const EdgeInsets.all(30), // Add 30 units of padding to the entire container
         child: Stack(
@@ -232,7 +239,7 @@ class _FloodWatchFormState extends State<FloodWatchForm> {
                               style: TextStyle(
                                 fontSize: 14.0,
                                 fontFamily: 'WorkSans',
-                                color: Resources.colors.appTheme.veryDarkGray,
+                                color: Resources.colors.appTheme.seondary,
                               ),
                             ),
                             suggestionsCallback: (pattern) async {
@@ -304,7 +311,7 @@ class _FloodWatchFormState extends State<FloodWatchForm> {
                           style: TextStyle(
                             fontSize: 14.0,
                             fontFamily: 'WorkSans',
-                            color: Resources.colors.appTheme.veryDarkGray,
+                            color: Resources.colors.appTheme.seondary,
                           ),
                         ),
                       ],
@@ -353,7 +360,7 @@ class _FloodWatchFormState extends State<FloodWatchForm> {
                           style: TextStyle(
                             fontSize: 14.0,
                             fontFamily: 'WorkSans',
-                            color: Resources.colors.appTheme.veryDarkGray,
+                            color: Resources.colors.appTheme.seondary,
                           ),
                         ),
                       ],
@@ -387,7 +394,7 @@ class _FloodWatchFormState extends State<FloodWatchForm> {
                               ),
                             ),
                             child: Text(
-                                ("Add Alert"),
+                                ("ADD ALERT"),
                               style: TextStyle(
                                 fontSize: 12,
                                 fontFamily: 'WorkSans',
@@ -400,7 +407,7 @@ class _FloodWatchFormState extends State<FloodWatchForm> {
                     ),
                     const SizedBox(height: 30,),
                     Container(
-                      height: 300, // Adjust the height as needed
+                      height: 500, // Adjust the height as needed
                       child: CustomGoogleMap(
                         onLocationPicked: (locationName, latitude, longitude) {
                           setState(() {
