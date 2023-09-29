@@ -60,7 +60,7 @@ class _RegisterPageState extends State<RegisterPage> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => OtpPage(verificationID:actualCode)));
+            builder: (context) => OtpPage(verificationID:actualCode,mode:'register')));
   }
   Future<void> _sendMobileOTP(context,user) async {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor:Colors.green,content: Text("Sending OTP...")));
@@ -131,6 +131,7 @@ class _RegisterPageState extends State<RegisterPage> {
       // _navigateToHomeScreen(context);
     }
   }
+
   Future<bool> checkAndRequestLocationPermission() async {
     // Check if location permission is already granted
     PermissionStatus permissionStatus = await Permission.location.status;

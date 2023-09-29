@@ -2,13 +2,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../pages/home.dart';
 import '../services/models/user.dart';
 import '../services/providers/AppSharedPreferences.dart';
 import '../utils/resources.dart';
 
 class OtpPage extends StatefulWidget {
   var verificationID;
-  OtpPage({Key? key, required this.verificationID}) : super(key: key);
+  var mode;
+  OtpPage({Key? key, required this.verificationID, required this.mode}) : super(key: key);
 
   @override
   State<OtpPage> createState() => _OtpPageState();
@@ -46,10 +48,22 @@ class _OtpPageState extends State<OtpPage> {
         .then((value) async{
       if (value != null) {
         //send a request to create user
-        _user.registerUser(_user, context,'mobileOTP');
+        if(widget.mode=="register"){
+          _user.registerUser(_user, context,'mobileOTP');
+        }else{
+          _navigateToVerifyHomeScreen(context);
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor:Colors.green,content: Text("OTP Verified")));
         bool hasLocationPermission = await checkAndRequestLocationPermission();
       }});
+  }
+
+  _navigateToVerifyHomeScreen(context){
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => HomePage(selectedIndex: 0,)));
   }
 
   Future<bool> checkAndRequestLocationPermission() async {

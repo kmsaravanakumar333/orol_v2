@@ -1416,22 +1416,22 @@ class _RiverMonitoringDetailsPageState
                                                     2,
                                                 alignment: Alignment.centerLeft,
                                                 child: snapshot.data
-                                                    .waterTesting['Ammonia'] !=
+                                                    .waterTesting['ammonia'] !=
                                                     null&&snapshot.data
-                                                    .waterTesting['Ammonia'] !=
+                                                    .waterTesting['ammonia'] !=
                                                     "" ?
                                                 Text("${snapshot.data
-                                                    .waterTesting['Ammonia']}" +
+                                                    .waterTesting['ammonia']}" +
                                                     " mg/L",
                                                     style: TextStyle(
                                                         color: int.parse(
                                                             snapshot.data
-                                                                .waterTesting['Ammonia']) ==
+                                                                .waterTesting['ammonia']) ==
                                                             0
                                                             ? Colors.green
                                                             : int.parse(
                                                             snapshot.data
-                                                                .waterTesting['Ammonia']) >
+                                                                .waterTesting['ammonia']) >
                                                             0
                                                             ? Colors.red
                                                             : Colors.black,

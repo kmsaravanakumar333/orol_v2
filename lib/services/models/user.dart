@@ -57,19 +57,6 @@ class Users {
 
   //Function to login the user using email
   loginByEmail(_user, context, mode) async {
-    final verifyUser = await  http.post(
-      Uri.parse("https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=${URL.verificationKey}"),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'email': _user['email'],
-        'password': _user['password'],
-      }),
-    );
-    var data1 = verifyUser;
-
-    if(data1.statusCode==200){
       final response = await http.post(
         Uri.parse(
             '${URL.apiURL}/user/auth'),
@@ -113,17 +100,17 @@ class Users {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.green, content: Text("User not registered")));
       return data;
-    }
-    else if(data1.statusCode==400){
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          backgroundColor: Colors.redAccent, content: Text("Invalid Email / Password")));
-    }
   }
 
   //Function to login the user using phone number
   loginByPhone(_user, context, mode) async {
-    print(_user.runtimeType);
     var body;
+    var phoneNumber;
+    if(_user.phoneNumber!=null){
+      phoneNumber = _user.phoneNumber;
+    }else{
+      phoneNumber = _user.email;
+    }
     if(_user.runtimeType==UnmodifiableMapView<String, Object?>){
       body=jsonEncode(<String, String>{
         'phoneNumber': _user['email'],
@@ -131,7 +118,7 @@ class Users {
       });
     }else{
       body=jsonEncode(<String, String>{
-        'phoneNumber': _user.phoneNumber,
+        'phoneNumber': phoneNumber,
         'password': _user.password,
       });
     }
@@ -148,8 +135,10 @@ class Users {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString("access_token", "${data["accessToken"]}");
       AppSharedPreference().saveUserInfo(Users.fromJson(data['user']));
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(backgroundColor:Colors.green,content: Text('Successfully logged in')));
-      _navigateToHomeScreen(context);
+      if(mode=="registerUser"){
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(backgroundColor:Colors.green,content: Text("Successfully logged in")));
+        _navigateToHomeScreen(context);
+      }
       return Users.fromJson(data['user']);
     } else if (response.statusCode == 401) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
