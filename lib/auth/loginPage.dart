@@ -147,9 +147,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Login"),
-      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -240,7 +237,7 @@ class _LoginPageState extends State<LoginPage> {
                           // const SizedBox(height: 16.0),
                           ElevatedButton(
                             style:ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
+                              backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.blue),
                               padding: MaterialStateProperty.all<EdgeInsetsGeometry>(const EdgeInsets.only(top: 10.0,bottom: 10.0,left: 20.0,right: 20.0)),
                             ),
                             onPressed: () async {
@@ -294,8 +291,8 @@ class _LoginPageState extends State<LoginPage> {
                               }
                             },
                             child:  Text(
-                                emailRegex.hasMatch(form.value['email'].toString())?'Login':
-                                phoneRegex.hasMatch(form.value['email'].toString())?'Send OTP':'Login'),
+                                emailRegex.hasMatch(form.value['email'].toString())?'LOGIN':
+                                phoneRegex.hasMatch(form.value['email'].toString())?'SEND OTP':'LOGIN'),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(20.0),
