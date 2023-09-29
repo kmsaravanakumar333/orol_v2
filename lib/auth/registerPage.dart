@@ -177,6 +177,10 @@ class _RegisterPageState extends State<RegisterPage> {
                       children: [
                         ReactiveTextField<String>(
                           formControlName: 'firstName',
+                          style: TextStyle(
+                            color: Resources.colors.appTheme.lable,
+                            fontFamily: "WorkSans",
+                          ),
                           validationMessages: {
                             ValidationMessage.required: (_) =>
                             'The first name must not be empty'
@@ -184,7 +188,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
                             labelText: 'First Name ',
-                            labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue),
+                            labelStyle: TextStyle(color: Resources.colors.appTheme.lable),
                             focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
                                 color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
@@ -199,6 +203,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         const SizedBox(height: 16.0),
                         ReactiveTextField<String>(
                           formControlName: 'lastName',
+                          style: TextStyle(
+                            color: Resources.colors.appTheme.lable,
+                            fontFamily: "WorkSans",
+                          ),
                           validationMessages: {
                             ValidationMessage.required: (_) =>
                             'The last name must not be empty',
@@ -206,7 +214,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
                             labelText: 'Last Name ',
-                            labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue),
+                            labelStyle: TextStyle(color: Resources.colors.appTheme.lable),
                             focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
                                 color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
@@ -221,6 +229,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         const SizedBox(height: 16.0),
                         ReactiveTextField<String>(
                           formControlName: 'email',
+                          style: TextStyle(
+                            color: Resources.colors.appTheme.lable,
+                            fontFamily: "WorkSans",
+                          ),
                           validationMessages: {
                             ValidationMessage.required: (_) =>
                             'The email must not be empty',
@@ -230,7 +242,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
                             labelText: 'Email ',
-                            labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue),
+                            labelStyle: TextStyle(color: Resources.colors.appTheme.lable),
                             focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
                                 color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
@@ -245,6 +257,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         const SizedBox(height: 16.0),
                         ReactiveTextField<String>(
                           formControlName: 'phoneNumber',
+                          style: TextStyle(
+                            color: Resources.colors.appTheme.lable,
+                            fontFamily: "WorkSans",
+                          ),
                           validationMessages: {
                             ValidationMessage.required: (_) =>
                             'The phone must not be empty',
@@ -254,7 +270,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
                             labelText: 'Phone',
-                            labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue),
+                            labelStyle: TextStyle(color: Resources.colors.appTheme.lable),
                             focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
                                 color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
@@ -269,6 +285,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         const SizedBox(height: 16.0),
                         ReactiveTextField<String>(
                           formControlName: 'password',
+                          style: TextStyle(
+                            color: Resources.colors.appTheme.lable,
+                            fontFamily: "WorkSans",
+                          ),
                           obscureText: !_showPassword,
                           validationMessages: {
                             ValidationMessage.required: (_) =>
@@ -288,7 +308,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               },
                             ),
                             labelText: 'Password',
-                            labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue),
+                            labelStyle: TextStyle(color: Resources.colors.appTheme.lable),
                             focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
                                 color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
@@ -303,6 +323,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         const SizedBox(height: 16.0),
                         ReactiveTextField<String>(
                           formControlName: 'confirmPassword',
+                          style: TextStyle(
+                            color: Resources.colors.appTheme.lable,
+                            fontFamily: "WorkSans",
+                          ),
                           obscureText: !_showConfirmPassword,
                           validationMessages: {
                             ValidationMessage.required: (_) =>
@@ -322,7 +346,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               },
                             ),
                             labelText: 'Confirm Password',
-                            labelStyle: TextStyle(color: Resources.colors.appTheme.darkBlue),
+                            labelStyle: TextStyle(color: Resources.colors.appTheme.lable),
                             focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
                                 color:Resources.colors.appTheme.darkBlue,  // Replace with your desired focus border color
@@ -338,13 +362,13 @@ class _RegisterPageState extends State<RegisterPage> {
                         Row(
                           children: [
                             ReactiveCheckbox(formControlName: 'emailOTP'),
-                            const Text('Send verification link to mail')
+                            const Text('Send verification link to mail',)
                           ],
                         ),
                         const SizedBox(height: 16.0),
                         ElevatedButton(
                           style:ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.darkBlue),
+                            backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.blue),
                             padding: MaterialStateProperty.all<EdgeInsetsGeometry>(const EdgeInsets.only(top: 10.0,bottom: 10.0,left: 20.0,right: 20.0)),
                           ),
                           onPressed: () {
@@ -360,7 +384,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               form.markAllAsTouched();
                             }
                           },
-                          child: const Text('Register'),
+                          child: const Text('REGISTER'),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(20.0),
@@ -371,7 +395,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   Text(
                                       "Already have an account?",
                                       style: TextStyle(
-                                          fontFamily: 'Montserrat', fontSize: 14, fontWeight: FontWeight.bold,color: Resources.colors.appTheme.darkBlue)),
+                                          fontFamily: 'Montserrat', fontSize: 14, fontWeight: FontWeight.bold,color: Resources.colors.appTheme.seondary)),
                                   TextButton(
                                     onPressed: () async {
                                       Navigator.of(context).pushAndRemoveUntil(
@@ -380,8 +404,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                           }
                                           ), (Route<dynamic> route) => false);
                                     },
-                                    child: const Text("Login",style: TextStyle(
-                                        fontFamily: 'Montserrat', fontSize: 14, fontWeight: FontWeight.bold)),
+                                    child:  Text("Login",style: TextStyle(
+                                        fontFamily: 'Montserrat', fontSize: 14, fontWeight: FontWeight.bold, color: Resources.colors.appTheme.seondary)),
                                   )
                                 ],
                               )),

@@ -8,6 +8,7 @@ import 'package:flutter_orol_v2/services/models/floodWatch.dart';
 import 'package:flutter_orol_v2/utils/resources.dart';
 import 'package:flutter_pagewise/flutter_pagewise.dart';
 import 'package:intl/intl.dart';
+import 'package:nuts_activity_indicator/nuts_activity_indicator.dart';
 import 'package:path/path.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/models/riverMonitoring.dart';
@@ -72,6 +73,15 @@ class _FloodAlertListState extends State<FloodAlertList> {
       ),
       body: PagewiseListView(
         pageSize: pageSize,
+        loadingBuilder: (context){
+          return Center(child: NutsActivityIndicator(
+            radius: 10,
+            activeColor: Colors.lightGreen,
+            inactiveColor: Colors.grey,
+            tickCount: 8,
+            relativeWidth: 0.6,
+            startRatio: 2.0,));
+        },
         itemBuilder: this._itemBuilder,
         pageFuture: (pageIndex) => fetchData(pageIndex! + 1),
         noItemsFoundBuilder: (context) => Center(child: Text('No items found.')),
@@ -91,9 +101,9 @@ class _FloodAlertListState extends State<FloodAlertList> {
         height: 140.0,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
-          color: Resources.colors.appTheme.white,
+          color: Resources.colors.appTheme.primary,
           border: Border.all(
-            color: Resources.colors.appTheme.white,
+            color: Resources.colors.appTheme.primary,
           ),
           boxShadow: const [
             BoxShadow(
@@ -120,7 +130,7 @@ class _FloodAlertListState extends State<FloodAlertList> {
                         "${item.location}",
                         style: TextStyle(
                           fontFamily: "WorkSans",
-                          color: Resources.colors.appTheme.veryDarkGray,
+                          color: Resources.colors.appTheme.seondary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -132,15 +142,16 @@ class _FloodAlertListState extends State<FloodAlertList> {
                   "${item.latitude} & ${item.longitude}",
                   style: TextStyle(
                     fontFamily: "WorkSans",
-                    color: Resources.colors.appTheme.veryDarkGray,
+                    color: Resources.colors.appTheme.seondary,
                   ),
                 ),
                 const SizedBox(height: 10,),
                 Text(
                   "${item.date}",
+                  // '${DateFormat.yMMMd().format(DateTime.parse(item.createdAt).toLocal())} ${item.floodAlert['activityTime'] != null ? "${item.floodAlert['activityTime']}" : ""}',
                   style: TextStyle(
                     fontFamily: "WorkSans",
-                    color: Resources.colors.appTheme.veryDarkGray,
+                    color: Resources.colors.appTheme.seondary,
                   ),
                 ),
                 const SizedBox(height: 10,),

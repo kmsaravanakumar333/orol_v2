@@ -162,7 +162,6 @@ class WaterTestDetails {
       var multipartFile = await http.MultipartFile.fromPath('artworkFiles', artworkPictures[i].path);
       request.files.add(multipartFile);
     }
-
     request.fields['userId'] = user.id.toString();
     request.fields['generalInformation.activityDate'] = waterTestObj['generalInformation']["activityDate"] ;
     request.fields['generalInformation.activityTime'] = waterTestObj['generalInformation']["activityTime"] ;
@@ -187,6 +186,8 @@ class WaterTestDetails {
     request.fields['waterTesting.phosphate'] = waterTestObj['waterTesting']['phosphate']?? '';
     request.fields['waterTesting.ammonia'] = waterTestObj['waterTesting']['ammonia']?? '';
     request.fields['waterTesting.lead'] = waterTestObj['waterTesting']['lead']?? '';
+    request.fields['waterTesting.conductivity'] = waterTestObj['waterTesting']['conductivity']?? '';
+    request.fields['waterTesting.totalDissolvedSolids'] = waterTestObj['waterTesting']['totalDissolvedSolids']?? '';
     request.fields['surroundings'] = jsonEncode(waterTestObj['surroundings']);
     request.fields['surroundingPictures'] = jsonEncode(waterTestObj['surroundingPictures']);
     request.fields['riverPictures'] = jsonEncode(waterTestObj['riverPictures']);
@@ -481,6 +482,8 @@ class WaterTestDetails {
     request.fields['waterTesting.phosphate'] = waterTestObj['waterTesting']['phosphate']?? '';
     request.fields['waterTesting.ammonia'] = waterTestObj['waterTesting']['ammonia']?? '';
     request.fields['waterTesting.lead'] = waterTestObj['waterTesting']['lead']?? '';
+    request.fields['waterTesting.conductivity'] = waterTestObj['waterTesting']['conductivity']?? '';
+    request.fields['waterTesting.totalDissolvedSolids'] = waterTestObj['waterTesting']['totalDissolvedSolids']?? '';
     request.fields['surroundings'] = jsonEncode(waterTestObj['surroundings']);
     request.fields['surroundingPictures'] = jsonEncode(waterTestObj['surroundingPictures']);
     request.fields['riverPictures'] = jsonEncode(waterTestObj['riverPictures']);
@@ -534,7 +537,7 @@ class WaterTestDetails {
     var accessToken = prefs.getString('access_token') ;
     var _user = (await AppSharedPreference().getUserInfo())as Users;
     final response = await http.get(
-        Uri.parse(URL.apiURL+'/water-test-details?page=$page&limit=15'),
+        Uri.parse(URL.apiURL+'/water-test-details?page=$page&limit=30'),
       headers: <String, String>{
         "Authorization": 'Bearer '+ accessToken!
       },

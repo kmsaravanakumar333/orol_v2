@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_orol_v2/pages/riverMonitoringForm.dart';
 import 'package:flutter_orol_v2/services/models/floodWatch.dart';
 import 'package:flutter_orol_v2/utils/resources.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../services/models/riverMonitoring.dart';
 import '../services/models/user.dart';
-import '../services/providers/AppSharedPreferences.dart';
+import 'package:nuts_activity_indicator/nuts_activity_indicator.dart';
 
 class FloodWatchDetailsPage extends StatefulWidget {
   var floodDetailsId;
@@ -67,14 +63,26 @@ class _FloodWatchDetailsPageState extends State<FloodWatchDetailsPage> {
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Scaffold(
-                body: Center(child: CircularProgressIndicator()));
+                body: Center(child: NutsActivityIndicator(
+                  radius: 10,
+                  activeColor: Colors.lightGreen,
+                  inactiveColor: Colors.grey,
+                  tickCount: 8,
+                  relativeWidth: 0.6,
+                  startRatio: 2.0,)));
           } else {
             if (snapshot.hasError) {
               return Scaffold(
                   body: Center(child: Text('Error: ${snapshot.error}')));
             } else {
               return Scaffold(
-                  body: isLoading?Center(child:CircularProgressIndicator()):SingleChildScrollView(
+                  body: isLoading?Center(child: NutsActivityIndicator(
+                    radius: 10,
+                    activeColor: Colors.lightGreen,
+                    inactiveColor: Colors.grey,
+                    tickCount: 8,
+                    relativeWidth: 0.6,
+                    startRatio: 2.0,)):SingleChildScrollView(
                     child: Column(
                         children: [
                           Container(
@@ -83,8 +91,9 @@ class _FloodWatchDetailsPageState extends State<FloodWatchDetailsPage> {
                                   horizontal: 25, vertical: 20),
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
+                                color: Resources.colors.appTheme.lightGray,
                                 border: Border.all(
-                                  color: Color(0xFF1C3764),
+                                  color: Resources.colors.appTheme.gray,
                                 ),
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -94,24 +103,19 @@ class _FloodWatchDetailsPageState extends State<FloodWatchDetailsPage> {
                                   Container(
                                       padding: EdgeInsets.only(bottom: 5),
                                       margin: EdgeInsets.only(bottom: 20),
-                                      decoration: const BoxDecoration(
-                                        border: Border(
-                                          bottom: BorderSide(),
-                                        ),
-                                      ),
                                       child: Row(
                                         mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
-                                        children: const <Widget>[
+                                        children:  <Widget>[
                                           Text(
                                             "Alert Information",
                                             style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                color: Color(
-                                                  0xFF1C3764,
-                                                )),
+                                              fontFamily: "WorkSans",
+                                              color: Resources.colors.appTheme.blue,
+                                              fontWeight: FontWeight.w600,
+                                            ),
 
-                                          ),
+                                          )
                                         ],
                                       )),
                                   Container(
@@ -123,41 +127,36 @@ class _FloodWatchDetailsPageState extends State<FloodWatchDetailsPage> {
                                         Container(
                                           padding: EdgeInsets.only(bottom: 10),
                                           child: Row(
-                                            mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: <Widget>[
                                               Container(
-                                                  width: (MediaQuery
-                                                      .of(context)
-                                                      .size
-                                                      .width -
-                                                      100) /
-                                                      2,
-                                                  child: Text("Activity Date",
-                                                      style: TextStyle(
-                                                          color: Resources.colors.appTheme.lable,
-                                                          fontFamily: "WorkSans"))),
+                                                width: (MediaQuery.of(context).size.width - 100) / 2,
+                                                child: Text(
+                                                  "Activity Date",
+                                                  style: TextStyle(
+                                                    color: Resources.colors.appTheme.lable,
+                                                    fontFamily: "WorkSans",
+                                                  ),
+                                                ),
+                                              ),
                                               Container(
-                                                  width: (MediaQuery
-                                                      .of(context)
-                                                      .size
-                                                      .width -
-                                                      100) /
-                                                      2,
-                                                  alignment: Alignment.centerLeft,
-                                                  child: Text(
-                                                      '${DateFormat.yMMMd()
-                                                          .format(DateTime.parse(
-                                                          snapshot.data.date)
-                                                          .toLocal())}',
-                                                      style: TextStyle(
-                                                          color: Resources.colors.appTheme.veryDarkGray,
-                                                          fontFamily: "WorkSans",
-                                                          fontWeight: FontWeight
-                                                              .w600)))
+                                                width: (MediaQuery.of(context).size.width - 100) / 2,
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  snapshot.data.date != null
+                                                      ? '${DateFormat.yMMMd().format(DateTime.parse(snapshot.data.date).toLocal())}'
+                                                      : '', // Handle null case gracefully
+                                                  style: TextStyle(
+                                                    color: Resources.colors.appTheme.seondary,
+                                                    fontFamily: "WorkSans",
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         ),
+
                                         Container(
                                           padding: EdgeInsets.only(bottom: 10),
                                           child: Row(
@@ -190,7 +189,7 @@ class _FloodWatchDetailsPageState extends State<FloodWatchDetailsPage> {
                                                       .time}"
                                                       : "",
                                                       style: TextStyle(
-                                                          color: Resources.colors.appTheme.veryDarkGray,
+                                                          color: Resources.colors.appTheme.seondary,
                                                           fontFamily: "WorkSans",
                                                           fontWeight: FontWeight
                                                               .bold)))
@@ -224,7 +223,7 @@ class _FloodWatchDetailsPageState extends State<FloodWatchDetailsPage> {
                                                   alignment: Alignment.centerLeft,
                                                   child: Text("${snapshot.data.location}",
                                                       style: TextStyle(
-                                                          color: Resources.colors.appTheme.veryDarkGray,
+                                                          color: Resources.colors.appTheme.seondary,
                                                           fontFamily: "WorkSans",
                                                           fontWeight:
                                                           FontWeight.w600))),
@@ -259,7 +258,7 @@ class _FloodWatchDetailsPageState extends State<FloodWatchDetailsPage> {
                                                   child:
                                                     Text("${snapshot.data.latitude}",
                                                       style: TextStyle(
-                                                          color: Resources.colors.appTheme.veryDarkGray,
+                                                          color: Resources.colors.appTheme.seondary,
                                                           fontFamily: "WorkSans",
                                                           fontWeight: FontWeight
                                                               .w600)))
@@ -294,7 +293,7 @@ class _FloodWatchDetailsPageState extends State<FloodWatchDetailsPage> {
                                                   child:
                                                 Text("${snapshot.data.longitude}",
                                                       style: TextStyle(
-                                                          color: Resources.colors.appTheme.veryDarkGray,
+                                                          color: Resources.colors.appTheme.seondary,
                                                           fontFamily: "WorkSans",
                                                           fontWeight: FontWeight
                                                               .w600)))
@@ -329,7 +328,7 @@ class _FloodWatchDetailsPageState extends State<FloodWatchDetailsPage> {
                                                   child:
                                                   Text("${snapshot.data.experience}",
                                                       style: TextStyle(
-                                                          color: Resources.colors.appTheme.veryDarkGray,
+                                                          color: Resources.colors.appTheme.seondary,
                                                           fontFamily: "WorkSans",
                                                           fontWeight: FontWeight
                                                               .w600)))
@@ -346,8 +345,9 @@ class _FloodWatchDetailsPageState extends State<FloodWatchDetailsPage> {
                               EdgeInsets.symmetric(horizontal: 25, vertical: 20),
                               padding: EdgeInsets.all(10),
                               decoration: BoxDecoration(
+                                color: Resources.colors.appTheme.lightGray,
                                 border: Border.all(
-                                  color: Color(0xFF1C3764),
+                                  color: Resources.colors.appTheme.gray,
                                 ),
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -357,22 +357,17 @@ class _FloodWatchDetailsPageState extends State<FloodWatchDetailsPage> {
                                   Container(
                                       padding: EdgeInsets.only(bottom: 5),
                                       margin: EdgeInsets.only(bottom: 20),
-                                      decoration: const BoxDecoration(
-                                        border: Border(
-                                          bottom: BorderSide(),
-                                        ),
-                                      ),
                                       child: Row(
                                         mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
-                                        children: const <Widget>[
+                                        children: <Widget>[
                                           Text(
                                             "Pictures",
                                             style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                color: Color(
-                                                  0xFF1C3764,
-                                                )),
+                                              fontFamily: "WorkSans",
+                                              color: Resources.colors.appTheme.blue,
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           ),
                                         ],
                                       )),
@@ -381,7 +376,7 @@ class _FloodWatchDetailsPageState extends State<FloodWatchDetailsPage> {
                                         margin: const EdgeInsets.symmetric(
                                             horizontal: 10, vertical: 5),
                                         child: Container(
-                                            height: 165,
+                                            height: 235,
                                             child: ListView.builder(
                                                 shrinkWrap: true,
                                                 scrollDirection: Axis.horizontal,
@@ -393,22 +388,13 @@ class _FloodWatchDetailsPageState extends State<FloodWatchDetailsPage> {
                                                   return Column(
                                                     children: [
                                                       Container(
-                                                        margin: EdgeInsets.only(
-                                                            right: 10),
-                                                        height: (MediaQuery
-                                                            .of(context)
-                                                            .size
-                                                            .width - 30) / 2,
-                                                        width: (MediaQuery
-                                                            .of(context)
-                                                            .size
-                                                            .width - 30) / 2,
-                                                        padding: const EdgeInsets
-                                                            .only(
-                                                            bottom: 10, left: 5),
-                                                        alignment: Alignment
-                                                            .bottomLeft,
+                                                        margin: EdgeInsets.only(right: 10),
+                                                        height: (MediaQuery.of(context).size.width - 30) / 1.6,
+                                                        width: (MediaQuery.of(context).size.width - 220) / 1.6,
+                                                        padding: const EdgeInsets.only(bottom: 10, left: 5),
+                                                        alignment: Alignment.bottomLeft,
                                                         decoration: BoxDecoration(
+                                                          color: Resources.colors.appTheme.lightGray, // Use the desired background color
                                                           image: DecorationImage(
                                                             image: NetworkImage(
                                                                 snapshot.data

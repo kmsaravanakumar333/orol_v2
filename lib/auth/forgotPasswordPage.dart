@@ -142,7 +142,7 @@ class _ForgorPasswordPageState extends State<ForgorPasswordPage> {
                   backgroundColor: Resources.colors.appTheme.lightTeal,
                 ),
             ],
-          ),
+          ), 
         ),
       ),
     );

@@ -49,12 +49,12 @@ class _MyAppState extends State<MyApp> {
         scaffoldBackgroundColor:Colors.white,
           appBarTheme:  AppBarTheme(
             // Customize the app bar theme here
-            color: Resources.colors.appTheme.blue,  // Set the background color of the app bar
+            color: Resources.colors.appTheme.primary,  // Set the background color of the app bar
             elevation: 2.0, // Set the elevation (shadow) of the app bar
-            iconTheme: IconThemeData(color: Resources.colors.appTheme.lightTeal),
+            iconTheme: IconThemeData(color: Resources.colors.appTheme.seondary),
             toolbarTextStyle: TextTheme(
               titleLarge: TextStyle(
-                color: Resources.colors.appTheme.lightTeal,// Set the color of the title text in the app bar
+                color: Resources.colors.appTheme.seondary,// Set the color of the title text in the app bar
                 fontSize: 20.0, // Set the font size of the title text in the app bar
                 fontWeight: FontWeight.bold,
                 fontFamily: 'WorkSans'// Set the font weight of the title text in the app bar
@@ -62,7 +62,7 @@ class _MyAppState extends State<MyApp> {
             ).bodyMedium,
             titleTextStyle: TextTheme(
               titleLarge: TextStyle(
-                color: Resources.colors.appTheme.lightTeal, // Set the color of the title text in the app bar
+                color: Resources.colors.appTheme.seondary, // Set the color of the title text in the app bar
                 fontSize: 20.0, // Set the font size of the title text in the app bar
                 fontWeight: FontWeight.bold,
                 fontFamily: 'WorkSans'// Set the font weight of the title text in the app bar

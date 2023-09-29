@@ -67,7 +67,7 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Resources.colors.appTheme.veryDarkGray,// Color for the selected item
+        selectedItemColor: Resources.colors.appTheme.seondary,// Color for the selected item
         unselectedItemColor: Colors.grey, // Color for unselected items
         onTap: _onItemTapped,
       ),

@@ -20,6 +20,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:nuts_activity_indicator/nuts_activity_indicator.dart';
 
 class RiverMonitoringForm extends StatefulWidget {
   String mode;
@@ -50,6 +51,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   bool _autoValidate = false;
   List<PlacesSearchResult> _searchResults = [];
   var selectedWaterLevel;
+  String formattedDate = '';
 
   var selectedWeather;
   var _bacteriaPresent;
@@ -118,6 +120,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   var activityImg = [];
   var artWorkImg = [];
 
+
   @override
   void initState() {
     super.initState();
@@ -183,8 +186,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
       'testerName': FormControl<String>(validators: [Validators.required]),
     }),
     'waterLevelAndWeather': fb.group({
-      'airTemperature': FormControl<String>(
-          value: '', validators: [Validators.required, Validators.number]),
+      'airTemperature': FormControl<String>(validators: [Validators.required]),
       'waterLevel':
           FormControl<String>(value: '', validators: [Validators.required]),
       'weather': FormControl<String>(validators: [Validators.required]),
@@ -216,6 +218,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
     'groupPictures': FormControl<List>(value: []),
     'artworkPictures': FormControl<List>(value: []),
     'activityPictures': FormControl<List>(value: []),
+    'flora':FormControl<String>(),
+    'preview':FormControl<String>(),
   });
 
   setForm() {
@@ -582,7 +586,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
               style: TextStyle(
                 fontSize: 14.0,
                 fontFamily: 'WorkSans',
-                color: Resources.colors.appTheme.veryDarkGray,
+                color: Resources.colors.appTheme.seondary,
               ),
             ),
           ],
@@ -764,6 +768,9 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           "description": faunaDescriptions[i].text
         });
       }
+      else {
+        faunaImgObj[i]['description'] = faunaDescriptionsEdit[i].text;
+      }
     }
     for (int i = 0; i < selectedGroupImages.length; i++) {
       if (selectedGroupImages[i].runtimeType == XFile) {
@@ -772,6 +779,9 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           "fileName": path.basename(selectedGroupImages[i].path),
           "description": groupImageDescriptions[i].text
         });
+      }
+      else {
+        groupImgObj[i]['description'] = groupImageDescriptionsEdit[i].text;
       }
     }
     for (int i = 0; i < selectedActivityImages.length; i++) {
@@ -782,6 +792,9 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           "description": activityImageDescriptions[i].text
         });
       }
+      else {
+        activityImgObj[i]['description'] = activityImageDescriptionsEdit[i].text;
+      }
     }
     for (int i = 0; i < selectedArtworkImages.length; i++) {
       if (selectedArtworkImages[i].runtimeType == XFile) {
@@ -790,6 +803,9 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           "fileName": path.basename(selectedArtworkImages[i].path),
           "description": artworkDescriptions[i].text
         });
+      }
+      else {
+        artwrokImgObj[i]['description'] = artworkDescriptionsEdit[i].text;
       }
     }
     form.control('riverPictures').value = riverImgObj;
@@ -1078,7 +1094,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     formControlName: 'generalInformation.activityDate',
                     controller: activityDateController,
                     validationMessages: {
-                      ValidationMessage.required: (_) => 'Required field',
+                      ValidationMessage.required: (_) => 'This field is required',
                     },
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
@@ -1108,7 +1124,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     style: TextStyle(
                       fontSize: 14.0,
                       fontFamily: 'WorkSans',
-                      color: Resources.colors.appTheme.veryDarkGray,
+                      color: Resources.colors.appTheme.seondary,
                     ),
                   ),
                 ],
@@ -1141,7 +1157,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     formControlName: 'generalInformation.activityTime',
                     controller: activityTimeController,
                     validationMessages: {
-                      ValidationMessage.required: (_) => 'Required field',
+                      ValidationMessage.required: (_) => 'This field is required',
                     },
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
@@ -1168,7 +1184,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     style: TextStyle(
                       fontSize: 14.0,
                       fontFamily: 'WorkSans',
-                      color: Resources.colors.appTheme.veryDarkGray,
+                      color: Resources.colors.appTheme.seondary,
                     ),
                   ),
                 ],
@@ -1198,7 +1214,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   ReactiveTextField<String>(
                     formControlName: 'generalInformation.testerName',
                     validationMessages: {
-                      ValidationMessage.required: (_) => 'Required field',
+                      ValidationMessage.required: (_) => 'This field is required',
                     },
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
@@ -1217,7 +1233,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     style: TextStyle(
                       fontSize: 14.0,
                       fontFamily: 'WorkSans',
-                      color: Resources.colors.appTheme.veryDarkGray,
+                      color: Resources.colors.appTheme.seondary,
                     ),
                   ),
                 ],
@@ -1232,9 +1248,10 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     text: TextSpan(
                       text: 'Location',
                       style: TextStyle(
-                          fontSize: 14.0,
-                          fontFamily: 'WorkSans',
-                          color: Resources.colors.appTheme.lable),
+                        fontSize: 14.0,
+                        fontFamily: 'WorkSans',
+                        color: Resources.colors.appTheme.lable,
+                      ),
                       children: const [
                         TextSpan(
                           text: ' *',
@@ -1246,77 +1263,90 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       ],
                     ),
                   ),
-                  Form(
-                    key: this._formKey,
-                    autovalidateMode: _autoValidate
-                        ? AutovalidateMode.always
-                        : AutovalidateMode.disabled,
-                    child: TypeAheadFormField(
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Required field';
-                        }
-                        return null;
-                      },
-                      textFieldConfiguration: TextFieldConfiguration(
-                        controller: _searchController,
+                  if (widget.mode == "add") // Check if it's in "add" mode
+                    Form(
+                      key: _formKey,
+                      autovalidateMode: _autoValidate
+                          ? AutovalidateMode.always
+                          : AutovalidateMode.disabled,
+                      child: TypeAheadFormField(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'This field is required';
+                          }
+                          return null;
+                        },
+                        textFieldConfiguration: TextFieldConfiguration(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            border: UnderlineInputBorder(),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Resources.colors.appTheme.darkBlue,
+                                width: 1.0,
+                              ),
+                            ),
+                          ),
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            fontFamily: 'WorkSans',
+                            color: Resources.colors.appTheme.seondary,
+                          ),
+                        ),
+                        suggestionsCallback: (pattern) async {
+                          form.control('generalInformation.location').value = pattern;
+                          _onSearchTextChanged(pattern);
+                          return _searchResults.where((place) => place.name.toLowerCase().contains(pattern.toLowerCase()));
+                        },
+                        itemBuilder: (context, suggestion) {
+                          return _searchResults.length > 0
+                              ? ListTile(
+                            title: Text(suggestion.name),
+                            subtitle: Text(
+                              suggestion.formattedAddress == null ? "" : "${suggestion.formattedAddress}",
+                            ),
+                          )
+                              : SizedBox();
+                        },
+                        onSuggestionSelected: (suggestion) {
+                          var location = "${suggestion.name}, ${suggestion.formattedAddress != null ? suggestion.formattedAddress : ''}";
+                          getLocationFromPlaceId(suggestion.placeId);
+                          setState(() {
+                            _searchController.text = location;
+                            form.control('generalInformation.location').value = location;
+                          });
+                        },
+                      ),
+                    ),
+                  if (widget.mode == "edit") // Check if it's in "edit" mode
+                    Form(
+                      child: ReactiveTextField<String>(
+                        formControlName: 'generalInformation.location',
+                        keyboardType: TextInputType.number,
+                        validationMessages: {
+                          ValidationMessage.required: (_) => 'This field is required',
+                        },
+                        textInputAction: TextInputAction.next,
                         decoration: InputDecoration(
-                          border: UnderlineInputBorder(),
-                          // suffixIcon: IconButton(
-                          //   icon: Icon(
-                          //     Icons.gps_fixed,
-                          //     color: Resources.colors.appTheme.blue,// Set the color you want here
-                          //   ),
-                          //   onPressed: () async {
-                          //     _navigateToMap();
-                          //   },
-                          // ),
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
                               color: Resources.colors.appTheme.darkBlue,
                               // Replace with your desired focus border color
                               width:
-                                  1.0, // Replace with your desired focus border width
+                              1.0, // Replace with your desired focus border width
                             ),
                           ),
+                          helperText: '',
+                          helperStyle: TextStyle(height: 0.7),
+                          errorStyle: TextStyle(height: 1),
                         ),
                         style: TextStyle(
                           fontSize: 14.0,
                           fontFamily: 'WorkSans',
-                          color: Resources.colors.appTheme.veryDarkGray,
+                          color: Resources.colors.appTheme.seondary,
                         ),
                       ),
-                      suggestionsCallback: (pattern) async {
-                        form.control('generalInformation.location').value =
-                            pattern;
-                        _onSearchTextChanged(pattern);
-                        return _searchResults.where((place) => place.name
-                            .toLowerCase()
-                            .contains(pattern.toLowerCase()));
-                      },
-                      itemBuilder: (context, suggestion) {
-                        return _searchResults.length > 0
-                            ? ListTile(
-                                title: Text(suggestion.name),
-                                subtitle: Text(
-                                    suggestion.formattedAddress == null
-                                        ? ""
-                                        : "${suggestion.formattedAddress}"),
-                              )
-                            : SizedBox();
-                      },
-                      onSuggestionSelected: (suggestion) {
-                        var location =
-                            "${suggestion.name}, ${suggestion.formattedAddress != null ? suggestion.formattedAddress : ''}";
-                        getLocationFromPlaceId(suggestion.placeId);
-                        setState(() {
-                          _searchController.text = location;
-                          form.control('generalInformation.location').value =
-                              location;
-                        });
-                      },
                     ),
-                  ),
                 ],
               ),
               const SizedBox(height: 10),
@@ -1345,7 +1375,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     formControlName: 'generalInformation.latitude',
                     keyboardType: TextInputType.number,
                     validationMessages: {
-                      ValidationMessage.required: (_) => 'Required field',
+                      ValidationMessage.required: (_) => 'This field is required',
                     },
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
@@ -1364,7 +1394,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     style: TextStyle(
                       fontSize: 14.0,
                       fontFamily: 'WorkSans',
-                      color: Resources.colors.appTheme.veryDarkGray,
+                      color: Resources.colors.appTheme.seondary,
                     ),
                   ),
                 ],
@@ -1397,7 +1427,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     formControlName: 'generalInformation.longitude',
                     keyboardType: TextInputType.number,
                     validationMessages: {
-                      ValidationMessage.required: (_) => 'Required field',
+                      ValidationMessage.required: (_) => 'This field is required',
                     },
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
@@ -1416,7 +1446,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     style: TextStyle(
                       fontSize: 14.0,
                       fontFamily: 'WorkSans',
-                      color: Resources.colors.appTheme.veryDarkGray,
+                      color: Resources.colors.appTheme.seondary,
                     ),
                   ),
                 ],
@@ -1428,7 +1458,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           height: 30,
         ),
         Container(
-          height: 300, // Adjust the height as needed
+          height: 500, // Adjust the height as needed
           child: CustomGoogleMap(
             onLocationPicked: (locationName, latitude, longitude) {
               setState(() {
@@ -1451,7 +1481,13 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   _waterAndWeatherInformation() {
     return SingleChildScrollView(
       child: isLoading
-          ? CircularProgressIndicator()
+          ? const NutsActivityIndicator(
+        radius: 10,
+        activeColor: Colors.lightGreen,
+        inactiveColor: Colors.grey,
+        tickCount: 8,
+        relativeWidth: 0.6,
+        startRatio: 2.0,)
           : Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1474,6 +1510,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          _error == true
+                              ? const Text(
+                            "This field is required",
+                            style: TextStyle(color: Colors.red, fontSize: 10),
+                          )
+                              : SizedBox(),
                           RichText(
                             text: TextSpan(
                               text: 'Measure the air temperature',
@@ -1493,22 +1535,17 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             ),
                           ),
                           ReactiveTextField<String>(
-                            formControlName:
-                                'waterLevelAndWeather.airTemperature',
+                            formControlName: 'waterLevelAndWeather.airTemperature',
                             keyboardType: TextInputType.number,
                             validationMessages: {
-                              ValidationMessage.required: (_) =>
-                                  'Required field',
+                              ValidationMessage.required: (_) => 'This field is required',
                             },
-                            textInputAction: TextInputAction.next,
                             decoration: InputDecoration(
                               suffix: Text("°C"),
                               focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
                                   color: Resources.colors.appTheme.darkBlue,
-                                  // Replace with your desired focus border color
-                                  width:
-                                      1.0, // Replace with your desired focus border width
+                                  width: 1.0,
                                 ),
                               ),
                               helperText: '',
@@ -1518,17 +1555,13 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                             style: TextStyle(
                               fontSize: 14.0,
                               fontFamily: 'WorkSans',
-                              color: Resources.colors.appTheme.veryDarkGray,
+                              color: Resources.colors.appTheme.seondary,
                             ),
-                          ),
+                            showErrors: (control) => _autoValidate, // Conditionally show errors based on _autoValidate
+                          )
                         ],
                       ),
-                      _error == true
-                          ? const Text(
-                              "This field is required",
-                              style: TextStyle(color: Colors.red, fontSize: 10),
-                            )
-                          : SizedBox(),
+
                       RichText(
                         text: TextSpan(
                           text: 'Observe the Water Level',
@@ -1547,6 +1580,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                           ],
                         ),
                       ),
+                      _error == true
+                          ? const Text(
+                        "This field is required",
+                        style: TextStyle(color: Colors.red, fontSize: 10),
+                      )
+                          : SizedBox(),
                       Container(
                           height: 100,
                           child: ListView.builder(
@@ -1606,6 +1645,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                     ],
                   ),
                 ),
+                _error == true
+                    ? const Text(
+                  "This image is required",
+                  style: TextStyle(color: Colors.red, fontSize: 10),
+                )
+                    : SizedBox(),
                 const SizedBox(height: 16.0),
                 ElevatedButton(
                   onPressed: () =>
@@ -1634,12 +1679,6 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   ),
                 ),
                 const SizedBox(height: 10.0),
-                _error == true
-                    ? const Text(
-                        "This image is required",
-                        style: TextStyle(color: Colors.red, fontSize: 10),
-                      )
-                    : SizedBox(),
                 if (riverPictures != null && riverPictures.isNotEmpty)
                   Container(
                     height: 255,
@@ -1651,6 +1690,10 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
                             children: [
                               Container(
                                   height: (MediaQuery.of(context).size.width -
@@ -1746,109 +1789,112 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               scrollDirection: Axis.horizontal,
                               itemCount: selectedRiverImages.length,
                               itemBuilder: (BuildContext ctxt, int Index) {
-                                return SingleChildScrollView(
-                                  child: Container(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                              color: Colors.white),
-                                          child: Stack(
-                                              alignment: Alignment.topRight,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Container(
-                                                      height: (MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width -
-                                                              100) /
-                                                          1.6,
-                                                      // width: (MediaQuery.of(context).size.width - 30) / 2,
-                                                      child: Image.file(
-                                                          fit: BoxFit.fill,
-                                                          File(
-                                                              selectedRiverImages[
-                                                                      Index]!
-                                                                  .path))),
-                                                ),
-                                                Align(
-                                                    alignment:
-                                                        Alignment.topRight,
-                                                    child: IconButton(
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            selectedRiverImages
-                                                                .removeAt(
-                                                                    Index);
-                                                            riverDescriptions
-                                                                .removeAt(
-                                                                    Index);
-                                                            _steps =
-                                                                _generateSteps();
-                                                          });
-                                                        },
-                                                        icon: const Icon(
-                                                          Icons.delete,
-                                                          color: Colors.red,
-                                                        ))),
-                                              ]),
-                                        ),
-                                        RichText(
-                                          text: TextSpan(
-                                            text: 'Description',
-                                            style: TextStyle(
-                                                fontSize: 14.0,
-                                                fontFamily: 'WorkSans',
-                                                color: Resources
-                                                    .colors.appTheme.lable),
-                                            // children: const [
-                                            //   TextSpan(
-                                            //     text: ' *',
-                                            //     style: TextStyle(
-                                            //       fontSize: 16.0,
-                                            //       color: Colors.red,
-                                            //     ),
-                                            //   ),
-                                            // ],
+                                return Container(
+                                  margin: EdgeInsets.only(right: 10),
+                                  child: SingleChildScrollView(
+                                    child: Container(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.white),
+                                            child: Stack(
+                                                alignment: Alignment.topRight,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(8.0),
+                                                    child: Container(
+                                                        height: (MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width -
+                                                                100) /
+                                                            1.6,
+                                                        // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                                        child: Image.file(
+                                                            fit: BoxFit.fill,
+                                                            File(
+                                                                selectedRiverImages[
+                                                                        Index]!
+                                                                    .path))),
+                                                  ),
+                                                  Align(
+                                                      alignment:
+                                                          Alignment.topRight,
+                                                      child: IconButton(
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              selectedRiverImages
+                                                                  .removeAt(
+                                                                      Index);
+                                                              riverDescriptions
+                                                                  .removeAt(
+                                                                      Index);
+                                                              _steps =
+                                                                  _generateSteps();
+                                                            });
+                                                          },
+                                                          icon: const Icon(
+                                                            Icons.delete,
+                                                            color: Colors.red,
+                                                          ))),
+                                                ]),
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Container(
-                                            width: 170,
-                                            height: 50,
-                                            decoration: const BoxDecoration(
-                                              color: Colors.white,
+                                          RichText(
+                                            text: TextSpan(
+                                              text: 'Description',
+                                              style: TextStyle(
+                                                  fontSize: 14.0,
+                                                  fontFamily: 'WorkSans',
+                                                  color: Resources
+                                                      .colors.appTheme.lable),
+                                              // children: const [
+                                              //   TextSpan(
+                                              //     text: ' *',
+                                              //     style: TextStyle(
+                                              //       fontSize: 16.0,
+                                              //       color: Colors.red,
+                                              //     ),
+                                              //   ),
+                                              // ],
                                             ),
-                                            // padding: EdgeInsets.symmetric(horizontal: 5),
-                                            child: TextFormField(
-                                              autofocus: false,
-                                              controller:
-                                                  riverDescriptions[Index],
-                                              style: TextStyle(fontSize: 12),
-                                              decoration: const InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.white,
-                                                      width: 1.0),
-                                                ),
-                                                focusedBorder:
-                                                    OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.black,
-                                                      width: 1.0),
-                                                ),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Container(
+                                              width: 170,
+                                              height: 50,
+                                              decoration: const BoxDecoration(
+                                                color: Colors.white,
                                               ),
-                                            )),
-                                      ],
+                                              // padding: EdgeInsets.symmetric(horizontal: 5),
+                                              child: TextFormField(
+                                                autofocus: false,
+                                                controller:
+                                                    riverDescriptions[Index],
+                                                style: TextStyle(fontSize: 12),
+                                                decoration: const InputDecoration(
+                                                  border: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.white,
+                                                        width: 1.0),
+                                                  ),
+                                                  focusedBorder:
+                                                      OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.black,
+                                                        width: 1.0),
+                                                  ),
+                                                ),
+                                              )),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 );
@@ -1862,7 +1908,13 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   _surrounding() {
     return SingleChildScrollView(
       child: isLoading
-          ? CircularProgressIndicator()
+          ? const NutsActivityIndicator(
+        radius: 10,
+        activeColor: Colors.lightGreen,
+        inactiveColor: Colors.grey,
+        tickCount: 8,
+        relativeWidth: 0.6,
+        startRatio: 2.0,)
           : Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -2124,6 +2176,10 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
                             children: [
                               Container(
                                   height: (MediaQuery.of(context).size.width -
@@ -2219,109 +2275,112 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               scrollDirection: Axis.horizontal,
                               itemCount: selectedSurroundingImages.length,
                               itemBuilder: (BuildContext ctxt, int Index) {
-                                return SingleChildScrollView(
-                                  child: Container(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                              color: Colors.white),
-                                          child: Stack(
-                                              alignment: Alignment.topRight,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                  const EdgeInsets.all(8.0),
-                                                  child: Container(
-                                                      height: (MediaQuery.of(
-                                                          context)
-                                                          .size
-                                                          .width -
-                                                          100) /
-                                                          1.6,
-                                                      // width: (MediaQuery.of(context).size.width - 30) / 2,
-                                                      child: Image.file(
-                                                          fit: BoxFit.fill,
-                                                          File(
-                                                              selectedSurroundingImages[
-                                                              Index]!
-                                                                  .path))),
-                                                ),
-                                                Align(
-                                                    alignment:
-                                                    Alignment.topRight,
-                                                    child: IconButton(
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            selectedSurroundingImages
-                                                                .removeAt(
-                                                                Index);
-                                                            surroundingDescriptions
-                                                                .removeAt(
-                                                                Index);
-                                                            _steps =
-                                                                _generateSteps();
-                                                          });
-                                                        },
-                                                        icon: const Icon(
-                                                          Icons.delete,
-                                                          color: Colors.red,
-                                                        ))),
-                                              ]),
-                                        ),
-                                        RichText(
-                                          text: TextSpan(
-                                            text: 'Description',
-                                            style: TextStyle(
-                                                fontSize: 14.0,
-                                                fontFamily: 'WorkSans',
-                                                color: Resources
-                                                    .colors.appTheme.lable),
-                                            // children: const [
-                                            //   TextSpan(
-                                            //     text: ' *',
-                                            //     style: TextStyle(
-                                            //       fontSize: 16.0,
-                                            //       color: Colors.red,
-                                            //     ),
-                                            //   ),
-                                            // ],
+                                return Container(
+                                  margin: EdgeInsets.only(right: 10),
+                                  child: SingleChildScrollView(
+                                    child: Container(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.white),
+                                            child: Stack(
+                                                alignment: Alignment.topRight,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                    const EdgeInsets.all(8.0),
+                                                    child: Container(
+                                                        height: (MediaQuery.of(
+                                                            context)
+                                                            .size
+                                                            .width -
+                                                            100) /
+                                                            1.6,
+                                                        // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                                        child: Image.file(
+                                                            fit: BoxFit.fill,
+                                                            File(
+                                                                selectedSurroundingImages[
+                                                                Index]!
+                                                                    .path))),
+                                                  ),
+                                                  Align(
+                                                      alignment:
+                                                      Alignment.topRight,
+                                                      child: IconButton(
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              selectedSurroundingImages
+                                                                  .removeAt(
+                                                                  Index);
+                                                              surroundingDescriptions
+                                                                  .removeAt(
+                                                                  Index);
+                                                              _steps =
+                                                                  _generateSteps();
+                                                            });
+                                                          },
+                                                          icon: const Icon(
+                                                            Icons.delete,
+                                                            color: Colors.red,
+                                                          ))),
+                                                ]),
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Container(
-                                            width: 170,
-                                            height: 50,
-                                            decoration: const BoxDecoration(
-                                              color: Colors.white,
+                                          RichText(
+                                            text: TextSpan(
+                                              text: 'Description',
+                                              style: TextStyle(
+                                                  fontSize: 14.0,
+                                                  fontFamily: 'WorkSans',
+                                                  color: Resources
+                                                      .colors.appTheme.lable),
+                                              // children: const [
+                                              //   TextSpan(
+                                              //     text: ' *',
+                                              //     style: TextStyle(
+                                              //       fontSize: 16.0,
+                                              //       color: Colors.red,
+                                              //     ),
+                                              //   ),
+                                              // ],
                                             ),
-                                            // padding: EdgeInsets.symmetric(horizontal: 5),
-                                            child: TextFormField(
-                                              autofocus: false,
-                                              controller:
-                                              surroundingDescriptions[Index],
-                                              style: TextStyle(fontSize: 12),
-                                              decoration: const InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.white,
-                                                      width: 1.0),
-                                                ),
-                                                focusedBorder:
-                                                OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.black,
-                                                      width: 1.0),
-                                                ),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Container(
+                                              width: 170,
+                                              height: 50,
+                                              decoration: const BoxDecoration(
+                                                color: Colors.white,
                                               ),
-                                            )),
-                                      ],
+                                              // padding: EdgeInsets.symmetric(horizontal: 5),
+                                              child: TextFormField(
+                                                autofocus: false,
+                                                controller:
+                                                surroundingDescriptions[Index],
+                                                style: TextStyle(fontSize: 12),
+                                                decoration: const InputDecoration(
+                                                  border: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.white,
+                                                        width: 1.0),
+                                                  ),
+                                                  focusedBorder:
+                                                  OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.black,
+                                                        width: 1.0),
+                                                  ),
+                                                ),
+                                              )),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 );
@@ -2335,7 +2394,13 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   _waterQuality() {
     return SingleChildScrollView(
       child: isLoading
-          ? CircularProgressIndicator()
+          ? const NutsActivityIndicator(
+        radius: 10,
+        activeColor: Colors.lightGreen,
+        inactiveColor: Colors.grey,
+        tickCount: 8,
+        relativeWidth: 0.6,
+        startRatio: 2.0,)
           : Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -2451,7 +2516,13 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   _floraAndFauna() {
     return SingleChildScrollView(
       child: isLoading
-          ? CircularProgressIndicator()
+          ? const NutsActivityIndicator(
+        radius: 10,
+        activeColor: Colors.lightGreen,
+        inactiveColor: Colors.grey,
+        tickCount: 8,
+        relativeWidth: 0.6,
+        startRatio: 2.0,)
           : Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -2540,6 +2611,10 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
                             children: [
                               Container(
                                   height: (MediaQuery.of(context).size.width -
@@ -2635,109 +2710,112 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               scrollDirection: Axis.horizontal,
                               itemCount: selectedFloraImages.length,
                               itemBuilder: (BuildContext ctxt, int Index) {
-                                return SingleChildScrollView(
-                                  child: Container(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                              color: Colors.white),
-                                          child: Stack(
-                                              alignment: Alignment.topRight,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                  const EdgeInsets.all(8.0),
-                                                  child: Container(
-                                                      height: (MediaQuery.of(
-                                                          context)
-                                                          .size
-                                                          .width -
-                                                          100) /
-                                                          1.6,
-                                                      // width: (MediaQuery.of(context).size.width - 30) / 2,
-                                                      child: Image.file(
-                                                          fit: BoxFit.fill,
-                                                          File(
-                                                              selectedFloraImages[
-                                                              Index]!
-                                                                  .path))),
-                                                ),
-                                                Align(
-                                                    alignment:
-                                                    Alignment.topRight,
-                                                    child: IconButton(
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            selectedFloraImages
-                                                                .removeAt(
-                                                                Index);
-                                                            floraDescriptions
-                                                                .removeAt(
-                                                                Index);
-                                                            _steps =
-                                                                _generateSteps();
-                                                          });
-                                                        },
-                                                        icon: const Icon(
-                                                          Icons.delete,
-                                                          color: Colors.red,
-                                                        ))),
-                                              ]),
-                                        ),
-                                        RichText(
-                                          text: TextSpan(
-                                            text: 'Description',
-                                            style: TextStyle(
-                                                fontSize: 14.0,
-                                                fontFamily: 'WorkSans',
-                                                color: Resources
-                                                    .colors.appTheme.lable),
-                                            // children: const [
-                                            //   TextSpan(
-                                            //     text: ' *',
-                                            //     style: TextStyle(
-                                            //       fontSize: 16.0,
-                                            //       color: Colors.red,
-                                            //     ),
-                                            //   ),
-                                            // ],
+                                return Container(
+                                  margin: EdgeInsets.only(right: 10),
+                                  child: SingleChildScrollView(
+                                    child: Container(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.white),
+                                            child: Stack(
+                                                alignment: Alignment.topRight,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                    const EdgeInsets.all(8.0),
+                                                    child: Container(
+                                                        height: (MediaQuery.of(
+                                                            context)
+                                                            .size
+                                                            .width -
+                                                            100) /
+                                                            1.6,
+                                                        // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                                        child: Image.file(
+                                                            fit: BoxFit.fill,
+                                                            File(
+                                                                selectedFloraImages[
+                                                                Index]!
+                                                                    .path))),
+                                                  ),
+                                                  Align(
+                                                      alignment:
+                                                      Alignment.topRight,
+                                                      child: IconButton(
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              selectedFloraImages
+                                                                  .removeAt(
+                                                                  Index);
+                                                              floraDescriptions
+                                                                  .removeAt(
+                                                                  Index);
+                                                              _steps =
+                                                                  _generateSteps();
+                                                            });
+                                                          },
+                                                          icon: const Icon(
+                                                            Icons.delete,
+                                                            color: Colors.red,
+                                                          ))),
+                                                ]),
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Container(
-                                            width: 170,
-                                            height: 50,
-                                            decoration: const BoxDecoration(
-                                              color: Colors.white,
+                                          RichText(
+                                            text: TextSpan(
+                                              text: 'Description',
+                                              style: TextStyle(
+                                                  fontSize: 14.0,
+                                                  fontFamily: 'WorkSans',
+                                                  color: Resources
+                                                      .colors.appTheme.lable),
+                                              // children: const [
+                                              //   TextSpan(
+                                              //     text: ' *',
+                                              //     style: TextStyle(
+                                              //       fontSize: 16.0,
+                                              //       color: Colors.red,
+                                              //     ),
+                                              //   ),
+                                              // ],
                                             ),
-                                            // padding: EdgeInsets.symmetric(horizontal: 5),
-                                            child: TextFormField(
-                                              autofocus: false,
-                                              controller:
-                                              floraDescriptions[Index],
-                                              style: TextStyle(fontSize: 12),
-                                              decoration: const InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.white,
-                                                      width: 1.0),
-                                                ),
-                                                focusedBorder:
-                                                OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.black,
-                                                      width: 1.0),
-                                                ),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Container(
+                                              width: 170,
+                                              height: 50,
+                                              decoration: const BoxDecoration(
+                                                color: Colors.white,
                                               ),
-                                            )),
-                                      ],
+                                              // padding: EdgeInsets.symmetric(horizontal: 5),
+                                              child: TextFormField(
+                                                autofocus: false,
+                                                controller:
+                                                floraDescriptions[Index],
+                                                style: TextStyle(fontSize: 12),
+                                                decoration: const InputDecoration(
+                                                  border: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.white,
+                                                        width: 1.0),
+                                                  ),
+                                                  focusedBorder:
+                                                  OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.black,
+                                                        width: 1.0),
+                                                  ),
+                                                ),
+                                              )),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 );
@@ -2817,6 +2895,10 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
                             children: [
                               Container(
                                   height: (MediaQuery.of(context).size.width -
@@ -2912,109 +2994,112 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               scrollDirection: Axis.horizontal,
                               itemCount: selectedFaunaImages.length,
                               itemBuilder: (BuildContext ctxt, int Index) {
-                                return SingleChildScrollView(
-                                  child: Container(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                              color: Colors.white),
-                                          child: Stack(
-                                              alignment: Alignment.topRight,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                  const EdgeInsets.all(8.0),
-                                                  child: Container(
-                                                      height: (MediaQuery.of(
-                                                          context)
-                                                          .size
-                                                          .width -
-                                                          100) /
-                                                          1.6,
-                                                      // width: (MediaQuery.of(context).size.width - 30) / 2,
-                                                      child: Image.file(
-                                                          fit: BoxFit.fill,
-                                                          File(
-                                                              selectedFaunaImages[
-                                                              Index]!
-                                                                  .path))),
-                                                ),
-                                                Align(
-                                                    alignment:
-                                                    Alignment.topRight,
-                                                    child: IconButton(
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            selectedFaunaImages
-                                                                .removeAt(
-                                                                Index);
-                                                            faunaDescriptions
-                                                                .removeAt(
-                                                                Index);
-                                                            _steps =
-                                                                _generateSteps();
-                                                          });
-                                                        },
-                                                        icon: const Icon(
-                                                          Icons.delete,
-                                                          color: Colors.red,
-                                                        ))),
-                                              ]),
-                                        ),
-                                        RichText(
-                                          text: TextSpan(
-                                            text: 'Description',
-                                            style: TextStyle(
-                                                fontSize: 14.0,
-                                                fontFamily: 'WorkSans',
-                                                color: Resources
-                                                    .colors.appTheme.lable),
-                                            // children: const [
-                                            //   TextSpan(
-                                            //     text: ' *',
-                                            //     style: TextStyle(
-                                            //       fontSize: 16.0,
-                                            //       color: Colors.red,
-                                            //     ),
-                                            //   ),
-                                            // ],
+                                return Container(
+                                  margin: EdgeInsets.only(right: 10),
+                                  child: SingleChildScrollView(
+                                    child: Container(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.white),
+                                            child: Stack(
+                                                alignment: Alignment.topRight,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                    const EdgeInsets.all(8.0),
+                                                    child: Container(
+                                                        height: (MediaQuery.of(
+                                                            context)
+                                                            .size
+                                                            .width -
+                                                            100) /
+                                                            1.6,
+                                                        // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                                        child: Image.file(
+                                                            fit: BoxFit.fill,
+                                                            File(
+                                                                selectedFaunaImages[
+                                                                Index]!
+                                                                    .path))),
+                                                  ),
+                                                  Align(
+                                                      alignment:
+                                                      Alignment.topRight,
+                                                      child: IconButton(
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              selectedFaunaImages
+                                                                  .removeAt(
+                                                                  Index);
+                                                              faunaDescriptions
+                                                                  .removeAt(
+                                                                  Index);
+                                                              _steps =
+                                                                  _generateSteps();
+                                                            });
+                                                          },
+                                                          icon: const Icon(
+                                                            Icons.delete,
+                                                            color: Colors.red,
+                                                          ))),
+                                                ]),
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Container(
-                                            width: 170,
-                                            height: 50,
-                                            decoration: const BoxDecoration(
-                                              color: Colors.white,
+                                          RichText(
+                                            text: TextSpan(
+                                              text: 'Description',
+                                              style: TextStyle(
+                                                  fontSize: 14.0,
+                                                  fontFamily: 'WorkSans',
+                                                  color: Resources
+                                                      .colors.appTheme.lable),
+                                              // children: const [
+                                              //   TextSpan(
+                                              //     text: ' *',
+                                              //     style: TextStyle(
+                                              //       fontSize: 16.0,
+                                              //       color: Colors.red,
+                                              //     ),
+                                              //   ),
+                                              // ],
                                             ),
-                                            // padding: EdgeInsets.symmetric(horizontal: 5),
-                                            child: TextFormField(
-                                              autofocus: false,
-                                              controller:
-                                              faunaDescriptions[Index],
-                                              style: TextStyle(fontSize: 12),
-                                              decoration: const InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.white,
-                                                      width: 1.0),
-                                                ),
-                                                focusedBorder:
-                                                OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.black,
-                                                      width: 1.0),
-                                                ),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Container(
+                                              width: 170,
+                                              height: 50,
+                                              decoration: const BoxDecoration(
+                                                color: Colors.white,
                                               ),
-                                            )),
-                                      ],
+                                              // padding: EdgeInsets.symmetric(horizontal: 5),
+                                              child: TextFormField(
+                                                autofocus: false,
+                                                controller:
+                                                faunaDescriptions[Index],
+                                                style: TextStyle(fontSize: 12),
+                                                decoration: const InputDecoration(
+                                                  border: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.white,
+                                                        width: 1.0),
+                                                  ),
+                                                  focusedBorder:
+                                                  OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.black,
+                                                        width: 1.0),
+                                                  ),
+                                                ),
+                                              )),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 );
@@ -3028,7 +3113,13 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
   _otherPictures() {
     return SingleChildScrollView(
       child: isLoading
-          ? CircularProgressIndicator()
+          ? const NutsActivityIndicator(
+        radius: 10,
+        activeColor: Colors.lightGreen,
+        inactiveColor: Colors.grey,
+        tickCount: 8,
+        relativeWidth: 0.6,
+        startRatio: 2.0,)
           : Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -3096,6 +3187,10 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
                             children: [
                               Container(
                                   height: (MediaQuery.of(context).size.width -
@@ -3191,109 +3286,112 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               scrollDirection: Axis.horizontal,
                               itemCount: selectedGroupImages.length,
                               itemBuilder: (BuildContext ctxt, int Index) {
-                                return SingleChildScrollView(
-                                  child: Container(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                              color: Colors.white),
-                                          child: Stack(
-                                              alignment: Alignment.topRight,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                  const EdgeInsets.all(8.0),
-                                                  child: Container(
-                                                      height: (MediaQuery.of(
-                                                          context)
-                                                          .size
-                                                          .width -
-                                                          100) /
-                                                          1.6,
-                                                      // width: (MediaQuery.of(context).size.width - 30) / 2,
-                                                      child: Image.file(
-                                                          fit: BoxFit.fill,
-                                                          File(
-                                                              selectedGroupImages[
-                                                              Index]!
-                                                                  .path))),
-                                                ),
-                                                Align(
-                                                    alignment:
-                                                    Alignment.topRight,
-                                                    child: IconButton(
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            selectedGroupImages
-                                                                .removeAt(
-                                                                Index);
-                                                            groupImageDescriptions
-                                                                .removeAt(
-                                                                Index);
-                                                            _steps =
-                                                                _generateSteps();
-                                                          });
-                                                        },
-                                                        icon: const Icon(
-                                                          Icons.delete,
-                                                          color: Colors.red,
-                                                        ))),
-                                              ]),
-                                        ),
-                                        RichText(
-                                          text: TextSpan(
-                                            text: 'Description',
-                                            style: TextStyle(
-                                                fontSize: 14.0,
-                                                fontFamily: 'WorkSans',
-                                                color: Resources
-                                                    .colors.appTheme.lable),
-                                            // children: const [
-                                            //   TextSpan(
-                                            //     text: ' *',
-                                            //     style: TextStyle(
-                                            //       fontSize: 16.0,
-                                            //       color: Colors.red,
-                                            //     ),
-                                            //   ),
-                                            // ],
+                                return Container(
+                                  margin: EdgeInsets.only(right: 10),
+                                  child: SingleChildScrollView(
+                                    child: Container(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.white),
+                                            child: Stack(
+                                                alignment: Alignment.topRight,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                    const EdgeInsets.all(8.0),
+                                                    child: Container(
+                                                        height: (MediaQuery.of(
+                                                            context)
+                                                            .size
+                                                            .width -
+                                                            100) /
+                                                            1.6,
+                                                        // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                                        child: Image.file(
+                                                            fit: BoxFit.fill,
+                                                            File(
+                                                                selectedGroupImages[
+                                                                Index]!
+                                                                    .path))),
+                                                  ),
+                                                  Align(
+                                                      alignment:
+                                                      Alignment.topRight,
+                                                      child: IconButton(
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              selectedGroupImages
+                                                                  .removeAt(
+                                                                  Index);
+                                                              groupImageDescriptions
+                                                                  .removeAt(
+                                                                  Index);
+                                                              _steps =
+                                                                  _generateSteps();
+                                                            });
+                                                          },
+                                                          icon: const Icon(
+                                                            Icons.delete,
+                                                            color: Colors.red,
+                                                          ))),
+                                                ]),
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Container(
-                                            width: 170,
-                                            height: 50,
-                                            decoration: const BoxDecoration(
-                                              color: Colors.white,
+                                          RichText(
+                                            text: TextSpan(
+                                              text: 'Description',
+                                              style: TextStyle(
+                                                  fontSize: 14.0,
+                                                  fontFamily: 'WorkSans',
+                                                  color: Resources
+                                                      .colors.appTheme.lable),
+                                              // children: const [
+                                              //   TextSpan(
+                                              //     text: ' *',
+                                              //     style: TextStyle(
+                                              //       fontSize: 16.0,
+                                              //       color: Colors.red,
+                                              //     ),
+                                              //   ),
+                                              // ],
                                             ),
-                                            // padding: EdgeInsets.symmetric(horizontal: 5),
-                                            child: TextFormField(
-                                              autofocus: false,
-                                              controller:
-                                              groupImageDescriptions[Index],
-                                              style: TextStyle(fontSize: 12),
-                                              decoration: const InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.white,
-                                                      width: 1.0),
-                                                ),
-                                                focusedBorder:
-                                                OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.black,
-                                                      width: 1.0),
-                                                ),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Container(
+                                              width: 170,
+                                              height: 50,
+                                              decoration: const BoxDecoration(
+                                                color: Colors.white,
                                               ),
-                                            )),
-                                      ],
+                                              // padding: EdgeInsets.symmetric(horizontal: 5),
+                                              child: TextFormField(
+                                                autofocus: false,
+                                                controller:
+                                                groupImageDescriptions[Index],
+                                                style: TextStyle(fontSize: 12),
+                                                decoration: const InputDecoration(
+                                                  border: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.white,
+                                                        width: 1.0),
+                                                  ),
+                                                  focusedBorder:
+                                                  OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.black,
+                                                        width: 1.0),
+                                                  ),
+                                                ),
+                                              )),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 );
@@ -3345,6 +3443,10 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
                             children: [
                               Container(
                                   height: (MediaQuery.of(context).size.width -
@@ -3440,109 +3542,112 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               scrollDirection: Axis.horizontal,
                               itemCount: selectedActivityImages.length,
                               itemBuilder: (BuildContext ctxt, int Index) {
-                                return SingleChildScrollView(
-                                  child: Container(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                              color: Colors.white),
-                                          child: Stack(
-                                              alignment: Alignment.topRight,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                  const EdgeInsets.all(8.0),
-                                                  child: Container(
-                                                      height: (MediaQuery.of(
-                                                          context)
-                                                          .size
-                                                          .width -
-                                                          100) /
-                                                          1.6,
-                                                      // width: (MediaQuery.of(context).size.width - 30) / 2,
-                                                      child: Image.file(
-                                                          fit: BoxFit.fill,
-                                                          File(
-                                                              selectedActivityImages[
-                                                              Index]!
-                                                                  .path))),
-                                                ),
-                                                Align(
-                                                    alignment:
-                                                    Alignment.topRight,
-                                                    child: IconButton(
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            selectedActivityImages
-                                                                .removeAt(
-                                                                Index);
-                                                            activityImageDescriptions
-                                                                .removeAt(
-                                                                Index);
-                                                            _steps =
-                                                                _generateSteps();
-                                                          });
-                                                        },
-                                                        icon: const Icon(
-                                                          Icons.delete,
-                                                          color: Colors.red,
-                                                        ))),
-                                              ]),
-                                        ),
-                                        RichText(
-                                          text: TextSpan(
-                                            text: 'Description',
-                                            style: TextStyle(
-                                                fontSize: 14.0,
-                                                fontFamily: 'WorkSans',
-                                                color: Resources
-                                                    .colors.appTheme.lable),
-                                            // children: const [
-                                            //   TextSpan(
-                                            //     text: ' *',
-                                            //     style: TextStyle(
-                                            //       fontSize: 16.0,
-                                            //       color: Colors.red,
-                                            //     ),
-                                            //   ),
-                                            // ],
+                                return Container(
+                                  margin: EdgeInsets.only(right: 10),
+                                  child: SingleChildScrollView(
+                                    child: Container(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.white),
+                                            child: Stack(
+                                                alignment: Alignment.topRight,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                    const EdgeInsets.all(8.0),
+                                                    child: Container(
+                                                        height: (MediaQuery.of(
+                                                            context)
+                                                            .size
+                                                            .width -
+                                                            100) /
+                                                            1.6,
+                                                        // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                                        child: Image.file(
+                                                            fit: BoxFit.fill,
+                                                            File(
+                                                                selectedActivityImages[
+                                                                Index]!
+                                                                    .path))),
+                                                  ),
+                                                  Align(
+                                                      alignment:
+                                                      Alignment.topRight,
+                                                      child: IconButton(
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              selectedActivityImages
+                                                                  .removeAt(
+                                                                  Index);
+                                                              activityImageDescriptions
+                                                                  .removeAt(
+                                                                  Index);
+                                                              _steps =
+                                                                  _generateSteps();
+                                                            });
+                                                          },
+                                                          icon: const Icon(
+                                                            Icons.delete,
+                                                            color: Colors.red,
+                                                          ))),
+                                                ]),
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Container(
-                                            width: 170,
-                                            height: 50,
-                                            decoration: const BoxDecoration(
-                                              color: Colors.white,
+                                          RichText(
+                                            text: TextSpan(
+                                              text: 'Description',
+                                              style: TextStyle(
+                                                  fontSize: 14.0,
+                                                  fontFamily: 'WorkSans',
+                                                  color: Resources
+                                                      .colors.appTheme.lable),
+                                              // children: const [
+                                              //   TextSpan(
+                                              //     text: ' *',
+                                              //     style: TextStyle(
+                                              //       fontSize: 16.0,
+                                              //       color: Colors.red,
+                                              //     ),
+                                              //   ),
+                                              // ],
                                             ),
-                                            // padding: EdgeInsets.symmetric(horizontal: 5),
-                                            child: TextFormField(
-                                              autofocus: false,
-                                              controller:
-                                              activityImageDescriptions[Index],
-                                              style: TextStyle(fontSize: 12),
-                                              decoration: const InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.white,
-                                                      width: 1.0),
-                                                ),
-                                                focusedBorder:
-                                                OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.black,
-                                                      width: 1.0),
-                                                ),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Container(
+                                              width: 170,
+                                              height: 50,
+                                              decoration: const BoxDecoration(
+                                                color: Colors.white,
                                               ),
-                                            )),
-                                      ],
+                                              // padding: EdgeInsets.symmetric(horizontal: 5),
+                                              child: TextFormField(
+                                                autofocus: false,
+                                                controller:
+                                                activityImageDescriptions[Index],
+                                                style: TextStyle(fontSize: 12),
+                                                decoration: const InputDecoration(
+                                                  border: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.white,
+                                                        width: 1.0),
+                                                  ),
+                                                  focusedBorder:
+                                                  OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.black,
+                                                        width: 1.0),
+                                                  ),
+                                                ),
+                                              )),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 );
@@ -3594,6 +3699,10 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
                             children: [
                               Container(
                                   height: (MediaQuery.of(context).size.width -
@@ -3689,109 +3798,112 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               scrollDirection: Axis.horizontal,
                               itemCount: selectedArtworkImages.length,
                               itemBuilder: (BuildContext ctxt, int Index) {
-                                return SingleChildScrollView(
-                                  child: Container(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                              color: Colors.white),
-                                          child: Stack(
-                                              alignment: Alignment.topRight,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                  const EdgeInsets.all(8.0),
-                                                  child: Container(
-                                                      height: (MediaQuery.of(
-                                                          context)
-                                                          .size
-                                                          .width -
-                                                          100) /
-                                                          1.6,
-                                                      // width: (MediaQuery.of(context).size.width - 30) / 2,
-                                                      child: Image.file(
-                                                          fit: BoxFit.fill,
-                                                          File(
-                                                              selectedArtworkImages[
-                                                              Index]!
-                                                                  .path))),
-                                                ),
-                                                Align(
-                                                    alignment:
-                                                    Alignment.topRight,
-                                                    child: IconButton(
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            selectedArtworkImages
-                                                                .removeAt(
-                                                                Index);
-                                                            artworkDescriptions
-                                                                .removeAt(
-                                                                Index);
-                                                            _steps =
-                                                                _generateSteps();
-                                                          });
-                                                        },
-                                                        icon: const Icon(
-                                                          Icons.delete,
-                                                          color: Colors.red,
-                                                        ))),
-                                              ]),
-                                        ),
-                                        RichText(
-                                          text: TextSpan(
-                                            text: 'Description',
-                                            style: TextStyle(
-                                                fontSize: 14.0,
-                                                fontFamily: 'WorkSans',
-                                                color: Resources
-                                                    .colors.appTheme.lable),
-                                            // children: const [
-                                            //   TextSpan(
-                                            //     text: ' *',
-                                            //     style: TextStyle(
-                                            //       fontSize: 16.0,
-                                            //       color: Colors.red,
-                                            //     ),
-                                            //   ),
-                                            // ],
+                                return Container(
+                                  margin: EdgeInsets.only(right: 10),
+                                  child: SingleChildScrollView(
+                                    child: Container(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.white),
+                                            child: Stack(
+                                                alignment: Alignment.topRight,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                    const EdgeInsets.all(8.0),
+                                                    child: Container(
+                                                        height: (MediaQuery.of(
+                                                            context)
+                                                            .size
+                                                            .width -
+                                                            100) /
+                                                            1.6,
+                                                        // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                                        child: Image.file(
+                                                            fit: BoxFit.fill,
+                                                            File(
+                                                                selectedArtworkImages[
+                                                                Index]!
+                                                                    .path))),
+                                                  ),
+                                                  Align(
+                                                      alignment:
+                                                      Alignment.topRight,
+                                                      child: IconButton(
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              selectedArtworkImages
+                                                                  .removeAt(
+                                                                  Index);
+                                                              artworkDescriptions
+                                                                  .removeAt(
+                                                                  Index);
+                                                              _steps =
+                                                                  _generateSteps();
+                                                            });
+                                                          },
+                                                          icon: const Icon(
+                                                            Icons.delete,
+                                                            color: Colors.red,
+                                                          ))),
+                                                ]),
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Container(
-                                            width: 170,
-                                            height: 50,
-                                            decoration: const BoxDecoration(
-                                              color: Colors.white,
+                                          RichText(
+                                            text: TextSpan(
+                                              text: 'Description',
+                                              style: TextStyle(
+                                                  fontSize: 14.0,
+                                                  fontFamily: 'WorkSans',
+                                                  color: Resources
+                                                      .colors.appTheme.lable),
+                                              // children: const [
+                                              //   TextSpan(
+                                              //     text: ' *',
+                                              //     style: TextStyle(
+                                              //       fontSize: 16.0,
+                                              //       color: Colors.red,
+                                              //     ),
+                                              //   ),
+                                              // ],
                                             ),
-                                            // padding: EdgeInsets.symmetric(horizontal: 5),
-                                            child: TextFormField(
-                                              autofocus: false,
-                                              controller:
-                                              artworkDescriptions[Index],
-                                              style: TextStyle(fontSize: 12),
-                                              decoration: const InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.white,
-                                                      width: 1.0),
-                                                ),
-                                                focusedBorder:
-                                                OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.black,
-                                                      width: 1.0),
-                                                ),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Container(
+                                              width: 170,
+                                              height: 50,
+                                              decoration: const BoxDecoration(
+                                                color: Colors.white,
                                               ),
-                                            )),
-                                      ],
+                                              // padding: EdgeInsets.symmetric(horizontal: 5),
+                                              child: TextFormField(
+                                                autofocus: false,
+                                                controller:
+                                                artworkDescriptions[Index],
+                                                style: TextStyle(fontSize: 12),
+                                                decoration: const InputDecoration(
+                                                  border: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.white,
+                                                        width: 1.0),
+                                                  ),
+                                                  focusedBorder:
+                                                  OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.black,
+                                                        width: 1.0),
+                                                  ),
+                                                ),
+                                              )),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 );
@@ -3811,7 +3923,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
           Container(
             child: Text("Preview before submit",
                 style: TextStyle(
-                    color: Resources.colors.appTheme.darkBlue,
+                    color: Resources.colors.appTheme.blue,
                     fontSize: 16,
                     fontWeight: FontWeight.bold)),
           ),
@@ -3819,8 +3931,9 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
               margin: EdgeInsets.symmetric(vertical: 20),
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
+                color: Resources.colors.appTheme.lightGray,
                 border: Border.all(
-                  color: Color(0xFF1C3764),
+                  color: Resources.colors.appTheme.gray,
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -3830,20 +3943,21 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   Container(
                       padding: EdgeInsets.only(bottom: 5),
                       margin: EdgeInsets.only(bottom: 20),
-                      decoration: const BoxDecoration(
+                      decoration:  BoxDecoration(
+                        color: Resources.colors.appTheme.lightGray,
                         border: Border(
-                          bottom: BorderSide(),
                         ),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          const Text(
+                           Text(
                             "General Information",
                             style: TextStyle(
-                                color: Color(
-                              0xFF1C3764,
-                            )),
+                              fontFamily: "WorkSans",
+                              color: Resources.colors.appTheme.blue,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           InkWell(
                               onTap: () {
@@ -3869,16 +3983,28 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           color:
                                               Resources.colors.appTheme.lable,
                                           fontFamily: "WorkSans"))),
-                              Flexible(
-                                child: Container(
-                                    alignment: Alignment.centerRight,
-                                    child: Text(
-                                        '${form.control('generalInformation.activityDate').value ?? ''}',
-                                        style: TextStyle(
-                                            color: Resources
-                                                .colors.appTheme.veryDarkGray,
-                                            fontWeight: FontWeight.bold))),
-                              )
+                              Container(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 100, // Set your desired maximum width here
+                                ),
+                                child: Row( // Wrap with a Row or Column
+                                  children: [
+                                    Flexible(
+                                      child: Container(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          '${form.control('generalInformation.activityDate').value ?? ''}',
+                                          style: TextStyle(
+                                            color: Resources.colors.appTheme.seondary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
                             ],
                           ),
                         ),
@@ -3894,13 +4020,26 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                               Resources.colors.appTheme.lable,
                                           fontFamily: "WorkSans"))),
                               Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                      "${form.control('generalInformation.activityTime').value ?? ''}",
-                                      style: TextStyle(
-                                          color: Resources
-                                              .colors.appTheme.veryDarkGray,
-                                          fontWeight: FontWeight.bold)))
+                                constraints: const BoxConstraints(
+                                  maxWidth: 100, // Set your desired maximum width here
+                                ),
+                                child: Row( // Wrap with a Row or Column
+                                  children: [
+                                    Flexible(
+                                      child: Container(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          "${form.control('generalInformation.activityTime').value ?? ''}",
+                                          style: TextStyle(
+                                            color: Resources.colors.appTheme.seondary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -3915,16 +4054,27 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           color:
                                               Resources.colors.appTheme.lable,
                                           fontFamily: "WorkSans"))),
-                              Flexible(
-                                child: Container(
-                                    alignment: Alignment.centerRight,
-                                    child: Text(
-                                        '${form.control('generalInformation.location').value ?? ''}',
-                                        style: TextStyle(
-                                            color: Resources
-                                                .colors.appTheme.veryDarkGray,
-                                            fontWeight: FontWeight.bold))),
-                              )
+                              Container(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 100, // Set your desired maximum width here
+                                ),
+                                child: Row( // Wrap with a Row or Column
+                                  children: [
+                                    Flexible(
+                                      child: Container(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          "${form.control('generalInformation.location').value ?? ''}",
+                                          style: TextStyle(
+                                            color: Resources.colors.appTheme.seondary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -3940,13 +4090,26 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                               Resources.colors.appTheme.lable,
                                           fontFamily: "WorkSans"))),
                               Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                      ' ${form.control('generalInformation.testerName').value ?? ''}',
-                                      style: TextStyle(
-                                          color: Resources
-                                              .colors.appTheme.veryDarkGray,
-                                          fontWeight: FontWeight.bold)))
+                                constraints: const BoxConstraints(
+                                  maxWidth: 100, // Set your desired maximum width here
+                                ),
+                                child: Row( // Wrap with a Row or Column
+                                  children: [
+                                    Flexible(
+                                      child: Container(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          '${form.control('generalInformation.testerName').value ?? ''}',
+                                          style: TextStyle(
+                                            color: Resources.colors.appTheme.seondary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -3962,13 +4125,26 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                               Resources.colors.appTheme.lable,
                                           fontFamily: "WorkSans"))),
                               Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                      '${form.control('generalInformation.latitude').value ?? ''}',
-                                      style: TextStyle(
-                                          color: Resources
-                                              .colors.appTheme.veryDarkGray,
-                                          fontWeight: FontWeight.bold)))
+                                constraints: const BoxConstraints(
+                                  maxWidth: 100, // Set your desired maximum width here
+                                ),
+                                child: Row( // Wrap with a Row or Column
+                                  children: [
+                                    Flexible(
+                                      child: Container(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          '${form.control('generalInformation.latitude').value ?? ''}',
+                                          style: TextStyle(
+                                            color: Resources.colors.appTheme.seondary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -3984,13 +4160,26 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                               Resources.colors.appTheme.lable,
                                           fontFamily: "WorkSans"))),
                               Container(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                      ' ${form.control('generalInformation.longitude').value ?? ''}',
-                                      style: TextStyle(
-                                          color: Resources
-                                              .colors.appTheme.veryDarkGray,
-                                          fontWeight: FontWeight.bold)))
+                                constraints: const BoxConstraints(
+                                  maxWidth: 100, // Set your desired maximum width here
+                                ),
+                                child: Row( // Wrap with a Row or Column
+                                  children: [
+                                    Flexible(
+                                      child: Container(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          '${form.control('generalInformation.latitude').value ?? ''}',
+                                          style: TextStyle(
+                                            color: Resources.colors.appTheme.seondary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -4003,8 +4192,9 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
               margin: const EdgeInsets.symmetric(vertical: 20),
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
+                color: Resources.colors.appTheme.lightGray,
                 border: Border.all(
-                  color: Color(0xFF1C3764),
+                  color: Resources.colors.appTheme.gray,
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -4014,20 +4204,19 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   Container(
                       padding: EdgeInsets.only(bottom: 5),
                       margin: EdgeInsets.only(bottom: 20),
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(),
-                        ),
+                      decoration:  BoxDecoration(
+                        color: Resources.colors.appTheme.lightGray,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          const Text(
+                           Text(
                             "Water Level & Weather",
                             style: TextStyle(
-                                color: Color(
-                              0xFF1C3764,
-                            )),
+                              fontFamily: "WorkSans",
+                              color: Resources.colors.appTheme.blue,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           InkWell(
                               onTap: () {
@@ -4059,7 +4248,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                       '${form.control('waterLevelAndWeather.weather').value ?? ''}',
                                       style: TextStyle(
                                           color: Resources
-                                              .colors.appTheme.veryDarkGray,
+                                              .colors.appTheme.seondary,
                                           fontWeight: FontWeight.bold)))
                             ],
                           ),
@@ -4082,7 +4271,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           " °C",
                                       style: TextStyle(
                                           color: Resources
-                                              .colors.appTheme.veryDarkGray,
+                                              .colors.appTheme.seondary,
                                           fontWeight: FontWeight.bold)))
                             ],
                           ),
@@ -4104,7 +4293,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                       '${form.control('waterLevelAndWeather.waterLevel').value ?? ''}',
                                       style: TextStyle(
                                           color: Resources
-                                              .colors.appTheme.veryDarkGray,
+                                              .colors.appTheme.seondary,
                                           fontWeight: FontWeight.bold))),
                             ],
                           ),
@@ -4118,8 +4307,9 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
               margin: EdgeInsets.symmetric(vertical: 20),
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
+                color: Resources.colors.appTheme.lightGray,
                 border: Border.all(
-                  color: Color(0xFF1C3764),
+                  color: Resources.colors.appTheme.gray,
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -4129,20 +4319,19 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   Container(
                       padding: EdgeInsets.only(bottom: 5),
                       margin: EdgeInsets.only(bottom: 20),
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(),
-                        ),
+                      decoration: BoxDecoration(
+                        color: Resources.colors.appTheme.lightGray,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          const Text(
+                           Text(
                             "River Pictures",
                             style: TextStyle(
-                                color: Color(
-                              0xFF1C3764,
-                            )),
+                              fontFamily: "WorkSans",
+                              color: Resources.colors.appTheme.blue,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           InkWell(
                               onTap: () {
@@ -4152,72 +4341,158 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                   color: Color(0xFF1C3764), size: 20)),
                         ],
                       )),
-                  if (selectedRiverImages.length > 0 &&
-                      selectedRiverImages[0].runtimeType != String)
+                  if (selectedRiverImages.isNotEmpty && selectedRiverImages[0].runtimeType != String)
                     Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        child: Container(
-                            height: 150,
-                            child: ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                itemCount: selectedRiverImages.length,
-                                itemBuilder: (BuildContext ctxt, int Index) {
-                                  return Container(
-                                    height: (MediaQuery.of(context).size.width -
-                                            30) /
-                                        2,
-                                    width: (MediaQuery.of(context).size.width -
-                                            30) /
-                                        2,
-                                    padding: const EdgeInsets.only(
-                                        bottom: 10, left: 5),
-                                    alignment: Alignment.bottomLeft,
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                            // width:180,
-                                            height: 90,
-                                            child: Image.file(
-                                                fit: BoxFit.fill,
-                                                File(selectedRiverImages[Index]!
-                                                    .path))),
-                                        SizedBox(height: 20),
-                                        Container(
-                                          height: 30,
-                                          child: TextFormField(
-                                            controller:
-                                                riverDescriptions[Index],
-                                            style:
-                                                const TextStyle(fontSize: 12),
-                                            readOnly: true,
-                                            decoration: const InputDecoration(
-                                              border: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.white,
-                                                    width: 1.0),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.white,
-                                                    width: 1.0),
-                                              ),
-                                            ),
+                      margin: EdgeInsets.symmetric(vertical: 20),
+                      child: Column(
+                        children: selectedRiverImages.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          var imageFile = entry.value;
+                          return SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  child: Stack(
+                                    alignment: Alignment.topRight,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Container(
+                                          height: (MediaQuery.of(context).size.width - 100) / 1.6,
+                                          child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(imageFile.path),
                                           ),
-                                        )
-                                      ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'Description',
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      fontFamily: 'WorkSans',
+                                      color: Resources.colors.appTheme.lable,
                                     ),
-                                  );
-                                }))),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                  width: 170,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  child: TextFormField(
+                                    autofocus: false,
+                                    controller: riverDescriptions[index],
+                                    style: TextStyle(fontSize: 12),
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  if (riverPictures != null && riverPictures.isNotEmpty)
+                    Container(
+                      height: 255,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: riverPictures.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Container(
+                                    height: (MediaQuery.of(context).size.width -
+                                        100) /
+                                        1.6,
+                                    // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        Image.network(
+                                            riverPictures[index]['imageURL']),
+                                      ],
+                                    )),
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'Description',
+                                    style: TextStyle(
+                                        fontSize: 14.0,
+                                        fontFamily: 'WorkSans',
+                                        color: Resources.colors.appTheme.lable),
+                                    // children: const [
+                                    //   TextSpan(
+                                    //     text: ' *',
+                                    //     style: TextStyle(
+                                    //       fontSize: 16.0,
+                                    //       color: Colors.red,
+                                    //     ),
+                                    //   ),
+                                    // ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                    width: 170,
+                                    height: 50,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                    ),
+                                    // padding: EdgeInsets.symmetric(horizontal: 5),
+                                    child: TextFormField(
+                                      autofocus: false,
+                                      controller: riverDescriptionsEdit[index],
+                                      style: TextStyle(fontSize: 12),
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.white, width: 1.0),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.black, width: 1.0),
+                                        ),
+                                      ),
+                                    )),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                 ],
               )),
           Container(
               margin: EdgeInsets.symmetric(vertical: 20),
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
+                color: Resources.colors.appTheme.lightGray,
                 border: Border.all(
-                  color: Color(0xFF1C3764),
+                  color: Resources.colors.appTheme.gray,
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -4227,20 +4502,19 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   Container(
                       padding: EdgeInsets.only(bottom: 5),
                       margin: EdgeInsets.only(bottom: 20),
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(),
-                        ),
+                      decoration:  BoxDecoration(
+                        color: Resources.colors.appTheme.lightGray,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          const Text(
+                           Text(
                             "Surrounding Pictures",
                             style: TextStyle(
-                                color: Color(
-                              0xFF1C3764,
-                            )),
+                              fontFamily: "WorkSans",
+                              color: Resources.colors.appTheme.blue,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           InkWell(
                               onTap: () {
@@ -4250,122 +4524,193 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                   color: Color(0xFF1C3764), size: 20)),
                         ],
                       )),
-                  if (selectedSurroundings.length > 0 &&
-                      selectedSurroundings[0].runtimeType != String)
+                  if (selectedSurroundings.length > 0)
                     Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        child: Container(
-                            height: 150,
-                            child: ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                itemCount: selectedSurroundings.length,
-                                itemBuilder: (BuildContext ctxt, int Index) {
-                                  return Container(
-                                    height: (MediaQuery.of(context).size.width -
-                                            30) /
-                                        2,
-                                    width: (MediaQuery.of(context).size.width -
-                                            30) /
-                                        2,
-                                    padding: const EdgeInsets.only(
-                                        bottom: 10, left: 5),
-                                    alignment: Alignment.bottomLeft,
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                            // width:180,
-                                            height: 90,
-                                            child: Image.file(
-                                                fit: BoxFit.fill,
-                                                File(
-                                                    selectedSurroundings[Index]!
-                                                        .path))),
-                                        SizedBox(height: 20),
-                                        Container(
-                                          height: 30,
-                                          child: TextFormField(
-                                            controller:
-                                                surroundingDescriptions[Index],
-                                            style:
-                                                const TextStyle(fontSize: 12),
-                                            readOnly: true,
-                                            decoration: const InputDecoration(
-                                              border: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.white,
-                                                    width: 1.0),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.white,
-                                                    width: 1.0),
-                                              ),
-                                            ),
+                      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 3),
+                      child: Container(
+                        height: 100,
+                        child: Wrap(
+                          spacing: 5, // Horizontal spacing between buttons
+                          runSpacing: 5, // Vertical spacing between rows of buttons
+                          children: List.generate(selectedSurroundings.length, (index) {
+                            return ElevatedButton(
+                              onPressed: () {
+                                // Handle button click here
+                              },
+                              style: ElevatedButton.styleFrom(
+                                primary: const Color(0xFFD9EAE8), // Background color
+                                onPrimary: const Color(0xFF212121), // Text color
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), // Padding
+                                minimumSize: const Size(0, 0), // Minimum size
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5.0), // Border radius
+                                  side: const BorderSide(
+                                    color: const Color(0xFFA8CFCA), // Border color
+                                    width: 1.0, // Border width
+                                  ),
+                                ),
+                              ),
+                              child: Text(
+                                selectedSurroundings[index],
+                                style: TextStyle(fontSize: 12),
+                              ),
+                            );
+                          }),
+                        ),
+                      ),
+                    ),
+                  if (selectedSurroundingImages.isNotEmpty && selectedSurroundingImages[0].runtimeType != String)
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: 20),
+                      child: Column(
+                        children: selectedSurroundingImages.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          var imageFile = entry.value;
+                          return SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  child: Stack(
+                                    alignment: Alignment.topRight,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Container(
+                                          height: (MediaQuery.of(context).size.width - 100) / 1.6,
+                                          child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(imageFile.path),
                                           ),
-                                        )
-                                      ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'Description',
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      fontFamily: 'WorkSans',
+                                      color: Resources.colors.appTheme.lable,
                                     ),
-                                  );
-                                }))),
-                  // if (riverPictures != null && riverPictures.isNotEmpty)
-                  //   Container(
-                  //       margin: const EdgeInsets.symmetric(
-                  //           horizontal: 10, vertical: 5),
-                  //       child: Container(
-                  //           height: 150,
-                  //           child: ListView.builder(
-                  //               shrinkWrap: true,
-                  //               scrollDirection: Axis.horizontal,
-                  //               itemCount: riverPictures.length,
-                  //               itemBuilder:
-                  //                   (BuildContext ctxt, int Index) {
-                  //                 return Container(
-                  //                   height: (MediaQuery.of(context).size.width - 30) / 2,
-                  //                   width: (MediaQuery.of(context).size.width - 30) / 2,
-                  //                   padding: const EdgeInsets.only(
-                  //                       bottom: 10, left: 5),
-                  //                   alignment: Alignment.bottomLeft,
-                  //                   child: Column(
-                  //                     children: [
-                  //                       Container(
-                  //                         // width:180,
-                  //                           height:90,
-                  //                           child: Image.file(
-                  //                               fit: BoxFit.fill,
-                  //                               File(riverPictures[Index]!.path)
-                  //                           )
-                  //                       ),
-                  //                       SizedBox(height:20),
-                  //                       Container(
-                  //                         height: 30,
-                  //                         child: TextFormField(
-                  //                           controller: riverDescriptions[Index],
-                  //                           style: const TextStyle(fontSize: 12),
-                  //                           readOnly: true,
-                  //                           decoration: const InputDecoration(
-                  //                             border: OutlineInputBorder(
-                  //                               borderSide: BorderSide(color: Colors.white, width: 1.0),
-                  //                             ),
-                  //                             focusedBorder: OutlineInputBorder(
-                  //                               borderSide: BorderSide(color: Colors.white, width: 1.0),
-                  //                             ),
-                  //                           ),
-                  //                         ),
-                  //                       )
-                  //                     ],
-                  //                   ),
-                  //                 );
-                  //               }))),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                  width: 170,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  child: TextFormField(
+                                    autofocus: false,
+                                    controller: surroundingDescriptions[index],
+                                    style: TextStyle(fontSize: 12),
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  if (surroundingPictures != null && surroundingPictures.isNotEmpty)
+                    Container(
+                      height: 255,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: surroundingPictures.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Container(
+                                    height: (MediaQuery.of(context).size.width -
+                                        100) /
+                                        1.6,
+                                    // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        Image.network(
+                                            surroundingPictures[index]['imageURL']),
+                                      ],
+                                    )),
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'Description',
+                                    style: TextStyle(
+                                        fontSize: 14.0,
+                                        fontFamily: 'WorkSans',
+                                        color: Resources.colors.appTheme.lable),
+                                    // children: const [
+                                    //   TextSpan(
+                                    //     text: ' *',
+                                    //     style: TextStyle(
+                                    //       fontSize: 16.0,
+                                    //       color: Colors.red,
+                                    //     ),
+                                    //   ),
+                                    // ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                    width: 170,
+                                    height: 50,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                    ),
+                                    // padding: EdgeInsets.symmetric(horizontal: 5),
+                                    child: TextFormField(
+                                      autofocus: false,
+                                      controller: surroundingDescriptionsEdit[index],
+                                      style: TextStyle(fontSize: 12),
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.white, width: 1.0),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.black, width: 1.0),
+                                        ),
+                                      ),
+                                    )),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                 ],
               )),
           Container(
               margin: const EdgeInsets.symmetric(vertical: 20),
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
+                color: Resources.colors.appTheme.lightGray,
                 border: Border.all(
-                  color: Color(0xFF1C3764),
+                  color: Resources.colors.appTheme.gray,
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -4375,20 +4720,19 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   Container(
                       padding: const EdgeInsets.only(bottom: 5),
                       margin: const EdgeInsets.only(bottom: 20),
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(),
-                        ),
+                      decoration:  BoxDecoration(
+                        color: Resources.colors.appTheme.lightGray,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          const Text(
+                           Text(
                             "Water Testing",
                             style: TextStyle(
-                                color: Color(
-                              0xFF1C3764,
-                            )),
+                              fontFamily: "WorkSans",
+                              color: Resources.colors.appTheme.blue,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           InkWell(
                               onTap: () {
@@ -4426,7 +4770,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                               " °C",
                                           style: TextStyle(
                                               color: Resources
-                                                  .colors.appTheme.veryDarkGray,
+                                                  .colors.appTheme.seondary,
                                               fontWeight: FontWeight.bold))
                                       : const Text("--",
                                           style: TextStyle(
@@ -4472,7 +4816,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           return Text(
                                             "--",
                                             style: TextStyle(
-                                              color: Colors.green,
+                                              color: Resources.colors.appTheme.seondary,
                                               fontFamily: "WorkSans",
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600,
@@ -4480,9 +4824,9 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           );
                                         }
                                       })()
-                                    : const Text("--",
+                                    :  Text("--",
                                         style: TextStyle(
-                                          color: Colors.green,
+                                          color: Resources.colors.appTheme.seondary,
                                           fontFamily: "WorkSans",
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
@@ -4510,7 +4854,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                               .value !=
                                           null
                                       ? Text(
-                                          '${form.control('waterTesting.alkalinity').value}' +
+                                          '${form.control('waterTesting.alkalinity').value}'
                                               " mg/L",
                                           style: TextStyle(
                                             color: () {
@@ -4583,7 +4927,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           return Text(
                                             "--",
                                             style: TextStyle(
-                                              color: Colors.green,
+                                              color: Resources.colors.appTheme.seondary,
                                               fontFamily: "WorkSans",
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600,
@@ -4618,50 +4962,46 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               Container(
                                 alignment: Alignment.centerLeft,
                                 child: form
-                                            .control('waterTesting.nitrite')
-                                            .value !=
-                                        null
-                                    ? Builder(
-                                        builder: (BuildContext context) {
-                                          final nitriteValue = form
-                                              .control('waterTesting.nitrite')
-                                              .value;
-                                          double? parsedValue;
-                                          Color textColor;
-
-                                          try {
-                                            parsedValue =
-                                                double.tryParse(nitriteValue);
-                                            textColor = parsedValue != null &&
-                                                    parsedValue <= 1
-                                                ? Colors.green
-                                                : Colors.red;
-                                          } catch (e) {
-                                            parsedValue = null;
-                                            textColor = Colors.black;
-                                          }
-
-                                          return Text(
-                                            parsedValue != null
-                                                ? '${parsedValue} mg/L'
-                                                : "--",
-                                            style: TextStyle(
-                                              color: textColor,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          );
-                                        },
-                                      )
-                                    : const Text(
-                                        "--",
-                                        style: TextStyle(
-                                          color: Colors.green,
-                                          fontFamily: "WorkSans",
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                    .control('waterTesting.nitrite')
+                                    .value !=
+                                    null
+                                    ? (() {
+                                  final nitriteValue = int.tryParse(form
+                                      .control('waterTesting.nitrite')
+                                      .value);
+                                  if (nitriteValue != null) {
+                                    return Text(
+                                      '${nitriteValue} mg/L',
+                                      style: TextStyle(
+                                        color: nitriteValue <= 1
+                                            ? Colors.green
+                                            : Colors.red,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                              )
+                                    );
+                                  } else {
+                                    // Handle the case where the value cannot be parsed as an integer.
+                                    return Text(
+                                      "--",
+                                      style: TextStyle(
+                                        color: Resources.colors.appTheme.seondary,
+                                        fontFamily: "WorkSans",
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    );
+                                  }
+                                })()
+                                    : const Text(
+                                  "--",
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                    fontFamily: "WorkSans",
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -4688,7 +5028,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                           style:
                                               TextStyle(
                                                   color: Resources.colors
-                                                      .appTheme.veryDarkGray,
+                                                      .appTheme.seondary,
                                                   fontWeight: FontWeight.bold))
                                       : const Text("--",
                                           style: TextStyle(
@@ -5291,8 +5631,9 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
               margin: const EdgeInsets.symmetric(vertical: 20),
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
+                color: Resources.colors.appTheme.lightGray,
                 border: Border.all(
-                  color: Color(0xFF1C3764),
+                  color: Resources.colors.appTheme.gray,
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -5302,20 +5643,19 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   Container(
                       padding: const EdgeInsets.only(bottom: 5),
                       margin: EdgeInsets.only(bottom: 20),
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(),
-                        ),
+                      decoration:  BoxDecoration(
+                        color: Resources.colors.appTheme.lightGray,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          const Text(
+                           Text(
                             "Flora & Fauna",
                             style: TextStyle(
-                                color: Color(
-                              0xFF1C3764,
-                            )),
+                              fontFamily: "WorkSans",
+                              color: Resources.colors.appTheme.blue,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           InkWell(
                               onTap: () {
@@ -5339,8 +5679,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                               ),
                               child: SvgPicture.asset(
                                 "assets/images/Flora-1.svg",
-                                width: 30,
-                                height: 30,
+                                width: 25,
+                                height: 25,
                               ),
                             ),
                             Container(
@@ -5360,64 +5700,149 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       ],
                     ),
                   ),
-                  if (selectedFloraImages.length > 0 &&
-                      selectedFloraImages[0].runtimeType != String)
+                  if (selectedFloraImages.isNotEmpty && selectedFloraImages[0].runtimeType != String)
                     Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        child: Container(
-                            height: 150,
-                            child: ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                itemCount: selectedFloraImages.length,
-                                itemBuilder: (BuildContext ctxt, int Index) {
-                                  return Container(
-                                    height: (MediaQuery.of(context).size.width -
-                                        30) /
-                                        2,
-                                    width: (MediaQuery.of(context).size.width -
-                                        30) /
-                                        2,
-                                    padding: const EdgeInsets.only(
-                                        bottom: 10, left: 5),
-                                    alignment: Alignment.bottomLeft,
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          // width:180,
-                                            height: 90,
-                                            child: Image.file(
-                                                fit: BoxFit.fill,
-                                                File(selectedFloraImages[Index]!
-                                                    .path))),
-                                        SizedBox(height: 20),
-                                        Container(
-                                          height: 30,
-                                          child: TextFormField(
-                                            controller:
-                                            floraDescriptions[Index],
-                                            style:
-                                            const TextStyle(fontSize: 12),
-                                            readOnly: true,
-                                            decoration: const InputDecoration(
-                                              border: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.white,
-                                                    width: 1.0),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.white,
-                                                    width: 1.0),
-                                              ),
-                                            ),
+                      margin: EdgeInsets.symmetric(vertical: 20),
+                      child: Column(
+                        children: selectedFloraImages.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          var imageFile = entry.value;
+                          return SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  child: Stack(
+                                    alignment: Alignment.topRight,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Container(
+                                          height: (MediaQuery.of(context).size.width - 100) / 1.6,
+                                          child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(imageFile.path),
                                           ),
-                                        )
-                                      ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'Description',
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      fontFamily: 'WorkSans',
+                                      color: Resources.colors.appTheme.lable,
                                     ),
-                                  );
-                                }))),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                  width: 170,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  child: TextFormField(
+                                    autofocus: false,
+                                    controller: floraDescriptions[index],
+                                    style: TextStyle(fontSize: 12),
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  if (floraPictures != null && floraPictures.isNotEmpty)
+                    Container(
+                      height: 255,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: floraPictures.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Container(
+                                    height: (MediaQuery.of(context).size.width -
+                                        100) /
+                                        1.6,
+                                    // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        Image.network(
+                                            floraPictures[index]['imageURL']),
+                                      ],
+                                    )),
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'Description',
+                                    style: TextStyle(
+                                        fontSize: 14.0,
+                                        fontFamily: 'WorkSans',
+                                        color: Resources.colors.appTheme.lable),
+                                    // children: const [
+                                    //   TextSpan(
+                                    //     text: ' *',
+                                    //     style: TextStyle(
+                                    //       fontSize: 16.0,
+                                    //       color: Colors.red,
+                                    //     ),
+                                    //   ),
+                                    // ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                    width: 170,
+                                    height: 50,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                    ),
+                                    // padding: EdgeInsets.symmetric(horizontal: 5),
+                                    child: TextFormField(
+                                      autofocus: false,
+                                      controller: floraDescriptionsEdit[index],
+                                      style: TextStyle(fontSize: 12),
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.white, width: 1.0),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.black, width: 1.0),
+                                        ),
+                                      ),
+                                    )),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
@@ -5429,8 +5854,8 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         ),
                         child: SvgPicture.asset(
                           "assets/images/Fauna-1.svg",
-                          width: 30,
-                          height: 30,
+                          width: 25,
+                          height: 25,
                         ),
                       ),
                       Container(
@@ -5448,72 +5873,158 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                           )),
                     ],
                   ),
-                  if (selectedFaunaImages.length > 0 &&
-                      selectedFaunaImages[0].runtimeType != String)
+                  if (selectedFaunaImages.isNotEmpty && selectedFaunaImages[0].runtimeType != String)
                     Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        child: Container(
-                            height: 150,
-                            child: ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                itemCount: selectedFaunaImages.length,
-                                itemBuilder: (BuildContext ctxt, int Index) {
-                                  return Container(
-                                    height: (MediaQuery.of(context).size.width -
-                                        30) /
-                                        2,
-                                    width: (MediaQuery.of(context).size.width -
-                                        30) /
-                                        2,
-                                    padding: const EdgeInsets.only(
-                                        bottom: 10, left: 5),
-                                    alignment: Alignment.bottomLeft,
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          // width:180,
-                                            height: 90,
-                                            child: Image.file(
-                                                fit: BoxFit.fill,
-                                                File(selectedFaunaImages[Index]!
-                                                    .path))),
-                                        SizedBox(height: 20),
-                                        Container(
-                                          height: 30,
-                                          child: TextFormField(
-                                            controller:
-                                            faunaDescriptions[Index],
-                                            style:
-                                            const TextStyle(fontSize: 12),
-                                            readOnly: true,
-                                            decoration: const InputDecoration(
-                                              border: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.white,
-                                                    width: 1.0),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.white,
-                                                    width: 1.0),
-                                              ),
-                                            ),
+                      margin: EdgeInsets.symmetric(vertical: 20),
+                      child: Column(
+                        children: selectedFaunaImages.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          var imageFile = entry.value;
+                          return SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  child: Stack(
+                                    alignment: Alignment.topRight,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Container(
+                                          height: (MediaQuery.of(context).size.width - 100) / 1.6,
+                                          child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(imageFile.path),
                                           ),
-                                        )
-                                      ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'Description',
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      fontFamily: 'WorkSans',
+                                      color: Resources.colors.appTheme.lable,
                                     ),
-                                  );
-                                }))),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                  width: 170,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  child: TextFormField(
+                                    autofocus: false,
+                                    controller: faunaDescriptions[index],
+                                    style: TextStyle(fontSize: 12),
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  if (faunaPictures != null && faunaPictures.isNotEmpty)
+                    Container(
+                      height: 255,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: faunaPictures.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Container(
+                                    height: (MediaQuery.of(context).size.width -
+                                        100) /
+                                        1.6,
+                                    // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        Image.network(
+                                            faunaPictures[index]['imageURL']),
+                                      ],
+                                    )),
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'Description',
+                                    style: TextStyle(
+                                        fontSize: 14.0,
+                                        fontFamily: 'WorkSans',
+                                        color: Resources.colors.appTheme.lable),
+                                    // children: const [
+                                    //   TextSpan(
+                                    //     text: ' *',
+                                    //     style: TextStyle(
+                                    //       fontSize: 16.0,
+                                    //       color: Colors.red,
+                                    //     ),
+                                    //   ),
+                                    // ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                    width: 170,
+                                    height: 50,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                    ),
+                                    // padding: EdgeInsets.symmetric(horizontal: 5),
+                                    child: TextFormField(
+                                      autofocus: false,
+                                      controller: faunaDescriptionsEdit[index],
+                                      style: TextStyle(fontSize: 12),
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.white, width: 1.0),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.black, width: 1.0),
+                                        ),
+                                      ),
+                                    )),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                 ],
               )),
           Container(
               margin: EdgeInsets.symmetric(vertical: 20),
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
+                color: Resources.colors.appTheme.lightGray,
                 border: Border.all(
-                  color: Color(0xFF1C3764),
+                  color: Resources.colors.appTheme.gray,
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -5523,20 +6034,19 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   Container(
                       padding: EdgeInsets.only(bottom: 5),
                       margin: EdgeInsets.only(bottom: 20),
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(),
-                        ),
+                      decoration:  BoxDecoration(
+                        color: Resources.colors.appTheme.lightGray,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          const Text(
+                           Text(
                             "Pictures",
                             style: TextStyle(
-                                color: Color(
-                              0xFF1C3764,
-                            )),
+                              fontFamily: "WorkSans",
+                              color: Resources.colors.appTheme.blue,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           InkWell(
                               onTap: () {
@@ -5549,16 +6059,6 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      Container(
-                        padding: const EdgeInsets.only(
-                          bottom: 5,
-                        ),
-                        child: SvgPicture.asset(
-                          "assets/images/Flora-1.svg",
-                          width: 30,
-                          height: 30,
-                        ),
-                      ),
                       Container(
                           padding: const EdgeInsets.only(
                             left: 10,
@@ -5573,77 +6073,152 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                           )),
                     ],
                   ),
-                  if (selectedGroupImages.length > 0 &&
-                      selectedGroupImages[0].runtimeType != String)
+                  if (selectedGroupImages.isNotEmpty && selectedGroupImages[0].runtimeType != String)
                     Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        child: Container(
-                            height: 150,
-                            child: ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                itemCount: selectedGroupImages.length,
-                                itemBuilder: (BuildContext ctxt, int Index) {
-                                  return Container(
-                                    height: (MediaQuery.of(context).size.width -
-                                        30) /
-                                        2,
-                                    width: (MediaQuery.of(context).size.width -
-                                        30) /
-                                        2,
-                                    padding: const EdgeInsets.only(
-                                        bottom: 10, left: 5),
-                                    alignment: Alignment.bottomLeft,
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          // width:180,
-                                            height: 90,
-                                            child: Image.file(
-                                                fit: BoxFit.fill,
-                                                File(selectedGroupImages[Index]!
-                                                    .path))),
-                                        SizedBox(height: 20),
-                                        Container(
-                                          height: 30,
-                                          child: TextFormField(
-                                            controller:
-                                            groupImageDescriptions[Index],
-                                            style:
-                                            const TextStyle(fontSize: 12),
-                                            readOnly: true,
-                                            decoration: const InputDecoration(
-                                              border: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.white,
-                                                    width: 1.0),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.white,
-                                                    width: 1.0),
-                                              ),
-                                            ),
+                      margin: EdgeInsets.symmetric(vertical: 20),
+                      child: Column(
+                        children: selectedGroupImages.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          var imageFile = entry.value;
+                          return SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  child: Stack(
+                                    alignment: Alignment.topRight,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Container(
+                                          height: (MediaQuery.of(context).size.width - 100) / 1.6,
+                                          child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(imageFile.path),
                                           ),
-                                        )
-                                      ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'Description',
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      fontFamily: 'WorkSans',
+                                      color: Resources.colors.appTheme.lable,
                                     ),
-                                  );
-                                }))),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                  width: 170,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  child: TextFormField(
+                                    autofocus: false,
+                                    controller: groupImageDescriptions[index],
+                                    style: TextStyle(fontSize: 12),
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  if (groupPictures != null && groupPictures.isNotEmpty)
+                    Container(
+                      height: 255,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: groupPictures.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Container(
+                                    height: (MediaQuery.of(context).size.width -
+                                        100) /
+                                        1.6,
+                                    // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        Image.network(
+                                            groupPictures[index]['imageURL']),
+                                      ],
+                                    )),
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'Description',
+                                    style: TextStyle(
+                                        fontSize: 14.0,
+                                        fontFamily: 'WorkSans',
+                                        color: Resources.colors.appTheme.lable),
+                                    // children: const [
+                                    //   TextSpan(
+                                    //     text: ' *',
+                                    //     style: TextStyle(
+                                    //       fontSize: 16.0,
+                                    //       color: Colors.red,
+                                    //     ),
+                                    //   ),
+                                    // ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                    width: 170,
+                                    height: 50,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                    ),
+                                    // padding: EdgeInsets.symmetric(horizontal: 5),
+                                    child: TextFormField(
+                                      autofocus: false,
+                                      controller: groupImageDescriptionsEdit[index],
+                                      style: TextStyle(fontSize: 12),
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.white, width: 1.0),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.black, width: 1.0),
+                                        ),
+                                      ),
+                                    )),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      Container(
-                        padding: const EdgeInsets.only(
-                          bottom: 5,
-                        ),
-                        child: SvgPicture.asset(
-                          "assets/images/Flora-1.svg",
-                          width: 30,
-                          height: 30,
-                        ),
-                      ),
                       Container(
                           padding: const EdgeInsets.only(
                             left: 10,
@@ -5658,84 +6233,159 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                           )),
                     ],
                   ),
-                  if (selectedActivityImages.length > 0 &&
-                      selectedActivityImages[0].runtimeType != String)
+                  if (selectedActivityImages.isNotEmpty && selectedActivityImages[0].runtimeType != String)
                     Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        child: Container(
-                            height: 150,
-                            child: ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                itemCount: selectedActivityImages.length,
-                                itemBuilder: (BuildContext ctxt, int Index) {
-                                  return Container(
-                                    height: (MediaQuery.of(context).size.width -
-                                        30) /
-                                        2,
-                                    width: (MediaQuery.of(context).size.width -
-                                        30) /
-                                        2,
-                                    padding: const EdgeInsets.only(
-                                        bottom: 10, left: 5),
-                                    alignment: Alignment.bottomLeft,
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          // width:180,
-                                            height: 90,
-                                            child: Image.file(
-                                                fit: BoxFit.fill,
-                                                File(selectedActivityImages[Index]!
-                                                    .path))),
-                                        SizedBox(height: 20),
-                                        Container(
-                                          height: 30,
-                                          child: TextFormField(
-                                            controller:
-                                            activityImageDescriptions[Index],
-                                            style:
-                                            const TextStyle(fontSize: 12),
-                                            readOnly: true,
-                                            decoration: const InputDecoration(
-                                              border: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.white,
-                                                    width: 1.0),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.white,
-                                                    width: 1.0),
-                                              ),
-                                            ),
+                      margin: EdgeInsets.symmetric(vertical: 20),
+                      child: Column(
+                        children: selectedActivityImages.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          var imageFile = entry.value;
+                          return SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  child: Stack(
+                                    alignment: Alignment.topRight,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Container(
+                                          height: (MediaQuery.of(context).size.width - 100) / 1.6,
+                                          child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(imageFile.path),
                                           ),
-                                        )
-                                      ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'Description',
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      fontFamily: 'WorkSans',
+                                      color: Resources.colors.appTheme.lable,
                                     ),
-                                  );
-                                }))),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                  width: 170,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  child: TextFormField(
+                                    autofocus: false,
+                                    controller: activityImageDescriptions[index],
+                                    style: TextStyle(fontSize: 12),
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  if (activityPictures != null && activityPictures.isNotEmpty)
+                    Container(
+                      height: 255,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: activityPictures.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Container(
+                                    height: (MediaQuery.of(context).size.width -
+                                        100) /
+                                        1.6,
+                                    // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        Image.network(
+                                            activityPictures[index]['imageURL']),
+                                      ],
+                                    )),
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'Description',
+                                    style: TextStyle(
+                                        fontSize: 14.0,
+                                        fontFamily: 'WorkSans',
+                                        color: Resources.colors.appTheme.lable),
+                                    // children: const [
+                                    //   TextSpan(
+                                    //     text: ' *',
+                                    //     style: TextStyle(
+                                    //       fontSize: 16.0,
+                                    //       color: Colors.red,
+                                    //     ),
+                                    //   ),
+                                    // ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                    width: 170,
+                                    height: 50,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                    ),
+                                    // padding: EdgeInsets.symmetric(horizontal: 5),
+                                    child: TextFormField(
+                                      autofocus: false,
+                                      controller: activityImageDescriptionsEdit[index],
+                                      style: TextStyle(fontSize: 12),
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.white, width: 1.0),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.black, width: 1.0),
+                                        ),
+                                      ),
+                                    )),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      Container(
-                        padding: const EdgeInsets.only(
-                          bottom: 5,
-                        ),
-                        child: SvgPicture.asset(
-                          "assets/images/Flora-1.svg",
-                          width: 30,
-                          height: 30,
-                        ),
-                      ),
                       Container(
                           padding: const EdgeInsets.only(
                             left: 10,
                             bottom: 5,
                           ),
                           child: const Text(
-                            "Artwork Pictures",
+                            "Artwork",
                             style: TextStyle(
                                 fontSize: 16,
                                 color: Color(0xFF1C3764),
@@ -5743,64 +6393,149 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                           )),
                     ],
                   ),
-                  if (selectedArtworkImages.length > 0 &&
-                      selectedArtworkImages[0].runtimeType != String)
+                  if (selectedArtworkImages.isNotEmpty && selectedArtworkImages[0].runtimeType != String)
                     Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        child: Container(
-                            height: 150,
-                            child: ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                itemCount: selectedArtworkImages.length,
-                                itemBuilder: (BuildContext ctxt, int Index) {
-                                  return Container(
-                                    height: (MediaQuery.of(context).size.width -
-                                        30) /
-                                        2,
-                                    width: (MediaQuery.of(context).size.width -
-                                        30) /
-                                        2,
-                                    padding: const EdgeInsets.only(
-                                        bottom: 10, left: 5),
-                                    alignment: Alignment.bottomLeft,
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          // width:180,
-                                            height: 90,
-                                            child: Image.file(
-                                                fit: BoxFit.fill,
-                                                File(selectedArtworkImages[Index]!
-                                                    .path))),
-                                        SizedBox(height: 20),
-                                        Container(
-                                          height: 30,
-                                          child: TextFormField(
-                                            controller:
-                                            artworkDescriptions[Index],
-                                            style:
-                                            const TextStyle(fontSize: 12),
-                                            readOnly: true,
-                                            decoration: const InputDecoration(
-                                              border: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.white,
-                                                    width: 1.0),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.white,
-                                                    width: 1.0),
-                                              ),
-                                            ),
+                      margin: EdgeInsets.symmetric(vertical: 20),
+                      child: Column(
+                        children: selectedArtworkImages.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          var imageFile = entry.value;
+                          return SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  child: Stack(
+                                    alignment: Alignment.topRight,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Container(
+                                          height: (MediaQuery.of(context).size.width - 100) / 1.6,
+                                          child: Image.file(
+                                            fit: BoxFit.fill,
+                                            File(imageFile.path),
                                           ),
-                                        )
-                                      ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'Description',
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      fontFamily: 'WorkSans',
+                                      color: Resources.colors.appTheme.lable,
                                     ),
-                                  );
-                                }))),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                  width: 170,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  child: TextFormField(
+                                    autofocus: false,
+                                    controller: artworkDescriptions[index],
+                                    style: TextStyle(fontSize: 12),
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.white, width: 1.0),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  if (artworkPictures != null && artworkPictures.isNotEmpty)
+                    Container(
+                      height: 255,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: artworkPictures.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Container(
+                                    height: (MediaQuery.of(context).size.width -
+                                        100) /
+                                        1.6,
+                                    // width: (MediaQuery.of(context).size.width - 30) / 2,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        Image.network(
+                                            artworkPictures[index]['imageURL']),
+                                      ],
+                                    )),
+                                RichText(
+                                  text: TextSpan(
+                                    text: 'Description',
+                                    style: TextStyle(
+                                        fontSize: 14.0,
+                                        fontFamily: 'WorkSans',
+                                        color: Resources.colors.appTheme.lable),
+                                    // children: const [
+                                    //   TextSpan(
+                                    //     text: ' *',
+                                    //     style: TextStyle(
+                                    //       fontSize: 16.0,
+                                    //       color: Colors.red,
+                                    //     ),
+                                    //   ),
+                                    // ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                    width: 170,
+                                    height: 50,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                    ),
+                                    // padding: EdgeInsets.symmetric(horizontal: 5),
+                                    child: TextFormField(
+                                      autofocus: false,
+                                      controller: artworkDescriptionsEdit[index],
+                                      style: TextStyle(fontSize: 12),
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.white, width: 1.0),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.black, width: 1.0),
+                                        ),
+                                      ),
+                                    )),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                 ],
               )),
         ],
@@ -5815,7 +6550,13 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
         title: Text("Monitor River"),
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: NutsActivityIndicator(
+        radius: 10,
+        activeColor: Colors.lightGreen,
+        inactiveColor: Colors.grey,
+        tickCount: 8,
+        relativeWidth: 0.6,
+        startRatio: 2.0,))
           : Stack(
               alignment: Alignment.center,
               children: [
@@ -5845,7 +6586,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                         });
                       } else if (steps[_index] == "waterLevelAndWeather") {
                         if (form.control(steps[_index]).valid &&
-                            selectedRiverImages.length > 0 || riverPictures.length > 0) {
+                            selectedRiverImages.length > 0) {
                           setState(() {
                             _index = index;
                             _error = false;
@@ -5893,7 +6634,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                   style: ButtonStyle(
                                     backgroundColor:
                                         MaterialStateProperty.all<Color>(
-                                            Resources.colors.appTheme.darkBlue),
+                                            Resources.colors.appTheme.blue),
                                   ),
                                   onPressed: () async {
                                     if (widget.mode == "add") {
@@ -5904,7 +6645,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                   },
                                   child: _isSubmitted
                                       ? Text('Creating')
-                                      : Text(widget.mode == "add"?"Save":"Update"),
+                                      : Text(widget.mode == "add"?"SAVE":"UPDATE"),
                                 ),
                               ],
                             )
@@ -5914,7 +6655,15 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                 _index > 0
                                     ? Row(
                                         children: [
-                                          TextButton(
+                                          ElevatedButton(
+                                            style: ButtonStyle(
+                                              backgroundColor: MaterialStateProperty.all<Color>(Resources.colors.appTheme.green), // Change to green color
+                                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                                RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(5.0), // Set to 0 for a square shape
+                                                ),
+                                              ),
+                                            ),
                                             onPressed: () {
                                               if (_index > 0) {
                                                 setState(() {
@@ -5923,7 +6672,12 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                                 });
                                               }
                                             },
-                                            child: Text('Previous'),
+                                            child: Text(
+                                              'PREVIOUS',
+                                              style: TextStyle(
+                                                fontFamily: 'WorkSans',
+                                              ),
+                                            ),
                                           ),
                                           SizedBox(width: 16),
                                         ],
@@ -5934,18 +6688,11 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                     backgroundColor:
                                         MaterialStateProperty.all<Color>(
                                             Resources.colors.appTheme.blue),
-                                    shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            20.0), // Adjust the radius as needed
-                                      ),
-                                    ),
                                   ),
                                   onPressed: () {
                                     // print(selectedRiverImages[0].runtimeType);
                                     if (_index >= 0 && _index < steps.length) {
-                                      if (this._formKey.currentState!.validate() &&
+                                      if (  form.control(steps[_index]).valid &&
                                           steps[_index] != 'flora'
                                           && steps[_index] != 'waterLevelAndWeather' &&
                                           steps[_index] != 'preview'
@@ -5959,7 +6706,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                       } else if (steps[_index] ==
                                           "waterLevelAndWeather") {
                                         if (form.control(steps[_index]).valid &&
-                                            selectedRiverImages.length > 0 || riverPictures.length > 0) {
+                                            selectedRiverImages.length > 0) {
                                           setState(() {
                                             _index++;
                                             _error = false;
@@ -6006,7 +6753,7 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                                     }
                                   },
                                   child: Text(
-                                    'Next',
+                                    'NEXT',
                                     style: TextStyle(
                                       fontFamily: 'WorkSans',
                                     ),
@@ -6024,7 +6771,13 @@ class _RiverMonitoringFormState extends State<RiverMonitoringForm> {
                       color: Colors.black.withOpacity(0.5),
                     ),
                   ),
-                if (_isSubmitted) CircularProgressIndicator()
+                if (_isSubmitted)  const NutsActivityIndicator(
+                  radius: 10,
+                  activeColor: Colors.lightGreen,
+                  inactiveColor: Colors.grey,
+                  tickCount: 8,
+                  relativeWidth: 0.6,
+                  startRatio: 2.0,)
               ],
             ),
     );

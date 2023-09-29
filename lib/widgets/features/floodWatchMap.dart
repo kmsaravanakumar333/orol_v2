@@ -80,33 +80,6 @@ class _FloodWatchMapState extends State<FloodWatchMap> {
     }
   }
 
-  // _showAlertBox(locationName,latitude,longitude){
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: Text('Confirm this location?'),
-  //         content: Text('Are you sure you want to confirm this location \n$locationName'),
-  //         actions: [
-  //           TextButton(
-  //             child: Text('Close'),
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //           ),
-  //           TextButton(
-  //             child: Text('Ok'),
-  //             onPressed: () {
-  //               widget.onLocationPicked(locationName,latitude,longitude);
-  //               Navigator.of(context).pop();
-  //               // Navigator.pop(context, {'locationName': locationName, 'lat': latitude,'lan':longitude});
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;

@@ -29,5 +29,7 @@ class _AppTheme {
   Color blue = Color(0xFF116BB5);
   Color red = Color(0xFF7C0A02);
   Color lable = Color(0xFF67717B);
-  Color veryDarkGray = Color(0xFF212121);
+  Color seondary = Color(0xFF242424);
+  Color primary = Color(0xFFF2F4F5);
+  Color lightGray = Color(0xFFF2F5F5);
 }
